@@ -4,7 +4,7 @@
 
 (sm-module "base"
            ;; add the packages required by your basic configuration here
-           :require-packages '("evil" "magit" "smex" "ido-ubiquitous"
+           :require-packages '("melpa" "evil" "magit" "smex" "ido-ubiquitous"
                                "gitignore-mode" "parenface" "s" "wgrep"
                                "pp-c-l")
            ;; set this to t if you want to manage this module yourself

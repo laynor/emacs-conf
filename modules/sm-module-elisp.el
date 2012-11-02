@@ -8,7 +8,7 @@
   )
 
 (sm-module-post (elisp)
-  (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
+  (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
   (defun message-point()
     (interactive)
     (message "Point: %S" (point)))
