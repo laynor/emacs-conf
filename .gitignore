@@ -9,3 +9,4 @@ auto-save-list/
 *.elc
 /ede-projects.el
 /.smex-items
+/site-lisp/lightware
