@@ -6,6 +6,7 @@
 ;;(load *active-profile*)
 
 (setq package-archives '(("melpa" . "http://melpa.milkbox.net/packages/")))
+
 (add-to-list 'load-path (concat user-emacs-directory "smotitah"))
 (setq sm-debug t)
 (require 'smotitah)

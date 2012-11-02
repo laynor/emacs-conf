@@ -1,6 +1,9 @@
+# packages installed with package
 elpa/
 auto-save-list/
+# varoius backup files
 *~
 \#*#
 \#.*
+# compilation output
 *.elc

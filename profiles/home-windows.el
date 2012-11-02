@@ -1,22 +1,19 @@
 ;;; smotitah: profile home-windows
 
-;;; Uncomment this if this profile should not use smotitah's
-;;; module-loading capabilities.
-;; (setq sm-unmanaged-profile t)
-
-
-;;; Delete this block if the profile is unmanaged
+;;; Before loading modules
 (sm-profile-pre (home-windows)
-  ;; TODO write the code to be executed BEFORE the modules are loaded
+  (setq custom-file (concat user-emacs-directory "custom.el"))
   )
 
-;;; Delete this block if the profile is unmanaged
-;; TODO: add the modules you want to load here
-(sm-require-modules '("base"))
+;;; Modules to activate
+(sm-require-modules "base")
 
-;;; Delete this block if the profile is unmanaged
+;;; After loading modules
 (sm-profile-post (home-windows)
-  ;; TODO write the code to be executed AFTER the modules are loaded
-  )
+  (setq magit-git-executable "c:/cygwin/bin/git.exe")
+  (load "custom.el")
+  (custom-set-faces
+   '(default ((t (:inherit nil :stipple nil :background "black" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 90 :width normal :foundry "outline" :family "Consolas"))))))
+
 
 ;;;; sm-base-profile end.

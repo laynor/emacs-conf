@@ -1,0 +1,28 @@
+
+;; ----- smex-history -----
+(
+ rainbow-mode
+ list-packages
+ rgrep
+ customize-variable
+ apropos-variable
+ magit-status
+ eldoc-mode
+)
+
+;; ----- smex-data -----
+(
+ (package-list-packages . 1)
+ (font-lock-fontify-buffer . 2)
+ (list-packages . 3)
+ (customize-face . 1)
+ (revert-buffer . 1)
+ (sm-edit-module . 1)
+ (eldoc-mode . 2)
+ (rgrep . 3)
+ (lisp-interaction-mode . 2)
+ (magit-status . 1)
+ (apropos-variable . 1)
+ (customize-variable . 1)
+ (rainbow-mode . 1)
+)
