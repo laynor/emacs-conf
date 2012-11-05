@@ -1,10 +1,11 @@
 # packages installed with package
+el-get/
 elpa/
 auto-save-list/
 # varoius backup files
 *~
 \#*#
-\#.*
+\.#*
 # compilation output
 *.elc
 /ede-projects.el
