@@ -41,6 +41,8 @@ The number of dashes is calculated based on `*titled-comment-length*'.
   (define-key key-translation-map (kbd "C-.") (kbd "M-TAB"))
   (global-set-key [f7] 'magit-status)
   (global-set-key (kbd "C-\;") 'message-point)
+  (defadvice magit-key-mode (after evil-magit-key-mode-in-emacs-state (for-group &optional original-opts) activate)
+    (evil-emacs-state))
   )
 
 (sm-provide :module base)
