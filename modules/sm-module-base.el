@@ -23,16 +23,20 @@
   (defalias 'ep 'sm-edit-package)
   (defalias 'epr 'sm-edit-profile)
   ;; insert titled comment
-  (defvar *titled-comment-length* 90)
+  (defvar *titled-comment-length* 90
+    "Total width of comments inserted with `insert-titled-comment'")
   (defun insert-titled-comment (string)
+    "Inserts a comment in the stile
+;;;; --------------------------------- STRING expansion ----------------------------------
+The number of dashes is calculated based on `*titled-comment-length*'.
+"
     (interactive "sTitle: ")
     (let* ((clen (length string))
            (comment-prefix (format "%s " (s-repeat 4 comment-start)))
            (remaining-space (- *titled-comment-length* (length comment-prefix) (+ 2 clen)))
-           (dashes-left (replicate "-" (floor (/ remaining-space 2.0))))
-           (dashes-right (replicate "-" (ceiling (/ remaining-space 2.0)))))
+           (dashes-left (s-repeat (floor (/ remaining-space 2.0)) "-"))
+           (dashes-right (s-repeat (ceiling (/ remaining-space 2.0)) "-")))
       (insert (format "%s%s %s %s\n" comment-prefix dashes-left string dashes-right))))
-  ;; column number mode
   ;; global bindings
   (define-key key-translation-map (kbd "C-.") (kbd "M-TAB"))
   (global-set-key [f7] 'magit-status)
