@@ -6,7 +6,7 @@
   )
 
 ;;; Modules to activate
-(sm-require-modules "base" "elisp")
+(sm-require-modules "base" "elisp" "lightware")
 
 ;;; After loading modules
 (sm-profile-post (job)
