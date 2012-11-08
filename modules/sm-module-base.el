@@ -18,6 +18,7 @@
   )
 
 (sm-module-post (base)
+  (require 'uniquify)
   ;; smotitah aliases
   (defalias 'em 'sm-edit-module)
   (defalias 'ep 'sm-edit-package)
