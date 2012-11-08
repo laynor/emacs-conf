@@ -1,7 +1,7 @@
 ;;;; Module elisp
 (sm-module elisp
            :unmanaged-p nil
-           :require-packages '("elisp-slime-nav" "ale-fixme"))
+           :require-packages '("elisp-slime-nav" "ale-fixme" "auto-complete"))
 
 (sm-module-pre (elisp)
   ;; TODO insert your pre-package-initialization code here
