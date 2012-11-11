@@ -1,6 +1,6 @@
 ;;;; Package undo-tree
 (sm-package undo-tree
-            :"package" "package"
+            :package-manager "package"
             :unmanaged-p nil)
 
 ;;; TODO insert your package initialization code here

@@ -6,7 +6,7 @@
            ;; add the packages required by your basic configuration here
            :require-packages '("melpa" "evil" "magit" "smex" "ido-ubiquitous"
                                "gitignore-mode" "parenface" "s" "wgrep"
-                               "pp-c-l")
+                               "pp-c-l" "erc" "dired")
            ;; set this to t if you want to manage this module yourself
            ;; instead of using the builtin package loading infrastructure
            :unmanaged-p nil)
@@ -18,28 +18,33 @@
   )
 
 (sm-module-post (base)
+  (require 'uniquify)
   ;; smotitah aliases
   (defalias 'em 'sm-edit-module)
   (defalias 'ep 'sm-edit-package)
   (defalias 'epr 'sm-edit-profile)
-  ;; ido
-  (setq ido-enable-flex-matching t)
   ;; insert titled comment
-  (defvar *titled-comment-length* 90)
+  (defvar *titled-comment-length* 90
+    "Total width of comments inserted with `insert-titled-comment'")
   (defun insert-titled-comment (string)
+    "Inserts a comment in the stile
+;;;; --------------------------------- STRING expansion ----------------------------------
+The number of dashes is calculated based on `*titled-comment-length*'.
+"
     (interactive "sTitle: ")
     (let* ((clen (length string))
            (comment-prefix (format "%s " (s-repeat 4 comment-start)))
            (remaining-space (- *titled-comment-length* (length comment-prefix) (+ 2 clen)))
-           (dashes-left (replicate "-" (floor (/ remaining-space 2.0))))
-           (dashes-right (replicate "-" (ceiling (/ remaining-space 2.0)))))
+           (dashes-left (s-repeat (floor (/ remaining-space 2.0)) "-"))
+           (dashes-right (s-repeat (ceiling (/ remaining-space 2.0)) "-")))
       (insert (format "%s%s %s %s\n" comment-prefix dashes-left string dashes-right))))
-  ;; column number mode
-  (column-number-mode t)
   ;; global bindings
   (define-key key-translation-map (kbd "C-.") (kbd "M-TAB"))
   (global-set-key [f7] 'magit-status)
   (global-set-key (kbd "C-\;") 'message-point)
+  ;; (defadvice magit-key-mode (after evil-magit-key-mode-in-emacs-state (for-group &optional original-opts) activate)
+  ;;   (evil-emacs-state))
+  (add-hook 'before-save-hook (lambda () (delete-trailing-whitespace)))
   )
 
 (sm-provide :module base)
