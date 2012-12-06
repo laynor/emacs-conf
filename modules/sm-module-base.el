@@ -38,15 +38,21 @@ The number of dashes is calculated based on `*titled-comment-length*'.
            (dashes-left (s-repeat (floor (/ remaining-space 2.0)) "-"))
            (dashes-right (s-repeat (ceiling (/ remaining-space 2.0)) "-")))
       (insert (format "%s%s %s %s\n" comment-prefix dashes-left string dashes-right))))
-  ;; global bindings
+
+
+  ;; Before save hook
+  (add-hook 'before-save-hook (lambda () (delete-trailing-whitespace)))
+
+  ;;; global bindings
   (define-key key-translation-map (kbd "C-.") (kbd "M-TAB"))
   (global-set-key [f7] 'magit-status)
   (global-set-key (kbd "C-\;") 'message-point)
-  ;; (defadvice magit-key-mode (after evil-magit-key-mode-in-emacs-state (for-group &optional original-opts) activate)
-  ;;   (evil-emacs-state))
-  (add-hook 'before-save-hook (lambda () (delete-trailing-whitespace)))
+  ;; Auto complete and evil
+  (define-key ac-completing-map (kbd "C-n") 'ac-next)
+  (define-key ac-completing-map (kbd "C-p") 'ac-previous)
+  (define-key ac-completing-map (kbd "C-[") '(lambda () (interactive) (ac-stop) (evil-normal-state)))
+
   )
 
 (sm-provide :module base)
 ;;;; End base module
-
