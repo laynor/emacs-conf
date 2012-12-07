@@ -12,4 +12,5 @@
 (add-to-list 'load-path (concat user-emacs-directory "smotitah"))
 (setq sm-debug t)
 (require 'smotitah)
+(add-hook 'kill-emacs-hook 'sm-recompile-all)
 (sm-initialize)

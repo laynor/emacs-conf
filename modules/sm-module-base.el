@@ -6,7 +6,7 @@
            ;; add the packages required by your basic configuration here
            :require-packages '("melpa" "evil" "magit" "smex" "ido-ubiquitous"
                                "gitignore-mode" "parenface" "s" "wgrep"
-                               "pp-c-l" "erc" "dired")
+                               "pp-c-l" "erc" "dired" "browse-kill-ring")
            ;; set this to t if you want to manage this module yourself
            ;; instead of using the builtin package loading infrastructure
            :unmanaged-p nil)
@@ -45,8 +45,21 @@ The number of dashes is calculated based on `*titled-comment-length*'.
   ;; (defadvice magit-key-mode (after evil-magit-key-mode-in-emacs-state (for-group &optional original-opts) activate)
   ;;   (evil-emacs-state))
   (add-hook 'before-save-hook (lambda () (delete-trailing-whitespace)))
-  )
 
+  (defadvice evil-paste-pop (around evil-kill-ring-browse-maybe (arg) activate)
+    "If last action was not a yank, run `browse-kill-ring' instead."
+    ;; yank-pop has an (interactive "*p") form which does not allow
+    ;; it to run in a read-only buffer.  We want browse-kill-ring to
+    ;; be allowed to run in a read only buffer, so we change the
+    ;; interactive form here.  In that case, we need to
+    ;; barf-if-buffer-read-only if we're going to call yank-pop with
+    ;; ad-do-it
+    (interactive "p")
+    (if (not (memq last-command '(evil-paste-after evil-paste-before yank)))
+        (browse-kill-ring)
+      (barf-if-buffer-read-only)
+      ad-do-it))
+
+  )
 (sm-provide :module base)
 ;;;; End base module
-
