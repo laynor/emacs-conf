@@ -3,6 +3,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ac-auto-show-menu 0.3)
+ '(ac-quick-help-delay 0.5)
+ '(c-default-style (quote ((c-mode . "k&r") (c++-mode . "ellemtel") (java-mode . "java") (awk-mode . "awk") (other . "gnu"))))
  '(column-number-mode t)
  '(custom-enabled-themes (quote (ale-black-2)))
  '(custom-safe-themes (quote ("7f96e6a6dd9b02aeae63cde2916f2725eaf91b44049cdc9cf608ceff4c2a3732" "238da0c6bc2420cac5f2b20f714a01f0e042ea3bd48146ad9fc6be6baf33594f" default)))
