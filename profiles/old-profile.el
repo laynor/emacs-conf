@@ -133,4 +133,4 @@
  '(w3m-image ((t (:inherit black-on-white))) t)
  '(woman-bold ((t (:inherit bold :foreground "deep sky blue"))) t))
 
-(load (concat *my-dropbox-dir* "/emacs/load-all.el"))
+(load (concat *my-dropbox-dir* "/emacs/load-all-2.el"))
