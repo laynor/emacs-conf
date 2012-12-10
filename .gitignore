@@ -12,3 +12,5 @@ auto-save-list/
 /.smex-items
 /site-lisp/lightware
 /ac-comphist.dat
+semanticdb/
+/srecode-map.el
