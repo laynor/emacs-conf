@@ -1,3 +1,6 @@
 [submodule "smotitah"]
 	path = smotitah
 	url = git@github.com:laynor/smotitah.git
+[submodule "site-lisp/distel"]
+	path = site-lisp/distel
+	url = git@github.com:massemanet/distel.git
