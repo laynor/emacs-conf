@@ -25,4 +25,10 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:inherit nil :stipple nil :background "black" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 90 :width normal :foundry "xos4" :family "Terminus"))))
- '(eldoc-highlight-function-argument ((t (:inherit bold :box nil :underline "deeppink")))))
+ '(eldoc-highlight-function-argument ((t (:inherit bold :box nil :underline "deeppink"))))
+ '(factor-font-lock-comment ((t (:inherit font-lock-comment-face))))
+ '(factor-font-lock-parsing-word ((t (:inherit font-lock-keyword-face))))
+ '(factor-font-lock-stack-effect ((t (:foreground "green"))))
+ '(factor-font-lock-string ((t (:inherit font-lock-string-face))))
+ '(factor-font-lock-word ((t (:inherit font-lock-function-name-face))))
+ '(font-lock-string-face ((t (:foreground "yellow")))))
