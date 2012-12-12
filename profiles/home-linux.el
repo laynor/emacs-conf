@@ -6,7 +6,7 @@
   )
 
 ;;; Modules to activate
-(sm-require-modules "base" "elisp" "C" "factor")
+(sm-require-modules "base" "elisp" "C" "factor" "erlang")
 
 ;;; After loading modules
 (sm-profile-post (home-linux)
