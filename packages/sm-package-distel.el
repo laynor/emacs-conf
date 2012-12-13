@@ -6,6 +6,7 @@
 (add-to-list 'load-path (concat user-emacs-directory "site-lisp/distel/elisp"))
 (require 'distel)
 (distel-setup)
+
 (defconst distel-shell-keys
   '(("\C-\M-i"   erl-complete)
     ("\M-?"      erl-complete)
@@ -14,6 +15,7 @@
     ("\M-*"      erl-find-source-unwind)
     )
   "Additional keys to bind when in Erlang shell.")
+
 (add-hook 'erlang-shell-mode-hook
 	  (lambda ()
 	    ;; add some Distel bindings to the Erlang shell
