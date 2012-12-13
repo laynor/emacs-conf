@@ -6,6 +6,7 @@
 (add-to-list 'load-path (concat user-emacs-directory "site-lisp/distel/elisp"))
 (require 'distel)
 (distel-setup)
+;; TODO: hack erl-print-arglist to color the help text in minibuffer
 
 (defconst distel-shell-keys
   '(("\C-\M-i"   erl-complete)
