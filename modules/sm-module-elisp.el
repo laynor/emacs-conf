@@ -16,10 +16,8 @@
   ;; Activate minor modes
   (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode) ;eldoc
   (add-hook 'emacs-lisp-mode-hook (lambda () (fic-ext-mode 1))) ;fic-ext-mode
-  
+  (add-hook 'emacs-lisp-mode-hook 'ac-emacs-lisp-mode-setup)
+
   )
 
 (sm-provide :module elisp)
-               
-               
-               
