@@ -14,3 +14,4 @@
 (require 'smotitah)
 (add-hook 'kill-emacs-hook 'sm-recompile-all)
 (sm-initialize)
+(server-start)
