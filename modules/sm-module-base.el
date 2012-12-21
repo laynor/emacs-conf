@@ -70,6 +70,8 @@ The number of dashes is calculated based on `*titled-comment-length*'.
   (define-key ac-completing-map (kbd "C-p") 'ac-previous)
   (define-key ac-completing-map (kbd "C-[") '(lambda () (interactive) (ac-stop) (evil-normal-state)))
 
+  ;; Frame title
+  (setq frame-title-format '(buffer-file-name "%b - emacs" ("%b - emacs")))
   )
 
 (sm-provide :module base)
