@@ -1,7 +1,7 @@
 ;;;; Module C
 (sm-module C
            :unmanaged-p nil
-           :require-packages nil )      ; '(auto-complete-clang))
+           :require-packages '(auto-complete-clang))
 
 (sm-module-pre (C)
   ;; TODO insert your pre-package-initialization code here
