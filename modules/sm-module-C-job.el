@@ -1,7 +1,7 @@
 ;;;; Module C
 (sm-module C-job
            :unmanaged-p nil
-           :require-packages '(ToolBOS auto-complete-clang c-eldoc))
+           :require-packages '(ToolBOS yasnippet auto-complete-clang c-eldoc))
 
 (sm-module-pre (C-job)
   ;; TODO insert your pre-package-initialization code here
@@ -22,6 +22,8 @@
 
   (setq c-eldoc-includes (concat c-eldoc-includes " "
                                  (mapconcat 'identity (c-get-standard-include-dirs) " ")))
+
+  (add-hook 'c-mode-common-hook 'yas-minor-mode-on)
   )
 
 (sm-provide :module C-job)

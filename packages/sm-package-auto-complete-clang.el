@@ -7,7 +7,8 @@
 
 ;; Do not insert function signature in the buffer
 (setq ac-source-clang
-      (append '((document . nil) (action . nil)) ac-source-clang))
+      (append '((document . nil))
+              ac-source-clang))
 
 (defadvice ac-clang-candidate (after ac-clang-candidate-show-signature-in-summary activate)
   (setq ad-return-value
