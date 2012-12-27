@@ -8,12 +8,12 @@
   )
 
 ;;; Modules to activate
-(sm-require-modules "base" "elisp" "C" "factor" "erlang" "python")
+(sm-require-modules "base" "elisp" "C" "factor" "erlang" "python" "ruby")
 
 ;;; After loading modules
 (sm-profile-post (home-linux)
   (custom-set-variables
-   `(jedi:server-command ("python2" ,(concat jedi:source-dir "jediepcserver.py")))
+   `(jedi:server-command '("python2" ,(concat jedi:source-dir "jediepcserver.py")))
    '(python-shell-interpreter "python2"))
 
   (load "custom.el"))
