@@ -4,3 +4,12 @@
 [submodule "site-lisp/distel"]
 	path = site-lisp/distel
 	url = git@github.com:massemanet/distel.git
+[submodule "site-lisp/auto-complete-distel"]
+	path = site-lisp/auto-complete-distel
+	url = git@github.com:rost/auto-complete-distel.git
+[submodule "site-lisp/popup"]
+	path = site-lisp/popup
+	url = git@github.com:laynor/popup-el.git
+[submodule "site-lisp/jedi-eldoc"]
+	path = site-lisp/jedi-eldoc
+	url = git@github.com:emacsmirror/jedi-eldoc.git
