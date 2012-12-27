@@ -9,4 +9,11 @@
 
 (autoload 'jedi:setup "jedi" nil t)
 
+(defadvice jedi:ac-direct-matches (after jedi:remove-summary activate)
+  (setq ad-return-value
+        (mapcar (lambda (item)
+                  (propertize item
+                              'summary nil))
+                ad-return-value)))
+
 (sm-provide :package jedi)
