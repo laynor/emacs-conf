@@ -8,10 +8,13 @@
   )
 
 ;;; Modules to activate
-(sm-require-modules "base" "elisp" "C" "factor" "erlang")
+(sm-require-modules "base" "elisp" "C" "factor" "erlang" "python")
 
 ;;; After loading modules
 (sm-profile-post (home-linux)
+  (custom-set-variables
+   '(python-shell-interpreter "python2"))
+
   (load "custom.el"))
 
 

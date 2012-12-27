@@ -6,7 +6,7 @@
            ;; add the packages required by your basic configuration here
            :require-packages '("melpa" "evil" "magit" "smex" "ido-ubiquitous"
                                "gitignore-mode" "parenface" "s" "wgrep"
-                               "pp-c-l" "erc" "dired" "browse-kill-ring")
+                               "pp-c-l" "erc" "dired" "browse-kill-ring" "popup-git")
            ;; set this to t if you want to manage this module yourself
            ;; instead of using the builtin package loading infrastructure
            :unmanaged-p nil)
