@@ -1,7 +1,7 @@
 ;;;; Module C
 (sm-module C
            :unmanaged-p nil
-           :require-packages '(auto-complete-clang c-eldoc))
+           :require-packages '(yasnippet auto-complete-clang c-eldoc))
 
 (sm-module-pre (C)
   )
@@ -21,6 +21,7 @@
 
   (setq c-eldoc-includes (concat c-eldoc-includes " "
                                  (mapconcat 'identity (c-get-standard-include-dirs) " ")))
+  (add-hook 'c-mode-common-hook 'yas-minor-mode-on)
   )
 
 (sm-provide :module C)
