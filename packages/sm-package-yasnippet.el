@@ -3,6 +3,9 @@
             :package-manager "package"
             :unmanaged-p nil)
 
-;;; TODO insert your package initialization code here
+(require 'yasnippet)
+
+(defun add-yasnippet-ac-sources ()
+  (add-to-list 'ac-sources 'ac-source-yasnippet))
 
 (sm-provide :package yasnippet)
