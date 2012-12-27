@@ -1,14 +1,14 @@
 ;;;; Module erlang
 (sm-module erlang
            :unmanaged-p nil
-           :require-packages '(erlang distel))
+           :require-packages '(erlang distel auto-complete auto-complete-distel))
 
 (sm-module-pre (erlang)
-  ;; TODO insert your pre-package-initialization code here
   )
 
 (sm-module-post (erlang)
-  ;; TODO insert your post-package-initialization code here
+  (add-hook 'erlang-mode-hook 'ac-distel-setup)
+  (add-hook 'erlang-shell-mode-hook 'ac-distel-setup)
   )
 
 (sm-provide :module erlang)
