@@ -1,7 +1,7 @@
 ;;;; Module python
 (sm-module python
            :unmanaged-p nil
-           :require-packages '(auto-complete jedi jedi-eldoc flymake-cursor flycheck))
+           :require-packages '(auto-complete jedi jedi-eldoc flycheck))
 
 (sm-module-pre (python)
   )
