@@ -8,7 +8,7 @@
   )
 
 ;;; Modules to activate
-(sm-require-modules "base" "elisp" "lightware" "C-job" "erlang" "python" "common-lisp")
+(sm-require-modules "base" "elisp" "lightware" "C-job" "erlang" "python" "common-lisp" "lua")
 
 ;;; After loading modules
 (sm-profile-post (job)
