@@ -1,7 +1,7 @@
 ;;;; Module C
 (sm-module C-job
            :unmanaged-p nil
-           :require-packages '(ToolBOS yasnippet auto-complete-clang c-eldoc))
+           :require-packages '(ToolBOS yasnippet auto-complete auto-complete-clang c-eldoc))
 
 (sm-module-pre (C-job)
   ;; TODO insert your pre-package-initialization code here
