@@ -14,12 +14,21 @@
                                  "E202" ; Whitespace before )
                                  ))
 
-  (defvar flycheck-checker-python-flake8-with-excludes
-    `(:command ("flake8" ,(concat "--ignore=" (mapconcat 'identity flake8-ignored-codes ",")) source-inplace)
-               :error-patterns
-               (("^\\(.*?\\):\\([0-9]+\\):\\([0-9]*\\):? \\(E.*\\)$" 1 2 3 4 error)
-                ("^\\(.*?\\):\\([0-9]+\\):\\([0-9]*\\):? \\(W.*\\)$" 1 2 3 4 warning))
-             :modes python-mode))
+  (flycheck-declare-checker python-flake8-with-excludes
+    "A Python syntax and style checker using the flake8 utility, with several ignored codes.
+   See http://pypi.python.org/pypi/flake8."
+    :command `("flake8" ,(concat "--ignore=" (mapconcat 'identity flake8-ignored-codes ",")) (config "--config" flycheck-flake8rc) source-inplace)
+    :error-patterns
+    '(("^\\(?1:.*\\):\\(?2:[0-9]+\\): \\(?4:[[:alpha:]]\\{2\\}.*\\)$" error)
+      ("^\\(?1:.*?\\):\\(?2:[0-9]+\\):\\(?:\\(?3:[0-9]+\\):\\)? \\(?4:E[0-9]+.*\\)$"
+       error)
+      ("^\\(?1:.*?\\):\\(?2:[0-9]+\\):\\(?:\\(?3:[0-9]+\\):\\)? \\(?4:W[0-9]+.*\\)$"
+       warning))
+    :modes 'python-mode)
+
+  (add-to-list 'flycheck-checkers 'python-flake8-with-excludes)
+
+
 
   (add-hook 'python-mode-hook 'flycheck-mode)
 
