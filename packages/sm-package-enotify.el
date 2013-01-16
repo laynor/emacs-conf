@@ -4,6 +4,7 @@
             :unmanaged-p t)
 
 (add-to-list 'load-path (concat user-emacs-directory "site-lisp/enotify/"))
+(setq enotify-use-next-available-port t)
 (require 'enotify)
 (enotify-minor-mode t)
 
