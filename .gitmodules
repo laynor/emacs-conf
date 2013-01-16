@@ -13,3 +13,6 @@
 [submodule "site-lisp/jedi-eldoc"]
 	path = site-lisp/jedi-eldoc
 	url = git@github.com:emacsmirror/jedi-eldoc.git
+[submodule "site-lisp/enotify"]
+	path = site-lisp/enotify
+	url = git@github.com:laynor/enotify.git
