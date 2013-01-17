@@ -1,7 +1,7 @@
 ;;;; Module ruby
 (sm-module ruby
            :unmanaged-p nil
-           :require-packages '(yasnippet rsense))
+           :require-packages '(yasnippet rsense enotify enotify-espectator))
 
 (sm-module-pre (ruby)
   ;; TODO insert your pre-package-initialization code here
