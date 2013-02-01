@@ -3,6 +3,10 @@
             :package-manager "builtin"
             :unmanaged-p nil)
 
+(require 'dired-x)
+(setq dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$\\|^\\..*$")
+
+
 (eval-after-load "dired"
   '(progn
      (define-key dired-mode-map "F" 'my-dired-find-file)
