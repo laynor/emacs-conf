@@ -1,13 +1,17 @@
 ;;;; Module ruby
 (sm-module ruby
            :unmanaged-p nil
-           :require-packages '(yasnippet rsense enotify enotify-espectator hideshow ale-fixme))
+           :require-packages '(yasnippet rsense enotify highlight-indentation
+                               enotify-espectator hideshow ale-fixme rspec-mode
+                               markdown-mode markdown-mode+ yard-mode
+                               rdoc-mode))
 
 (sm-module-pre (ruby)
   ;; TODO insert your pre-package-initialization code here
   )
 
 (sm-module-post (ruby)
+  (require 'ruby-mode)
   ;; Folding with hideshow
   (add-to-list 'hs-special-modes-alist
                '(ruby-mode
@@ -19,7 +23,16 @@
   (add-hook 'ruby-mode-hook 'yas-minor-mode-on)
   (add-hook 'ruby-mode-hook 'yas-reload-all)
   ;; todo/fixme comments
-  (add-hook 'ruby-mode-hook '(lambda () (fic-ext-mode 1)))
+  (add-hook 'ruby-mode-hook #'(lambda () (fic-ext-mode 1)))
+  (add-hook 'ruby-mode-hook #'(lambda () (highlight-indentation-mode 1)))
+  (add-hook 'ruby-mode-hook #'yard-turn-on)
+  ;; Auto indent current line when pressing RET
+  (defun indent-then-newline-and-indent()
+    (interactive)
+    (indent-according-to-mode)
+    (newline-and-indent))
+  (define-key ruby-mode-map (kbd "RET") 'indent-then-newline-and-indent)
+  (add-to-list 'auto-mode-alist '("Gemfile" . ruby-mode))
   )
 
 (sm-provide :module ruby)
