@@ -1,17 +1,21 @@
 ;;;; Module ruby
 (sm-module ruby
            :unmanaged-p nil
-           :require-packages '(yasnippet rsense enotify highlight-indentation
-                               enotify-espectator hideshow ale-fixme rspec-mode
-                               markdown-mode markdown-mode+ yard-mode
+           :require-packages '(yasnippet rsense enotify
+                               highlight-indentation
+                               enotify-espectator hideshow
+                               ale-fixme rspec-mode markdown-mode
+                               markdown-mode+ yard-mode
                                rdoc-mode))
 
 (sm-module-pre (ruby)
-  ;; TODO insert your pre-package-initialization code here
+  ;; Add current ruby elisp directory to load-path
+  (require 'ruby-mode)
+  (add-to-list 'load-path (concat (getenv "HOME") "/.rvm/src/" (getenv "rvm_ruby_string") "/misc/"))
   )
 
 (sm-module-post (ruby)
-  (require 'ruby-mode)
+  ;; (require 'ruby-electric)
   ;; Folding with hideshow
   (add-to-list 'hs-special-modes-alist
                '(ruby-mode
