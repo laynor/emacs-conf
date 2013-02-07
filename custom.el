@@ -43,6 +43,7 @@
  '(factor-font-lock-stack-effect ((t (:foreground "green"))))
  '(factor-font-lock-string ((t (:inherit font-lock-string-face))))
  '(factor-font-lock-word ((t (:inherit font-lock-function-name-face))))
+ '(flycheck-error-face ((t (:inherit error :underline t))))
  '(font-lock-comment-face ((t (:foreground "MediumPurple3" :slant italic))))
  '(font-lock-fic-face ((t (:inherit font-lock-comment-face :background "Red" :foreground "Yellow" :weight bold))))
  '(font-lock-preprocessor-face ((t (:inherit font-lock-builtin-face :foreground "#ff0033"))))
