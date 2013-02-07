@@ -26,6 +26,9 @@ having the same major mode as the current buffer"
 
 (require 'fic-ext-mode)
 
+(defun turn-on-fixme-mode ()
+  (fic-ext-mode 1))
+
 (setq fic-highlighted-words '("FIXME" "TODO" "BUG" "KLUDGE" "XXX" "UGLY"))
 
 (sm-provide :package ale-fixme)

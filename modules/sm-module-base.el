@@ -8,7 +8,8 @@
                                "gitignore-mode" "parenface" "s" "wgrep"
                                "pp-c-l" "erc" "dired" "browse-kill-ring"
                                "popup-git" "whitespace" "gist"
-                               "markdown-mode" "markdown-mode+")
+                               "markdown-mode" "markdown-mode+"
+                               "auto-complete")
            ;; set this to t if you want to manage this module yourself
            ;; instead of using the builtin package loading infrastructure
            :unmanaged-p nil)
@@ -28,6 +29,19 @@
   ;; insert titled comment
   (defvar *titled-comment-length* 90
     "Total width of comments inserted with `insert-titled-comment'")
+
+  (defun package-depends (package)
+    "Retrieves the packages PACKAGE depends on."
+    (mapcar 'car (elt (cdr (assoc package package-alist)) 1)))
+
+  (defun package-reverse-depends (package)
+    "Returns a list of the currently installed packages that
+depend on PACKAGE."
+    (let* ((package-list (mapcar 'car package-alist))
+           (deps (mapcar (lambda (p) (cons package (package-depends p)))
+                         package-list)))
+      (mapcar 'car (remove-if-not (lambda (dep) (memq package (cdr dep))) deps))))
+
   (defun insert-titled-comment (string)
     "Inserts a comment in the stile
 ;;;; --------------------------------- STRING expansion ----------------------------------
@@ -74,6 +88,9 @@ The number of dashes is calculated based on `*titled-comment-length*'.
 
   ;; Frame title
   (setq frame-title-format '(buffer-file-name "%b - emacs" ("%b - emacs")))
+
+  ;;; AUTO-MODES
+  (add-to-list 'auto-mode-alist (cons "\\.zsh$" 'shell-script-mode))
   )
 
 (sm-provide :module base)

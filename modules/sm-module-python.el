@@ -1,7 +1,7 @@
 ;;;; Module python
 (sm-module python
            :unmanaged-p nil
-           :require-packages '(auto-complete jedi jedi-eldoc flycheck))
+           :require-packages '(auto-complete jedi jedi-eldoc flycheck ale-fixme))
 
 (sm-module-pre (python)
   )
@@ -35,6 +35,7 @@
   (add-hook 'python-mode-hook 'jedi:setup)
   (add-hook 'python-mode-hook (lambda () (setq popup-max-menu-width 0.5)))
   (add-hook 'python-mode-hook 'jedi-eldoc-mode)
+  (add-hook 'python-mode-hook 'turn-on-fixme-mode)
   )
 
 (sm-provide :module python)
