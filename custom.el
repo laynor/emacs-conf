@@ -48,5 +48,6 @@
  '(font-lock-fic-face ((t (:inherit font-lock-comment-face :background "Red" :foreground "Yellow" :weight bold))))
  '(font-lock-preprocessor-face ((t (:inherit font-lock-builtin-face :foreground "#ff0033"))))
  '(font-lock-string-face ((t (:foreground "blue violet"))))
+ '(highlight-indentation-face ((t (:inherit fringe :background "grey8"))))
  '(jedi:highlight-function-argument ((t (:inherit eldoc-highlight-function-argument))))
  '(popup-scroll-bar-foreground-face ((t (:background "blue")))))

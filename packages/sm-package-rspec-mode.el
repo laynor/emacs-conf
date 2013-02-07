@@ -1,10 +1,8 @@
-;;;; Package yard-mode
-(sm-package yard-mode
+;;;; Package rspec-mode
+(sm-package rspec-mode
             :package-manager "package"
             :unmanaged-p nil)
 
-(require 'yard-mode)
-
 ;;; TODO insert your package initialization code here
 
-(sm-provide :package yard-mode)
+(sm-provide :package rspec-mode)
