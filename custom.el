@@ -17,6 +17,7 @@
  '(ido-enable-flex-matching t)
  '(jedi:cut-summary-postfix "...")
  '(jedi:max-summary-length 40)
+ '(jedi:server-command (quote ("python2" "/home/ale/.emacs.d/elpa/jedi-20130131.2352/jediepcserver.py")))
  '(jedi:show-function-signature-in-summary t)
  '(magit-diff-refine-hunk t)
  '(org-export-odt-inline-image-extensions (quote ("png" "jpeg" "jpg" "gif" "svg")))
