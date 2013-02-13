@@ -1,7 +1,7 @@
 ;;;; Module elisp
 (sm-module elisp
            :unmanaged-p nil
-           :require-packages '("elisp-slime-nav" "ale-fixme" "auto-complete"))
+           :require-packages '("elisp-slime-nav" "ale-fixme" "auto-complete" "hl-sexp"))
 
 (sm-module-pre (elisp)
   ;; TODO insert your pre-package-initialization code here
@@ -43,13 +43,13 @@
   ;;              (goto-char (1- (point))))
   ;;             (t (backward-sexp)))))
 
-  
-  ;; (evil-define-key 'normal lisp-interaction-mode-map 
+
+  ;; (evil-define-key 'normal lisp-interaction-mode-map
   ;;   (kbd "M-j") 'down-list
   ;;   (kbd "M-k") 'up-list
   ;;   (kbd "M-l") 'evil-forward-sexp
   ;;   (kbd "M-h") 'evil-backward-sexp)
-  ;; (evil-define-key 'normal emacs-lisp-mode-map 
+  ;; (evil-define-key 'normal emacs-lisp-mode-map
   ;;   (kbd "M-j") 'down-list
   ;;   (kbd "M-k") 'up-list
   ;;   (kbd "M-l") 'evil-forward-sexp
