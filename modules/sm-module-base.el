@@ -57,7 +57,7 @@ The number of dashes is calculated based on `*titled-comment-length*'.
 
 
   ;; Before save hook
-  (add-hook 'before-save-hook (lambda () (unless makefile-mode (delete-trailing-whitespace))))
+  (add-hook 'before-save-hook (lambda () (unless (ignore-errors makefile-mode) (delete-trailing-whitespace))))
 
   ;;; global bindings
   (define-key key-translation-map (kbd "C-.") (kbd "M-TAB"))
