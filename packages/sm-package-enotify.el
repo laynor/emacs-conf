@@ -6,6 +6,7 @@
 (add-to-list 'load-path (concat user-emacs-directory "site-lisp/enotify/"))
 (setq enotify-use-next-available-port t)
 (require 'enotify)
+(require 'enotify-tdd)
 (enotify-minor-mode t)
 
 (sm-provide :package enotify)
