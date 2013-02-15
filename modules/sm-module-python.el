@@ -1,7 +1,7 @@
 ;;;; Module python
 (sm-module python
            :unmanaged-p nil
-           :require-packages '(auto-complete jedi jedi-eldoc flycheck ale-fixme))
+           :require-packages '(auto-complete jedi jedi-eldoc flycheck ale-fixme enotify))
 
 (sm-module-pre (python)
   )

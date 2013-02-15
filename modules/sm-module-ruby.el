@@ -3,7 +3,7 @@
            :unmanaged-p nil
            :require-packages '(yasnippet rsense enotify
                                highlight-indentation
-                               enotify-espectator hideshow
+                               hideshow
                                ale-fixme rspec-mode markdown-mode
                                markdown-mode+ yard-mode
                                rdoc-mode))
