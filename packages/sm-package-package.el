@@ -7,8 +7,10 @@
   (concat user-emacs-directory ".manually-installed-packages"))
 
 (defun package-list ()
-  (mapcar 'car package-alist))
-
+  (sort (remove-duplicates (mapcar 'car package-alist) :test 'equal)
+        (lambda (s1 s2)
+          (string< (symbol-name s1)
+                   (symbol-name s2)))))
 
 
 (setq package-manually-installed-packages
@@ -21,7 +23,11 @@
 
 (defun package-dump-manually-installed-packages ()
   (with-temp-file package-manually-installed-packages-file
-    (insert (format "%S" package-manually-installed-packages))))
+    (insert "(\n")
+    (dolist (el package-manually-installed-packages)
+      (insert (format "%S\n" el)))
+    (insert ")\n")))
+
 
 (defadvice package-install (before track-manually-installed-packages (name) activate)
   (push name package-manually-installed-packages)

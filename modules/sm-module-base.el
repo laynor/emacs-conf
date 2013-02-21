@@ -9,7 +9,7 @@
                                "pp-c-l" "erc" "dired" "browse-kill-ring"
                                "popup-git" "whitespace" "gist"
                                "markdown-mode" "markdown-mode+"
-                               "auto-complete" "package")
+                               "auto-complete" "package" "projectile")
            ;; set this to t if you want to manage this module yourself
            ;; instead of using the builtin package loading infrastructure
            :unmanaged-p nil)

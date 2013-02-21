@@ -39,6 +39,7 @@
  '(default ((t (:inherit nil :stipple nil :background "black" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 100 :width normal :foundry "xos4" :family "consolas"))))
  '(ac-candidate-face ((t (:background "lightgray" :foreground "black" :underline "light slate blue"))))
  '(ac-clang-candidate-face ((t (:background "lightgray" :foreground "navy" :underline "medium slate blue"))))
+ '(ediff-odd-diff-C ((t (:background "Dim Grey" :foreground "White"))))
  '(eldoc-highlight-function-argument ((t (:inherit bold :box nil :underline "deeppink"))))
  '(factor-font-lock-comment ((t (:inherit font-lock-comment-face))))
  '(factor-font-lock-parsing-word ((t (:inherit font-lock-keyword-face))))
