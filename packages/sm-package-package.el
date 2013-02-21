@@ -22,6 +22,11 @@
 
 
 (defun package-dump-manually-installed-packages ()
+  (setq package-manually-installed-packages
+        (sort (remove-duplicates package-manually-installed-packages)
+              (lambda (s1 s2)
+                (string< (symbol-name s1)
+                         (symbol-name s2)))))
   (with-temp-file package-manually-installed-packages-file
     (insert "(\n")
     (dolist (el package-manually-installed-packages)

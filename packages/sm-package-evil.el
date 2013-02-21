@@ -17,5 +17,8 @@
 (evil-define-key 'normal emacs-lisp-mode-map (kbd "M-.") 'find-function)
 (evil-define-key 'normal lisp-mode-map (kbd "M-.") 'slime-edit-definition)
 (define-key evil-normal-state-map (kbd "M-.") nil)
+;; (define-key evil-insert-state-map [ctrl ] 'evil-normal-state)
+;; (define-key evil-esc-map (kbd "ESC") nil)
+;; (define-key evil-visual-state-map (kbd "M-x") 'smex)
 
 (sm-provide :package evil)
