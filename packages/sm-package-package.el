@@ -4,7 +4,7 @@
             :unmanaged-p nil)
 
 (defvar package-manually-installed-packages-file
-  (concat user-emacs-directory ".manually-installed-packages"))
+  (concat user-emacs-directory ".manually-installed-packages-" sm-profile))
 
 (defun package-list ()
   (sort (remove-duplicates (mapcar 'car package-alist) :test 'equal)
