@@ -4,12 +4,28 @@
 
 (sm-module "base"
            ;; add the packages required by your basic configuration here
-           :require-packages '("melpa" "evil" "magit" "smex" "ido-ubiquitous"
-                               "gitignore-mode" "parenface" "s" "wgrep"
-                               "pp-c-l" "erc" "dired" "browse-kill-ring"
-                               "popup-git" "whitespace" "gist"
-                               "markdown-mode" "markdown-mode+"
-                               "auto-complete" "package" "projectile")
+  :require-packages '( "auto-complete"
+                       "browse-kill-ring"
+                       "dired"
+                       "direx"
+                       "erc"
+                       "evil"
+                       "gist"
+                       "gitignore-mode"
+                       "ido-ubiquitous"
+                       "magit"
+                       "markdown-mode"
+                       "markdown-mode+"
+                       "melpa"
+                       "package"
+                       "parenface"
+                       "popup-git"
+                       "pp-c-l"
+                       "projectile"
+                       "s"
+                       "smex"
+                       "wgrep"
+                       "whitespace")
            ;; set this to t if you want to manage this module yourself
            ;; instead of using the builtin package loading infrastructure
            :unmanaged-p nil)
