@@ -4,6 +4,7 @@ auto-complete
 auto-complete-clang
 browse-kill-ring
 c-eldoc
+direx
 elisp-slime-nav
 erlang
 evil

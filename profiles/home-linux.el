@@ -13,7 +13,6 @@
 ;;; After loading modules
 (sm-profile-post (home-linux)
   (custom-set-variables
-   `(jedi:server-command '("python2" ,(concat jedi:source-dir "jediepcserver.py")))
    '(python-shell-interpreter "python2"))
 
   (load "custom.el"))

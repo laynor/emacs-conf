@@ -6,6 +6,7 @@
  '(ac-auto-show-menu 0.3)
  '(ac-modes (quote (emacs-lisp-mode lisp-mode lisp-interaction-mode slime-repl-mode c-mode cc-mode c++-mode go-mode java-mode malabar-mode clojure-mode clojurescript-mode scala-mode scheme-mode ocaml-mode tuareg-mode coq-mode haskell-mode agda-mode agda2-mode perl-mode cperl-mode python-mode ruby-mode lua-mode ecmascript-mode javascript-mode js-mode js2-mode php-mode css-mode makefile-mode sh-mode fortran-mode f90-mode ada-mode xml-mode sgml-mode ts-mode sclang-mode verilog-mode erlang-mode)))
  '(ac-quick-help-delay 0.5)
+ '(browse-url-browser-function (quote browse-url-firefox))
  '(c-default-style (quote ((c-mode . "k&r") (c++-mode . "ellemtel") (java-mode . "java") (awk-mode . "awk") (other . "gnu"))))
  '(column-number-mode t)
  '(custom-enabled-themes (quote (ale-black-2)))
