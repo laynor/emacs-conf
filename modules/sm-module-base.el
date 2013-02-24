@@ -13,6 +13,7 @@
                        "gist"
                        "gitignore-mode"
                        "guide-key"
+                       "hide-comnt"
                        "ido-ubiquitous"
                        "magit"
                        "markdown-mode"
