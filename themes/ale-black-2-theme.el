@@ -1,10 +1,9 @@
 (deftheme ale-black-2
-  "Created 2012-10-18.")
+  "Created 2013-02-24.")
 
 (custom-theme-set-variables
  'ale-black-2
  '(Info-additional-directory-list (quote ("/home/ale/Dropbox/emacs/info")))
- '(c-default-style (quote ((c-mode . "hri") (c++-mode . "ellemtel") (java-mode . "java") (awk-mode . "awk") (other . "gnu"))))
  '(custom-safe-themes (quote ("7f96e6a6dd9b02aeae63cde2916f2725eaf91b44049cdc9cf608ceff4c2a3732" "937192841e98d0260e5d2f24c5937136ea2ef5b9f5dcf79937a927da7fd07d9a" "c10c5633b72da0ab27ef6078173e950c770feee9ec755a4ef4b54b711647b637" "6ce86d5929771a629df54a073ad652a480be17cd7f75b76a61ad7be84b3766c8" default)))
  '(diff-switches "-u")
  '(erc-beep-match-types (quote (current-nick keyword)))
@@ -12,15 +11,10 @@
  '(evil-default-cursor (quote (t "#CC00CC")))
  '(evil-emacs-state-modes (quote (eassist-mode archive-mode bbdb-mode bookmark-bmenu-mode bookmark-edit-annotation-mode browse-kill-ring-mode bzr-annotate-mode calc-mode cfw:calendar-mode completion-list-mode Custom-mode debugger-mode delicious-search-mode desktop-menu-blist-mode desktop-menu-mode doc-view-mode dvc-bookmarks-mode dvc-diff-mode dvc-info-buffer-mode dvc-log-buffer-mode dvc-revlist-mode dvc-revlog-mode dvc-status-mode dvc-tips-mode ediff-mode efs-mode Electric-buffer-menu-mode emms-browser-mode emms-mark-mode emms-metaplaylist-mode emms-playlist-mode ert-results-mode etags-select-mode fj-mode gc-issues-mode gdb-breakpoints-mode gdb-disassembly-mode gdb-frames-mode gdb-locals-mode gdb-memory-mode gdb-registers-mode gdb-threads-mode gist-list-mode gnus-article-mode gnus-browse-mode gnus-group-mode gnus-server-mode gnus-summary-mode google-maps-static-mode ibuffer-mode jde-javadoc-checker-report-mode magit-commit-mode magit-diff-mode magit-key-mode magit-log-mode magit-mode magit-reflog-mode magit-show-branches-mode magit-stash-mode magit-status-mode magit-wazzup-mode mh-folder-mode monky-mode notmuch-hello-mode notmuch-search-mode notmuch-show-mode occur-mode org-agenda-mode package-menu-mode proced-mode rcirc-mode rebase-mode recentf-dialog-mode reftex-select-bib-mode reftex-toc-mode sldb-mode slime-inspector-mode slime-thread-control-mode slime-xref-mode sr-buttons-mode sr-mode sr-tree-mode sr-virtual-mode tar-mode tetris-mode tla-annotate-mode tla-archive-list-mode tla-bconfig-mode tla-bookmarks-mode tla-branch-list-mode tla-browse-mode tla-category-list-mode tla-changelog-mode tla-follow-symlinks-mode tla-inventory-file-mode tla-inventory-mode tla-lint-mode tla-logs-mode tla-revision-list-mode tla-revlog-mode tla-tree-lint-mode tla-version-list-mode twittering-mode urlview-mode vc-annotate-mode vc-dir-mode vc-git-log-view-mode vc-svn-log-view-mode vm-mode vm-summary-mode w3m-mode wab-compilation-mode xgit-annotate-mode xgit-changelog-mode xgit-diff-mode xgit-revlog-mode xhg-annotate-mode xhg-log-mode xhg-mode xhg-mq-mode xhg-mq-sub-mode xhg-status-extra-mode eclim-project-mode eclim-problems-mode)))
  '(evil-want-C-w-in-emacs-state t)
- '(gnus-article-sort-functions (quote (gnus-article-sort-by-number)))
- '(gnus-thread-sort-functions (quote (gnus-thread-sort-by-most-recent-date)))
  '(indent-tabs-mode nil)
  '(indicate-empty-lines t)
  '(inhibit-startup-screen nil)
  '(initial-buffer-choice t)
- '(org-agenda-files (quote ("~/Dropbox/Agendas/general.org" "~/Dropbox/Agendas/agenda.org" "~/Dropbox/Agendas/abitudini.org")))
- '(org-habit-show-habits-only-for-today nil)
- '(org-src-fontify-natively t)
  '(semantic-default-submodes (quote (global-semantic-highlight-func-mode global-semantic-stickyfunc-mode global-semantic-idle-scheduler-mode global-semanticdb-minor-mode global-semantic-show-unmatched-syntax-mode)))
  '(send-mail-function (quote smtpmail-send-it))
  '(user-full-name "Alessandro Piras")
@@ -29,7 +23,6 @@
 
 (custom-theme-set-faces
  'ale-black-2
- '(default ((t (:inherit nil :stipple nil :background "black" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 80 :width normal :family "terminus"))))
  '(bold ((t (:weight bold))))
  '(bow ((t (:inherit nil :background "gray80" :foreground "black"))))
  '(cursor ((t (:background "#CC00CC"))))
@@ -64,7 +57,6 @@
  '(link-visited ((t (:inherit link :foreground "purple3"))))
  '(menu ((t (:foreground "red" :height 80))))
  '(minibuffer-prompt ((t (:foreground "LimeGreen"))))
- '(mode-line ((t (:background "grey" :foreground "black" :box (:line-width 2 :color "grey" :style released-button) :height 1.0 :family "Segoe UI"))))
  '(mode-line-buffer-id ((t (:slant italic :weight bold :height 0.9 :family "Segoe UI"))))
  '(paren-face ((t (:foreground "dim gray"))))
  '(pp^L-highlight ((t (:foreground "#440044" :box (:line-width 1 :style pressed-button)))))
@@ -78,6 +70,7 @@
  '(w3m-image ((t (:inherit black-on-white))))
  '(woman-bold ((t (:inherit bold :foreground "deep sky blue"))))
  '(flymake-errline ((((class color)) (:underline "red"))))
- '(flymake-warnline ((((class color)) (:underline "yellow")))))
+ '(flymake-warnline ((((class color)) (:underline "yellow"))))
+ '(default ((t (:inherit nil :stipple nil :background "black" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 80 :width normal :family "terminus")))))
 
 (provide-theme 'ale-black-2)
