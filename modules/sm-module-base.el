@@ -12,18 +12,23 @@
                        "evil"
                        "gist"
                        "gitignore-mode"
+                       "guide-key"
                        "ido-ubiquitous"
                        "magit"
                        "markdown-mode"
                        "markdown-mode+"
                        "melpa"
+                       "nurumacs"
                        "package"
                        "parenface"
                        "popup-git"
+                       "powerline"
                        "pp-c-l"
+                       ;; "pretty-symbols-mode"
                        "projectile"
                        "s"
                        "smex"
+                       "smooth-scrolling"
                        "wgrep"
                        "whitespace")
            ;; set this to t if you want to manage this module yourself
@@ -37,33 +42,26 @@
   )
 
 (sm-module-post (base)
-  (require 'uniquify)
-  ;; smotitah aliases
+  ;;; ------------------------------------- Scrolling -------------------------------------
+  (setq scroll-step 1)
+  (setq scroll-conservatively 10000)
+  (setq auto-window-vscroll nil)
+
+  ;;; --------------------------------- Smotitah aliases ----------------------------------
   (defalias 'em 'sm-edit-module)
   (defalias 'ep 'sm-edit-package)
   (defalias 'epr 'sm-edit-profile)
+
   ;; insert titled comment
   (defvar *titled-comment-length* 90
     "Total width of comments inserted with `insert-titled-comment'")
-
-  (defun package-depends (package)
-    "Retrieves the packages PACKAGE depends on."
-    (mapcar 'car (elt (cdr (assoc package package-alist)) 1)))
-
-  (defun package-reverse-depends (package)
-    "Returns a list of the currently installed packages that
-depend on PACKAGE."
-    (let* ((package-list (mapcar 'car package-alist))
-           (deps (mapcar (lambda (p) (cons package (package-depends p)))
-                         package-list)))
-      (mapcar 'car (remove-if-not (lambda (dep) (memq package (cdr dep))) deps))))
 
   (defun insert-titled-comment (string)
     "Inserts a comment in the stile
 ;;;; --------------------------------- STRING expansion ----------------------------------
 The number of dashes is calculated based on `*titled-comment-length*'.
 "
-    (interactive "sTitle: ")
+    (interactive "PsTitle: ")
     (let* ((clen (length string))
            (comment-prefix (format "%s " (s-repeat 4 comment-start)))
            (remaining-space (- *titled-comment-length* (length comment-prefix) (+ 2 clen)))
@@ -72,17 +70,16 @@ The number of dashes is calculated based on `*titled-comment-length*'.
       (insert (format "%s%s %s %s\n" comment-prefix dashes-left string dashes-right))))
 
 
-  ;; Before save hook
+  ;;; --------------------------------- before-save-hook ----------------------------------
   (add-hook 'before-save-hook (lambda () (unless (ignore-errors makefile-mode) (delete-trailing-whitespace))))
 
-  ;;; global bindings
+  ;;; ---------------------------------- Bindings ----------------------------------
   (define-key key-translation-map (kbd "C-.") (kbd "M-TAB"))
   (global-set-key [f7] 'magit-status)
   (global-set-key (kbd "C-\;") 'message-point)
-  ;; (defadvice magit-key-mode (after evil-magit-key-mode-in-emacs-state (for-group &optional original-opts) activate)
-  ;;   (evil-emacs-state))
   (add-hook 'before-save-hook (lambda () (delete-trailing-whitespace)))
 
+  ;; Plug browse-kill-ring into evil
   (defadvice evil-paste-pop (around evil-kill-ring-browse-maybe (arg) activate)
     "If last action was not a yank, run `browse-kill-ring' instead."
     ;; yank-pop has an (interactive "*p") form which does not allow
@@ -107,6 +104,9 @@ The number of dashes is calculated based on `*titled-comment-length*'.
 
   ;;; AUTO-MODES
   (add-to-list 'auto-mode-alist (cons "\\.zsh$" 'shell-script-mode))
+
+  ;;; Unique buffer names
+  (require 'uniquify)
   )
 
 (sm-provide :module base)
