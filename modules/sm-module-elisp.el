@@ -18,6 +18,7 @@
   (add-hook 'emacs-lisp-mode-hook (lambda () (fic-ext-mode 1))) ;fic-ext-mode
   (add-hook 'emacs-lisp-mode-hook 'ac-emacs-lisp-mode-setup)
   (add-hook 'emacs-lisp-mode-hook '(lambda () (hl-sexp-mode 1)))
+  ;; (add-hook 'emacs-lisp-mode-hook '(lambda () (pretty-symbols-mode 1)))
 
   ;; (evil-define-motion evil-forward-sexp (count)
   ;;   (forward-sexp count))
@@ -54,7 +55,11 @@
   ;;   (kbd "M-k") 'up-list
   ;;   (kbd "M-l") 'evil-forward-sexp
   ;;   (kbd "M-h") 'evil-backward-sexp)
-
+ ; could be bad, will not let you save at all, until you correct the error
+ (add-hook 'emacs-lisp-mode-hook
+  (function (lambda ()
+   (add-hook 'local-write-file-hooks
+    'check-parens))))
   )
 
 (sm-provide :module elisp)
