@@ -3,6 +3,6 @@
             :package-manager "package"
             :unmanaged-p nil)
 
-;;; TODO insert your package initialization code here
+(require 'elisp-slime-nav)
 
 (sm-provide :package elisp-slime-nav)
