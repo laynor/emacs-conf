@@ -73,7 +73,7 @@
                               ;; NORMAL> foobar.txt > + > Fundamental >                 [ ] < 5: 0 < all
                               ;; NORMAL>
                               (powerline-evil pl-evil-face 'l)
-                              ;;(powerline-raw " " pl-evil-face 'l)
+                              (powerline-raw " " pl-evil-face 'l)
                               (powerline-arrow-right pl-evil-face nil)
                               ;; foobar.txt
                               (powerline-raw "%z")
