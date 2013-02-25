@@ -8,10 +8,14 @@
   )
 
 ;;; Modules to activate
-(sm-require-modules "base" "elisp" "lightware" "C-job" "erlang" "python" "common-lisp" "lua" "ruby")
+(sm-require-modules "base" "elisp" "lightware" "C-job" "erlang" "python" "common-lisp" "lua" "ruby" "diminish")
 
 ;;; After loading modules
 (sm-profile-post (job)
+  (add-to-list 'load-path "/usr/share/emacs/site-lisp/cmake/")
+  (require 'cmake-mode)
+  (add-to-list 'auto-mode-alist (cons "\\.cmake" 'cmake-mode))
+  (add-to-list 'auto-mode-alist (cons "CMakeLists.txt" 'cmake-mode))
   (load "custom.el"))
 
 
