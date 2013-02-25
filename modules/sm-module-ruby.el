@@ -5,8 +5,8 @@
                                highlight-indentation
                                hideshow
                                ale-fixme rspec-mode markdown-mode
-                               markdown-mode+ yard-mode
-                               rdoc-mode))
+                               markdown-mode+ yard-mode))
+                               ;; rdoc-mode)) 
 
 (sm-module-pre (ruby)
   ;; Add current ruby elisp directory to load-path
