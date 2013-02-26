@@ -108,6 +108,10 @@ The number of dashes is calculated based on `*titled-comment-length*'.
 
   ;;; Unique buffer names
   (require 'uniquify)
+
+  ;; direx bindings
+
+  (evil-global-set-key 'normal (kbd "C-d") 'direx:find-directory-other-window)
   )
 
 (sm-provide :module base)
