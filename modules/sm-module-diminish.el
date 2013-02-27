@@ -12,6 +12,9 @@
   (diminish 'undo-tree-mode)
   (diminish 'guide-key-mode)
   (diminish 'elisp-slime-nav-mode)
+  (require 'hideshow)
+  (diminish 'hs-minor-mode)
+  (diminish 'fic-ext-mode)
   )
 
 (sm-provide :module diminish)

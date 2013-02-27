@@ -58,4 +58,5 @@
  '(hl-sexp-face ((t (:background "gray7"))))
  '(jedi:highlight-function-argument ((t (:inherit eldoc-highlight-function-argument))))
  '(mode-line ((t (:background "grey" :foreground "black" :family "Consolas"))))
+ '(mode-line-inactive ((t (:inherit mode-line :background "grey30" :foreground "grey80" :weight light))))
  '(popup-scroll-bar-foreground-face ((t (:background "blue")))))
