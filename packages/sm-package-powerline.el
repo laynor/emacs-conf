@@ -54,6 +54,44 @@
           (active 'powerline-active2)
           (t powerline-inactive2))))
 
+(defun powerline-string-face-change-positions (string)
+  (let ((x 0)
+        p)
+    (while x
+      (push x p)
+      (setq x (next-property-change x string)))
+    (push (length string) p)
+    (cdr (nreverse p))))
+
+(defun powerline-string-intervals-by-face (string)
+  (let ((p (powerline-string-face-change-positions string))
+        (x 0)
+        l)
+    (dolist (i p (reverse l))
+      (push (substring string x i) l)
+      (setq x i))))
+
+(defun powerline-merge-faces (f1 f2)
+  `((:inherit (,f1 ,f2))))
+
+
+(defun powerline-merge-face-in-string-1 (string face)
+  (propertize string 'face (merge-faces (get-text-property 0 'face string) face)))
+
+
+(defun powerline-mung-string (string face)
+  (reduce 'concat (mapcar (lambda (str)
+                            (powerline-merge-face-in-string-1 str face))
+                          (powerline-string-intervals-by-face string))))
+
+(defun powerline-raw-preserve (str &optional face pad)
+  (let ((rendered-str (format-mode-line str)))
+    (powerline-mung-string
+     (concat (when (and rendered-str (eq pad 'l)) " ")
+             (if (listp str) rendered-str str)
+             (when (and rendered-str (eq pad 'r)) " "))
+     face)))
+
 
 (defpowerline powerline-evil
   (replace-regexp-in-string "[<> ]" "" (eval (evil-state-property evil-state :tag))))
@@ -99,8 +137,8 @@
                               ))
                         (rhs (list
                               ;; (powerline-raw global-mode-string nil 'r)
-                              ;;(powerline-raw global-mode-string)
-                              (apply #'concat enotify-mode-line-string)
+                              (powerline-raw-preserve global-mode-string face1)
+                              ;;(apply #'concat enotify-mode-line-string)
                               (powerline-raw " ")
                               (powerline-raw (remove 'enotify-mode-line-string global-mode-string))
 
