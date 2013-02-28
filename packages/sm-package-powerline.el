@@ -59,7 +59,7 @@
         p)
     (while x
       (push x p)
-      (setq x (next-property-change x string)))
+      (setq x (next-single-property-change x 'face string)))
     (push (length string) p)
     (cdr (nreverse p))))
 
@@ -76,17 +76,17 @@
 
 
 (defun powerline-merge-face-in-string-1 (string face)
-  (propertize string 'face (merge-faces (get-text-property 0 'face string) face)))
+  (propertize string 'face (powerline-merge-faces (get-text-property 0 'face string) face)))
 
 
-(defun powerline-mung-string (string face)
+(defun powerline-merge-face-in--string (string face)
   (reduce 'concat (mapcar (lambda (str)
                             (powerline-merge-face-in-string-1 str face))
                           (powerline-string-intervals-by-face string))))
 
 (defun powerline-raw-preserve (str &optional face pad)
   (let ((rendered-str (format-mode-line str)))
-    (powerline-mung-string
+    (powerline-merge-face-in--string
      (concat (when (and rendered-str (eq pad 'l)) " ")
              (if (listp str) rendered-str str)
              (when (and rendered-str (eq pad 'r)) " "))
@@ -137,10 +137,10 @@
                               ))
                         (rhs (list
                               ;; (powerline-raw global-mode-string nil 'r)
-                              (powerline-raw-preserve global-mode-string face1)
+                              ;;(powerline-raw-preserve global-mode-string face1)
                               ;;(apply #'concat enotify-mode-line-string)
-                              (powerline-raw " ")
-                              (powerline-raw (remove 'enotify-mode-line-string global-mode-string))
+                              ;;(powerline-raw " ")
+                              (powerline-raw-preserve global-mode-string face2 'r)
 
                               (powerline-arrow-left nil face1)
 
