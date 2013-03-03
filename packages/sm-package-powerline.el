@@ -47,12 +47,15 @@
   "face to fontify Enotify Success messages"
   :group 'powerline)
 
+(add-hook 'post-command-hook (lambda ()
+                               (setq powerline-selected-window (selected-window))))
+
 (defun powerline-evil-face (active)
   (let ((face (intern (concat "powerline-evil-" (symbol-name evil-state) "-face"))))
     (cond ((and active (facep face))
            face)
           (active 'powerline-active2)
-          (t powerline-inactive2))))
+          (t 'powerline-inactive2))))
 
 (defun powerline-string-face-change-positions (string)
   (let ((x 0)
@@ -103,7 +106,7 @@
 (setq-default mode-line-format
               '("%e"
                 (:eval
-                 (let* ((active (eq (frame-selected-window) (selected-window)))
+                 (let* ((active (eq powerline-selected-window (selected-window)))
                         (face1 (if active 'powerline-active1 'powerline-inactive1))
                         (face2 (if active 'powerline-active2 'powerline-inactive2))
                         (pl-evil-face (powerline-evil-face active))
