@@ -78,7 +78,8 @@
           (= (car (syntax-after (point))) 2))))))
 
 (defadvice c-electric-paren (after hri-c-paren-insert-space (arg) activate)
-  (when (and (memq 'paren-brace c-cleanup-list)
+  (when (and (equal c-indentation-style "hri")
+             (memq 'paren-brace c-cleanup-list)
              (hri-f-def-or-call))
     (cond ((char-equal last-command-event ?\()
            (just-one-space))
