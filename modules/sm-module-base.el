@@ -19,7 +19,6 @@
                        "markdown-mode"
                        "markdown-mode+"
                        "melpa"
-                       "nurumacs"
                        "package"
                        "parenface"
                        "popup-git"
@@ -29,7 +28,7 @@
                        "projectile"
                        "s"
                        "smex"
-                       "smooth-scrolling"
+                       ;; "smooth-scrolling"
                        "surround"
                        "wgrep"
                        "whitespace")
@@ -45,9 +44,9 @@
 
 (sm-module-post (base)
   ;;; ------------------------------------- Scrolling -------------------------------------
-  (setq scroll-step 1)
-  (setq scroll-conservatively 10000)
-  (setq auto-window-vscroll nil)
+  ;; (setq scroll-step 1)
+  ;; (setq scroll-conservatively 1000)
+  ;; (setq auto-window-vscroll nil)
 
   ;;; --------------------------------- Smotitah aliases ----------------------------------
   (defalias 'em 'sm-edit-module)
