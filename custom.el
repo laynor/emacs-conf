@@ -27,6 +27,7 @@
  '(org-export-odt-inline-image-extensions (quote ("png" "jpeg" "jpg" "gif" "svg")))
  '(python-shell-interpreter "python2")
  '(rsense-rurema-home "~/Documents/ruby-refm-1.9.2-dynamic-20110629/")
+ '(safe-local-variable-values (quote ((c-auto-newline) (c-file-style . k&r))))
  '(show-paren-mode t)
  '(tool-bar-mode nil)
  '(tramp-default-method "ssh")
