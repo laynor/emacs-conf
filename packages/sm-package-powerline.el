@@ -143,7 +143,7 @@
                               ;;(powerline-raw-preserve global-mode-string face1)
                               ;;(apply #'concat enotify-mode-line-string)
                               ;;(powerline-raw " ")
-                              (powerline-raw-preserve global-mode-string 'r)
+                              (powerline-raw-preserve global-mode-string nil 'r)
 
                               (powerline-arrow-left nil face1)
 
