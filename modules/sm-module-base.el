@@ -10,6 +10,7 @@
                        "direx"
                        "erc"
                        "evil"
+                       "fuzzy"
                        "gist"
                        "gitignore-mode"
                        "guide-key"
@@ -96,8 +97,6 @@ The number of dashes is calculated based on `*titled-comment-length*'.
       ad-do-it))
 
   ;; Auto complete and evil
-  (define-key ac-completing-map (kbd "C-n") 'ac-next)
-  (define-key ac-completing-map (kbd "C-p") 'ac-previous)
   (define-key ac-completing-map (kbd "C-[") '(lambda () (interactive) (ac-stop) (evil-normal-state)))
 
   ;; Frame title

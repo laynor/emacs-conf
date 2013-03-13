@@ -11,5 +11,7 @@
   (global-auto-complete-mode t))
 
 (my-ac-config)
-
+(define-key ac-mode-map (kbd "M-/") 'auto-complete)
+(define-key ac-completing-map (kbd "C-n") 'ac-next)
+(define-key ac-completing-map (kbd "C-p") 'ac-previous)
 (sm-provide :package auto-complete)
