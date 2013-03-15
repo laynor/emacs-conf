@@ -5,6 +5,13 @@
 
 (require 'powerline)
 
+(defface powerline-enotify-bg-face
+  '((((class color))
+     (:background "gray20" :foreground "white" :weight bold))
+    (t (:weight bold)))
+  "face to fontify Enotify Success messages"
+  :group 'powerline)
+
 (defface powerline-evil-insert-face
   '((((class color))
      (:background "green" :foreground "black" :weight bold))
@@ -90,9 +97,9 @@
 (defun powerline-raw-preserve (str &optional face pad)
   (let ((rendered-str (format-mode-line str)))
     (powerline-merge-face-in--string
-     (concat (when (and rendered-str (eq pad 'l)) " ")
+     (concat (when (and rendered-str (memq pad '(t l))) " ")
              (if (listp str) rendered-str str)
-             (when (and rendered-str (eq pad 'r)) " "))
+             (when (and rendered-str (memq pad '(t r))) " "))
      face)))
 
 
@@ -143,7 +150,10 @@
                               ;;(powerline-raw-preserve global-mode-string face1)
                               ;;(apply #'concat enotify-mode-line-string)
                               ;;(powerline-raw " ")
-                              (powerline-raw-preserve global-mode-string nil 'r)
+                              (powerline-raw-preserve (remove 'enotify-mode-line-string
+                                                              global-mode-string)
+                                                      nil 'r)
+
 
                               (powerline-arrow-left nil face1)
 
@@ -155,6 +165,8 @@
                               (powerline-raw " ")
 
                               (powerline-raw "%6p" nil 'r)
+                              (powerline-raw-preserve enotify-mode-line-string
+                                                      'powerline-enotify-bg-face 't)
 
                               (powerline-hud face2 face1))))
                    (concat
