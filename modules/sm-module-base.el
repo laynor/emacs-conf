@@ -31,6 +31,7 @@
                        "smex"
                        ;; "smooth-scrolling"
                        "surround"
+                       "undo-tree"
                        "wgrep"
                        "whitespace")
            ;; set this to t if you want to manage this module yourself
