@@ -31,3 +31,5 @@
          (destructuring-bind (hi lo ms ps)
              (current-time)
            (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
+
+(defalias 'smufu 'save-buffers-kill-emacs)
