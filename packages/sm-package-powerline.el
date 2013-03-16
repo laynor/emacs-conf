@@ -82,7 +82,10 @@
       (setq x i))))
 
 (defun powerline-merge-faces (f1 f2)
-  `((:inherit (,f1 ,f2))))
+  (if (or f1 f2)
+      `((:inherit ,(remove nil (list f1 f2))))
+    nil))
+
 
 
 (defun powerline-merge-face-in-string-1 (string face)
@@ -144,6 +147,7 @@
                               (powerline-arrow-right face1 nil)
 
                               (powerline-vc nil)
+                              (powerline-raw-preserve mode-line-modes)
                               ))
                         (rhs (list
                               ;; (powerline-raw global-mode-string nil 'r)
