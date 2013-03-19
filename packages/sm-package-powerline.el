@@ -82,7 +82,8 @@
       (setq x i))))
 
 (defun powerline-merge-faces (f1 f2)
-  `((:inherit (,f1 ,f2))))
+  (when (or f1 f2)
+    `((:inherit ,(remove nil (list f1 f2))))))
 
 
 (defun powerline-merge-face-in-string-1 (string face)
