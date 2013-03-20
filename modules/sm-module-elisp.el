@@ -60,6 +60,7 @@
   (function (lambda ()
    (add-hook 'local-write-file-hooks
     'check-parens))))
-  )
+ (evil-define-key 'normal emacs-lisp-mode-map (kbd "M-.") 'elisp-slime-nav-find-elisp-thing-at-point)
+ )
 
 (sm-provide :module elisp)
