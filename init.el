@@ -7,7 +7,7 @@
 ;;   (when (eq package 'mediawiki)
 ;;     (debug))
 ;;   (message "PACKAGE %s" package))
-(setq evil-intercept-esc 'always)
+(setq-default evil-intercept-esc 'always)
 (add-to-list 'load-path user-emacs-directory)
 ;; (setq custom-file (concat user-emacs-directory *active-profile* ".el"))
 ;;(load *active-profile*)

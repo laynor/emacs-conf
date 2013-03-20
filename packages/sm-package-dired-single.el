@@ -22,8 +22,5 @@
   (add-hook 'dired-load-hook 'my-dired-init))
 
 
-(add-hook 'dired-mode-hook
-          'rename-dired-buffer)
-
 
 (sm-provide :package dired-single)
