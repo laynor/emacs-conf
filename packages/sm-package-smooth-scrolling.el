@@ -3,6 +3,6 @@
             :package-manager "package"
             :unmanaged-p nil)
 
-;;; TODO insert your package initialization code here
+;; (require 'smooth-scrolling)
 
 (sm-provide :package smooth-scrolling)
