@@ -8,7 +8,7 @@
   )
 
 ;;; Modules to activate
-(sm-require-modules "base" "elisp" "C" "factor" "erlang" "python" "ruby" "diminish" "scrolling")
+(sm-require-modules "base" "elisp" "C" "factor" "erlang" "python" "ruby" "diminish" "scrolling" "lua")
 
 ;;; After loading modules
 (sm-profile-post (home-linux)
