@@ -6,7 +6,6 @@
            ;; add the packages required by your basic configuration here
   :require-packages '( "auto-complete"
                        "browse-kill-ring"
-                       "dired"
                        "direx"
                        "erc"
                        "undo-tree"
