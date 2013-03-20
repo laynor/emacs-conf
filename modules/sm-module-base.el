@@ -6,6 +6,8 @@
            ;; add the packages required by your basic configuration here
   :require-packages '( "auto-complete"
                        "browse-kill-ring"
+                       "diff-hl"
+                       "dired"
                        "direx"
                        "erc"
                        "undo-tree"
@@ -79,6 +81,7 @@ The number of dashes is calculated based on `*titled-comment-length*'.
   (define-key key-translation-map (kbd "C-.") (kbd "M-TAB"))
   (global-set-key [f7] 'magit-status)
   (global-set-key (kbd "C-\;") 'message-point)
+  (global-set-key (kbd "C-x C-b") 'ibuffer)
   (add-hook 'before-save-hook (lambda () (delete-trailing-whitespace)))
 
   ;; Plug browse-kill-ring into evil
