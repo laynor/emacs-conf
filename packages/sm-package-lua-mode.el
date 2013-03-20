@@ -3,6 +3,6 @@
             :package-manager "package"
             :unmanaged-p nil)
 
-;;; TODO insert your package initialization code here
+(setq-default lua-electric-flag nil)
 
 (sm-provide :package lua-mode)
