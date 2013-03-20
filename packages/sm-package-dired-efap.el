@@ -3,6 +3,7 @@
             :package-manager "package"
             :unmanaged-p nil)
 
-;;; TODO insert your package initialization code here
+(require dired-efap)
+(evil-define-key 'normal dired-mode-map (kbd "C-c C-c") 'dired-efap)
 
 (sm-provide :package dired-efap)
