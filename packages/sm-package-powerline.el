@@ -147,7 +147,8 @@
                               (powerline-arrow-right face1 nil)
 
                               (powerline-vc nil)
-                              (powerline-raw-preserve mode-line-modes)
+                              (powerline-raw-preserve erc-modified-channels-object)
+                              ;; (powerline-raw (if (file-exists-p (scratch-palette-file)) "S" "") nil 'l)
                               ))
                         (rhs (list
                               ;; (powerline-raw global-mode-string nil 'r)
@@ -160,6 +161,7 @@
 
 
                               (powerline-arrow-left nil face1)
+
 
                               (powerline-raw "%4l" face1 'r)
                               (powerline-raw ":" face1)

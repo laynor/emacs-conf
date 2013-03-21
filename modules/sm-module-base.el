@@ -19,6 +19,7 @@
                        "hide-comnt"
                        "ido-ubiquitous"
                        "magit"
+                       "git-commit-mode"
                        "markdown-mode"
                        "markdown-mode+"
                        "melpa"
