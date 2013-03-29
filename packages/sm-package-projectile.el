@@ -25,6 +25,10 @@
            (lambda (dir)
              (file-exists-p (expand-file-name "GNUmakefile" dir)))))
 
+(add-to-list 'projectile-project-test-commands
+             (cons "make test"
+                   (lambda (dir)
+                     (file-exists-p (expand-file-name "GNUmakefile" dir)))))
 
 (defun projectile-compile-project (&optional arg)
   "Run project compilation command."

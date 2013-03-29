@@ -8,7 +8,7 @@
   )
 
 (sm-module-post (objc)
-  (font-lock-add-keywords 'objc-mode '(("\\(@synthesize\\|@property\\)" 1 'font-lock-keyword-face)))
+  (font-lock-add-keywords 'objc-mode '(("\\(@synthesize\\|@property\\|@autoreleasepool\\)" 1 'font-lock-keyword-face)))
   (add-hook 'objc-mode-hook '(lambda ()
                                (setq c-basic-offset 4)
                                (auto-complete-mode 1)))
