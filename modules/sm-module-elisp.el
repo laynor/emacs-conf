@@ -1,7 +1,7 @@
 ;;;; Module elisp
 (sm-module elisp
            :unmanaged-p nil
-           :require-packages '("elisp-slime-nav" "ale-fixme" "auto-complete" "hl-sexp"))
+           :require-packages '("elisp-slime-nav" "ale-fixme" "auto-complete" "hl-sexp" "highlight-cl"))
 
 (sm-module-pre (elisp)
   ;; TODO insert your pre-package-initialization code here
@@ -18,6 +18,9 @@
   (add-hook 'emacs-lisp-mode-hook (lambda () (fic-ext-mode 1))) ;fic-ext-mode
   (add-hook 'emacs-lisp-mode-hook 'ac-emacs-lisp-mode-setup)
   (add-hook 'emacs-lisp-mode-hook '(lambda () (hl-sexp-mode 1)))
+  (add-hook 'emacs-lisp-mode-hook 'highlight-cl-add-font-lock-keywords)
+  (add-hook 'lisp-interaction-mode-hook 'highlight-cl-add-font-lock-keywords)
+
   ;; (add-hook 'emacs-lisp-mode-hook '(lambda () (pretty-symbols-mode 1)))
 
   ;; (evil-define-motion evil-forward-sexp (count)
