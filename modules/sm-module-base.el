@@ -17,6 +17,8 @@
                        "gitignore-mode"
                        "guide-key"
                        "hide-comnt"
+                       "httpcode"
+                       "ido-hacks"
                        "ido-ubiquitous"
                        "magit"
                        "git-commit-mode"
