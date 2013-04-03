@@ -18,6 +18,8 @@
                        "gitignore-mode"
                        "guide-key"
                        "hide-comnt"
+                       "httpcode"
+                       "ido-hacks"
                        "ido-ubiquitous"
                        "magit"
                        "git-commit-mode"
@@ -32,12 +34,14 @@
                        ;; "pretty-symbols-mode"
                        "projectile"
                        "s"
+                       "shell-pop"
                        "smex"
                        ;; "smooth-scrolling"
                        "surround"
                        "wgrep"
                        "wgrep-ack"
-                       "whitespace")
+                       "undohist"
+                       )
            ;; set this to t if you want to manage this module yourself
            ;; instead of using the builtin package loading infrastructure
            :unmanaged-p nil)
@@ -115,8 +119,14 @@ The number of dashes is calculated based on `*titled-comment-length*'.
   (require 'uniquify)
 
   ;; direx bindings
+  (defun popwin:direx (dirname)
+    "Edit file FILENAME with popup window by `popwin:popup-buffer'."
+    (interactive
+     (list (ido-read-directory-name "Direx (popup): ")))
+    (popwin:popup-buffer (direx:find-directory-noselect dirname) :position 'left))
 
-  (evil-global-set-key 'normal (kbd "C-d") 'direx:find-directory-other-window)
+  (evil-global-set-key 'normal (kbd "C-d") 'popwin:direx)
+  (global-subword-mode 1)
   )
 
 (sm-provide :module base)

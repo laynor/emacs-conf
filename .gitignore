@@ -18,3 +18,9 @@ semanticdb/
 /eshell
 /tramp
 /site-lisp/chess-mode
+
+/palette
+/projectile-bookmarks.eld
+/undohist
+/session.*
+/bookmarks
