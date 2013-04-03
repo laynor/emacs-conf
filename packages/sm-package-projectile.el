@@ -30,6 +30,18 @@
                    (lambda (dir)
                      (file-exists-p (expand-file-name "GNUmakefile" dir)))))
 
+
+;; Rake
+(add-to-list 'projectile-project-compilation-commands
+             (cons "rake build"
+                   (lambda (dir)
+                     (file-exists-p (expand-file-name "Rakefile" dir)))))
+
+(add-to-list 'projectile-project-test-commands
+             (cons "rake spec"
+                   (lambda (dir)
+                     (file-exists-p (expand-file-name "Rakefile" dir)))))
+
 (defun projectile-compile-project (&optional arg)
   "Run project compilation command."
   (interactive "p")
