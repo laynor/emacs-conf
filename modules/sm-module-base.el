@@ -31,11 +31,14 @@
                        ;; "pretty-symbols-mode"
                        "projectile"
                        "s"
+                       "shell-pop"
                        "smex"
                        ;; "smooth-scrolling"
                        "surround"
                        "wgrep"
-                       "whitespace")
+                       "whitespace"
+                       "undohist"
+                       )
            ;; set this to t if you want to manage this module yourself
            ;; instead of using the builtin package loading infrastructure
            :unmanaged-p nil)
