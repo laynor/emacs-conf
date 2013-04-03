@@ -125,6 +125,7 @@ The number of dashes is calculated based on `*titled-comment-length*'.
     (popwin:popup-buffer (direx:find-directory-noselect dirname) :position 'left))
 
   (evil-global-set-key 'normal (kbd "C-d") 'popwin:direx)
+  (global-subword-mode 1)
   )
 
 (sm-provide :module base)
