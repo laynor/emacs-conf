@@ -4,11 +4,13 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(ac-auto-show-menu 0.3)
+ '(ac-clang-complete-executable "\"~/.emacs.d/site-lisp/emacs-clang-complete-async/clang-complete\"")
  '(ac-modes (quote (emacs-lisp-mode lisp-mode lisp-interaction-mode slime-repl-mode c-mode cc-mode c++-mode go-mode java-mode malabar-mode clojure-mode clojurescript-mode scala-mode scheme-mode ocaml-mode tuareg-mode coq-mode haskell-mode agda-mode agda2-mode perl-mode cperl-mode python-mode ruby-mode lua-mode ecmascript-mode javascript-mode js-mode js2-mode php-mode css-mode makefile-mode sh-mode fortran-mode f90-mode ada-mode xml-mode sgml-mode ts-mode sclang-mode verilog-mode erlang-mode)))
  '(ac-quick-help-delay 0.5)
  '(ac-use-fuzzy t)
  '(ac-use-menu-map t)
  '(blink-cursor-mode t)
+ '(bmkp-last-as-first-bookmark-file "~/.emacs.d/bookmarks")
  '(browse-url-browser-function (quote browse-url-firefox))
  '(c-default-style (quote ((c-mode . "k&r") (c++-mode . "ellemtel") (java-mode . "java") (awk-mode . "awk") (other . "gnu"))))
  '(column-number-mode t)
@@ -35,7 +37,7 @@
  '(org-export-odt-inline-image-extensions (quote ("png" "jpeg" "jpg" "gif" "svg")))
  '(python-shell-interpreter "python2")
  '(rsense-rurema-home "~/Documents/ruby-refm-1.9.2-dynamic-20110629/")
- '(safe-local-variable-values (quote ((c-auto-newline) (c-file-style . k&r))))
+ '(safe-local-variable-values (quote ((eval add-project-directories "include/") (eval progn (setq my-include-directories (list (concat (file-name-directory (file-truename load-file-name)) "include/"))) (add-my-include-directories)) (c-auto-newline) (c-file-style . k&r))))
  '(scroll-bar-mode nil)
  '(show-paren-mode t)
  '(tool-bar-mode nil)

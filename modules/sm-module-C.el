@@ -1,7 +1,7 @@
 ;;;; Module C
 (sm-module C
            :unmanaged-p nil
-           :require-packages '(yasnippet auto-complete-clang c-eldoc))
+           :require-packages '(yasnippet auto-complete-clang-async c-eldoc))
 
 (sm-module-pre (C)
   )
@@ -67,6 +67,29 @@
                                  (mapconcat 'identity (c-get-standard-include-dirs) " ")))
   (add-hook 'c-mode-common-hook 'yas-minor-mode-on)
   (add-hook 'c-mode-common-hook 'turn-on-fixme-mode)
+  ;;(add-hook 'c-mode-common-hook 'add-my-include-directories)
   )
+
+  (defun add-my-include-directories ()
+    (interactive)
+    (setq c-eldoc-includes (concat c-eldoc-includes " "
+                                   (mapconcat '(lambda (dir) (concat "-I" dir))
+                                              my-include-directories
+                                              " "))
+
+          ac-clang-flags (append (mapcar (lambda (ip) (concat "-I" ip))
+                                         my-include-directories)
+                                 ac-clang-flags)))
+
+(defun add-project-directories (&rest args)
+  (defvar my-include-directories nil)
+  (make-variable-buffer-local 'my-include-directories)
+  (setq my-include-directories
+        (mapcar (lambda (subdir)
+                  (concat (file-name-directory
+                           (file-truename (locate-dominating-file buffer-file-name ".dir-locals.el")))
+                          subdir))
+                args))
+  (add-my-include-directories))
 
 (sm-provide :module C)
