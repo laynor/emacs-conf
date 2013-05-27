@@ -39,6 +39,7 @@
                        "surround"
                        "wgrep"
                        "whitespace"
+                       "woman"
                        ;;"undohist"
                        )
            ;; set this to t if you want to manage this module yourself
@@ -65,6 +66,11 @@
   ;; insert titled comment
   (defvar *titled-comment-length* 90
     "Total width of comments inserted with `insert-titled-comment'")
+
+  (defun length-of-region(start end)
+    "Places the length of the current region in the kill ring."
+    (interactive "r")
+    (kill-new (message "%S" (- end start))))
 
   (defun insert-titled-comment (string)
     "Inserts a comment in the stile
