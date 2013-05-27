@@ -4,7 +4,8 @@
 
 (sm-module "base"
            ;; add the packages required by your basic configuration here
-  :require-packages '( "auto-complete"
+  :require-packages '( "ag"
+                       "auto-complete"
                        "browse-kill-ring"
                        "diff-hl"
                        "dired"
@@ -41,6 +42,7 @@
                        "whitespace"
                        "woman"
                        ;;"undohist"
+                       "wgrep-ack"
                        )
            ;; set this to t if you want to manage this module yourself
            ;; instead of using the builtin package loading infrastructure
