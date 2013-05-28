@@ -38,7 +38,7 @@
  '(org-export-odt-inline-image-extensions (quote ("png" "jpeg" "jpg" "gif" "svg")))
  '(python-shell-interpreter "python2")
  '(rsense-rurema-home "~/Documents/ruby-refm-1.9.2-dynamic-20110629/")
- '(safe-local-variable-values (quote ((eval add-project-directories "include/" "third_party/dice-pjsip/pjmedia/include" "/third_party/dice-pjsip/pjlib/include" "/third_party/dice-pjsip/pjlib-util/include" "/third_party/dice-pjsip/pjsip/include" "/third_party/dice-pjsip/pjnath/include") (eval add-project-directories "include/") (eval progn (setq my-include-directories (list (concat (file-name-directory (file-truename load-file-name)) "include/"))) (add-my-include-directories)) (c-auto-newline) (c-file-style . k&r))))
+ '(safe-local-variable-values (quote ((eval progn (message "stercoraro") (add-to-list (quote ac-clang-cflags) "-I/home/ale/src/C/prova")) (eval add-project-directories "include/" "third_party/dice-pjsip/pjmedia/include" "/third_party/dice-pjsip/pjlib/include" "/third_party/dice-pjsip/pjlib-util/include" "/third_party/dice-pjsip/pjsip/include" "/third_party/dice-pjsip/pjnath/include") (eval add-project-directories "include/") (eval progn (setq my-include-directories (list (concat (file-name-directory (file-truename load-file-name)) "include/"))) (add-my-include-directories)) (c-auto-newline) (c-file-style . k&r))))
  '(scroll-bar-mode nil)
  '(show-paren-mode t)
  '(tool-bar-mode nil)

@@ -1,9 +1,9 @@
 ;;;; Package evil
 (sm-package evil
-            :package-manager nil
-            :unmanaged-p t)
+            :package-manager "package")
+            ;;:unmanaged-p t)
 
-(add-to-list 'load-path (concat user-emacs-directory "site-lisp/evil"))
+;;(add-to-list 'load-path (concat user-emacs-directory "site-lisp/evil"))
 (require 'evil)
 (evil-mode 1)
 (evil-define-key 'motion Info-mode-map
