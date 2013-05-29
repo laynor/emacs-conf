@@ -30,6 +30,8 @@
  '(ido-auto-merge-delay-time 1.0)
  '(ido-default-buffer-method (quote selected-window))
  '(ido-enable-flex-matching t)
+ '(ipa-annotation-face (quote ipa-face))
+ '(ipa-overlay-position "above")
  '(jedi:cut-summary-postfix "...")
  '(jedi:max-summary-length 40)
  '(jedi:show-function-signature-in-summary t)
@@ -46,7 +48,8 @@
  '(uniquify-buffer-name-style (quote forward) nil (uniquify))
  '(uniquify-ignore-buffers-re "^\\ *")
  '(uniquify-separator ":")
- '(visible-bell t))
+ '(visible-bell t)
+ '(yas-prompt-functions (quote (yas-dropdown-prompt yas-completing-prompt yas-ido-prompt yas-no-prompt))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -64,7 +67,7 @@
  '(factor-font-lock-stack-effect ((t (:foreground "green"))))
  '(factor-font-lock-string ((t (:inherit font-lock-string-face))))
  '(factor-font-lock-word ((t (:inherit font-lock-function-name-face))))
- '(flycheck-error-face ((t (:inherit error :underline t))))
+ '(flycheck-error ((t (:inherit error :underline t))))
  '(font-lock-comment-face ((t (:foreground "MediumPurple3" :slant italic))))
  '(font-lock-fic-face ((t (:inherit font-lock-comment-face :background "Red" :foreground "Yellow" :weight bold))))
  '(font-lock-preprocessor-face ((t (:inherit font-lock-builtin-face :foreground "#ff0033"))))
