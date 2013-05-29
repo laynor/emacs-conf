@@ -19,3 +19,6 @@
 [submodule "site-lisp/emacs-clang-complete-async"]
 	path = site-lisp/emacs-clang-complete-async
 	url = https://github.com/Golevka/emacs-clang-complete-async.git
+[submodule "site-lisp/ipa"]
+	path = site-lisp/ipa
+	url = git://github.com/idomagal/ipa.el.git

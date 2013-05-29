@@ -21,6 +21,7 @@
                        "httpcode"
                        "ido-hacks"
                        "ido-ubiquitous"
+                       "ipa"
                        "magit"
                        "git-commit-mode"
                        "markdown-mode"
