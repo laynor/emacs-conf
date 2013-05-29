@@ -18,9 +18,17 @@
                 ;ad-return-value)))
 
 (defun my-ac-cc-mode-setup ()
+  (message "SMUFUTU")
+  (setq ac-clang-complete-executable "/home/ale/.emacs.d/site-lisp/emacs-clang-complete-async/clang-complete")
   (setq ac-sources (append '(ac-source-clang-async ac-source-yasnippet) ac-sources))
   (ac-clang-launch-completion-process))
 
-(add-hook 'c-mode-common-hook 'my-ac-cc-mode-setup)
+(defun my-ac-config ()
+  (add-hook 'c-mode-common-hook 'my-ac-cc-mode-setup)
+  (add-hook 'auto-complete-mode-hook 'ac-common-setup)
+  (global-auto-complete-mode t))
+
+(my-ac-config)
+;;(add-hook 'c-mode-common-hook 'my-ac-cc-mode-setup)
 
 (sm-provide :package auto-complete-clang-async)

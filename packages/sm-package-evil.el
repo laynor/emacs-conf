@@ -19,8 +19,12 @@
 (evil-define-key 'normal lisp-mode-map (kbd "M-.") 'slime-edit-definition)
 (define-key evil-normal-state-map (kbd "M-.") nil)
 (define-key evil-insert-state-map (kbd "C-d") 'delete-char)
-;; (define-key evil-insert-state-map [ctrl ] 'evil-normal-state)
-;; (define-key evil-esc-map (kbd "ESC") nil)
-;; (define-key evil-visual-state-map (kbd "M-x") 'smex)
+
+(evil-define-motion evil-ret (count)
+  "Move the cursor COUNT lines down.
+If point is on a widget or a button, click on it.
+In Insert state, insert a newline."
+  :type line
+  (evil-ret-gen count evil-auto-indent))
 
 (sm-provide :package evil)

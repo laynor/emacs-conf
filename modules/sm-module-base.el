@@ -33,6 +33,7 @@
                        "pp-c-l"
                        ;; "pretty-symbols-mode"
                        "projectile"
+                       "quickrun"
                        "s"
                        "shell-pop"
                        "smex"
@@ -134,6 +135,17 @@ The number of dashes is calculated based on `*titled-comment-length*'.
 
   (evil-global-set-key 'normal (kbd "C-d") 'popwin:direx)
   (global-subword-mode 1)
+
+(defun insert-title (fill title)
+  (interactive "cFill with: \nsEnter string:")
+  (let* ((l (length title))
+         (n (/ (- 80 l) 2))
+         (title (concat " " title " ")))
+    (dotimes (i (floor n))
+      (insert fill))
+    (insert title)
+    (dotimes (i (ceiling n))
+      (insert fill))))
   )
 
 (sm-provide :module base)
