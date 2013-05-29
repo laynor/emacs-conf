@@ -1,0 +1,2 @@
+* Compilation mode
+  Goto next/previous error: M-g n, M-g p

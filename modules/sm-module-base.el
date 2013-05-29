@@ -149,5 +149,11 @@ The number of dashes is calculated based on `*titled-comment-length*'.
       (insert fill))))
   )
 
+(defun open-notes-file ()
+  (interactive)
+  (find-file-other-window "~/.emacs.d/notes.org"))
+
+(global-set-key [(f9)] 'open-notes-file)
+
 (sm-provide :module base)
 ;;;; End base module
