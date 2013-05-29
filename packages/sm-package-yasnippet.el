@@ -8,6 +8,6 @@
 (defun add-yasnippet-ac-sources ()
   (add-to-list 'ac-sources 'ac-source-yasnippet))
 
-;; (yas-reload-all)
+(yas-reload-all)
 
 (sm-provide :package yasnippet)
