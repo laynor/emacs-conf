@@ -3,6 +3,15 @@
             :package-manager "package"
             :unmanaged-p nil)
 
-;;; TODO insert your package initialization code here
+(defun insert-closed-paren (&optional n)
+  (interactive "p")
+  (self-insert-command n)
+  (save-excursion
+    (backward-char)
+    (litable-refresh)))
+
+(add-hook litable-mode-hook
+          (lambda ()
+            (local-set-key (kbd ")") 'insert-closed-paren)))
 
 (sm-provide :package litable)

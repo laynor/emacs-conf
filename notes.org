@@ -1,3 +1,7 @@
+* git
+  Throw away upstream changes
+  git checkout --ours file.txt
+  git add file.txt
 * elisp
   Pattern Matching: pcase
 * Compilation mode
