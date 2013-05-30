@@ -32,4 +32,6 @@
              (current-time)
            (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
+(setq gc-cons-threshold 20000000)
+
 (defalias 'smufu 'save-buffers-kill-emacs)
