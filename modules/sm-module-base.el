@@ -13,6 +13,7 @@
                        "erc"
                        "undo-tree"
                        "evil"
+                       "flx"
                        "fuzzy"
                        "gist"
                        "gitignore-mode"
@@ -91,7 +92,11 @@ The number of dashes is calculated based on `*titled-comment-length*'.
 
 
   ;;; --------------------------------- before-save-hook ----------------------------------
-  (add-hook 'before-save-hook (lambda () (unless (ignore-errors makefile-mode) (delete-trailing-whitespace))))
+  (add-hook 'before-save-hook (lambda () (unless (or (ignore-errors makefile-mode)
+                                                     (memq major-mode '(ipa-mode
+                                                                        makefile-mode)))
+                                           (delete-trailing-whitespace))))
+
 
   ;;; ---------------------------------- Bindings ----------------------------------
   (define-key key-translation-map (kbd "C-.") (kbd "M-TAB"))
@@ -137,23 +142,23 @@ The number of dashes is calculated based on `*titled-comment-length*'.
   (evil-global-set-key 'normal (kbd "C-d") 'popwin:direx)
   (global-subword-mode 1)
 
-(defun insert-title (fill title)
-  (interactive "cFill with: \nsEnter string:")
-  (let* ((l (length title))
-         (n (/ (- 80 l) 2))
-         (title (concat " " title " ")))
-    (dotimes (i (floor n))
-      (insert fill))
-    (insert title)
-    (dotimes (i (ceiling n))
-      (insert fill))))
+  (defun insert-title (fill title)
+    (interactive "cFill with: \nsEnter string:")
+    (let* ((l (length title))
+           (n (/ (- 80 l) 2))
+           (title (concat " " title " ")))
+      (dotimes (i (floor n))
+        (insert fill))
+      (insert title)
+      (dotimes (i (ceiling n))
+        (insert fill))))
+  (defun open-notes-file ()
+    (interactive)
+    (find-file-other-window "~/.emacs.d/notes.org"))
+
+  (global-set-key [(f9)] 'open-notes-file)
   )
 
-(defun open-notes-file ()
-  (interactive)
-  (find-file-other-window "~/.emacs.d/notes.org"))
-
-(global-set-key [(f9)] 'open-notes-file)
 
 (sm-provide :module base)
 ;;;; End base module
