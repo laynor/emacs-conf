@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: typedef struct ... { ... }...;
+# key: tdstruct
+# --
+typedef struct ${1:MyStruct} {
+    $0
+} $1;

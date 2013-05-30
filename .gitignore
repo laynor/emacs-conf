@@ -24,3 +24,5 @@ semanticdb/
 /undohist
 /session.*
 /bookmarks
+/site-lisp/nxhtml
+/site-lisp/evil
