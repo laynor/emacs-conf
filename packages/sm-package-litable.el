@@ -3,6 +3,8 @@
             :package-manager "package"
             :unmanaged-p nil)
 
+(require 'litable)
+
 (defun insert-closed-paren (&optional n)
   (interactive "p")
   (self-insert-command n)
@@ -10,7 +12,7 @@
     (backward-char)
     (litable-refresh)))
 
-(add-hook litable-mode-hook
+(add-hook 'litable-mode-hook
           (lambda ()
             (local-set-key (kbd ")") 'insert-closed-paren)))
 

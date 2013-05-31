@@ -119,23 +119,34 @@
                  (let* ((active (eq powerline-selected-window (selected-window)))
                         (face1 (if active 'powerline-active1 'powerline-inactive1))
                         (face2 (if active 'powerline-active2 'powerline-inactive2))
+                        (mode-line (if active 'mode-line 'mode-line-inactive))
                         (pl-evil-face (powerline-evil-face active))
+                        (separator-left
+                         (intern (format "powerline-%s-%s"
+                                         powerline-default-separator
+                                         (car powerline-default-separator-dir))))
+                        (separator-right
+                         (intern (format "powerline-%s-%s"
+                                         powerline-default-separator
+                                         (cdr powerline-default-separator-dir))))
+
                         (lhs (list
                               ;; NORMAL> foobar.txt > + > Fundamental >                 [ ] < 5: 0 < all
                               ;; NORMAL>
                               (powerline-evil pl-evil-face 'l)
                               (powerline-raw " " pl-evil-face 'l)
-                              (powerline-arrow-right pl-evil-face nil)
+                              (funcall separator-left pl-evil-face mode-line)
+                              ;;(powerline-arrow-right pl-evil-face nil)
                               ;; foobar.txt
                               (powerline-raw "%z")
                               (powerline-raw (mode-line-eol-desc))
                               (powerline-buffer-id 'bold 'l)
                               (powerline-raw " ")
-                              (powerline-arrow-right nil face2)
+                              (funcall separator-left mode-line face2)
                               ;; > * >
                               (powerline-raw "%* " `((:weight bold :inherit ,face2)) 'l)
                               ;; (powerline-buffer-size face2 'l)
-                              (powerline-arrow-right face2 face1)
+                              (funcall separator-left face2 face1)
 
                               ;; Fundamental .. >
                               (powerline-major-mode face1 'l)
@@ -145,7 +156,7 @@
 
                               (powerline-narrow face1 'l)
 
-                              (powerline-arrow-right face1 nil)
+                              (funcall separator-left face1 mode-line)
 
                               (powerline-vc nil)
                               (powerline-raw-preserve erc-modified-channels-object)
@@ -161,7 +172,7 @@
                                                       nil 'r)
 
 
-                              (powerline-arrow-left nil face1)
+                              (powerline-arrow-right mode-line face1)
 
 
                               (powerline-raw "%4l" face1 'r)
