@@ -4,9 +4,9 @@
            :require-packages '(yasnippet rsense enotify
                                highlight-indentation
                                hideshow
-                               ale-fixme rspec-mode markdown-mode
+                               rspec-mode markdown-mode
                                markdown-mode+ yard-mode))
-                               ;; rdoc-mode)) 
+                               ;; rdoc-mode))
 
 (sm-module-pre (ruby)
   ;; Add current ruby elisp directory to load-path
@@ -25,9 +25,7 @@
   (add-hook 'ruby-mode-hook 'add-rsense-ac-sources)
   (add-hook 'ruby-mode-hook 'add-yasnippet-ac-sources)
   (add-hook 'ruby-mode-hook 'yas-minor-mode-on)
-  (add-hook 'ruby-mode-hook 'yas-reload-all)
   ;; todo/fixme comments
-  (add-hook 'ruby-mode-hook #'(lambda () (fic-ext-mode 1)))
   (add-hook 'ruby-mode-hook #'(lambda () (highlight-indentation-mode 1)))
   (add-hook 'ruby-mode-hook #'yard-turn-on)
   ;; Auto indent current line when pressing RET

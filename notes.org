@@ -6,3 +6,5 @@
   Pattern Matching: pcase
 * Compilation mode
   Goto next/previous error: M-g n, M-g p
+* CL
+  check out redshank

@@ -31,4 +31,6 @@ having the same major mode as the current buffer"
 
 (setq fic-highlighted-words '("FIXME" "TODO" "BUG" "KLUDGE" "XXX" "UGLY"))
 
+(add-hook 'prog-mode-hook 'turn-on-fixme-mode)
+
 (sm-provide :package ale-fixme)

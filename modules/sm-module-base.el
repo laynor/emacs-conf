@@ -5,6 +5,7 @@
 (sm-module "base"
            ;; add the packages required by your basic configuration here
   :require-packages '( "ag"
+                       "ace-jump-mode"
                        "auto-complete"
                        "browse-kill-ring"
                        "diff-hl"
@@ -13,7 +14,7 @@
                        "erc"
                        "undo-tree"
                        "evil"
-                       "flx"
+                       ;;"flx"
                        "fuzzy"
                        "gist"
                        "gitignore-mode"
@@ -40,7 +41,6 @@
                        "shell-pop"
                        "smex"
                        ;; "smooth-scrolling"
-                       "surround"
                        "wgrep"
                        "whitespace"
                        "woman"
@@ -101,27 +101,11 @@ The number of dashes is calculated based on `*titled-comment-length*'.
   ;;; ---------------------------------- Bindings ----------------------------------
   (define-key key-translation-map (kbd "C-.") (kbd "M-TAB"))
   (global-set-key [f7] 'magit-status)
-  (global-set-key (kbd "C-\;") 'message-point)
+  (global-set-key (kbd "C-\:") 'message-point)
   (global-set-key (kbd "C-x C-b") 'ibuffer)
   (add-hook 'before-save-hook (lambda () (delete-trailing-whitespace)))
 
-  ;; Plug browse-kill-ring into evil
-  (defadvice evil-paste-pop (around evil-kill-ring-browse-maybe (arg) activate)
-    "If last action was not a yank, run `browse-kill-ring' instead."
-    ;; yank-pop has an (interactive "*p") form which does not allow
-    ;; it to run in a read-only buffer.  We want browse-kill-ring to
-    ;; be allowed to run in a read only buffer, so we change the
-    ;; interactive form here.  In that case, we need to
-    ;; barf-if-buffer-read-only if we're going to call yank-pop with
-    ;; ad-do-it
-    (interactive "p")
-    (if (not (memq last-command '(evil-paste-after evil-paste-before yank)))
-        (browse-kill-ring)
-      (barf-if-buffer-read-only)
-      ad-do-it))
 
-  ;; Auto complete and evil
-  (define-key ac-completing-map (kbd "C-[") '(lambda () (interactive) (ac-stop) (evil-normal-state)))
 
   ;; Frame title
   (setq frame-title-format '(buffer-file-name "%b - emacs" ("%b - emacs")))
@@ -131,15 +115,6 @@ The number of dashes is calculated based on `*titled-comment-length*'.
 
   ;;; Unique buffer names
   (require 'uniquify)
-
-  ;; direx bindings
-  (defun popwin:direx (dirname)
-    "Edit file FILENAME with popup window by `popwin:popup-buffer'."
-    (interactive
-     (list (ido-read-directory-name "Direx (popup): ")))
-    (popwin:popup-buffer (direx:find-directory-noselect dirname) :position 'left))
-
-  (evil-global-set-key 'normal (kbd "C-d") 'popwin:direx)
   (global-subword-mode 1)
 
   (defun insert-title (fill title)
@@ -157,6 +132,7 @@ The number of dashes is calculated based on `*titled-comment-length*'.
     (find-file-other-window "~/.emacs.d/notes.org"))
 
   (global-set-key [(f9)] 'open-notes-file)
+
   )
 
 

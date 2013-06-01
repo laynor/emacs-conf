@@ -10,30 +10,6 @@
   )
 
 (sm-module-post (C)
-  (defvar ac-clang-debug nil)
-
-  (defun ac-clang-handle-error (res args)
-    (goto-char (point-min))
-    (let* ((buf (get-buffer-create ac-clang-error-buffer-name))
-           (cmd (concat ac-clang-executable " " (mapconcat 'identity args " ")))
-           (pattern (format ac-clang-completion-pattern ""))
-           (err (if (re-search-forward pattern nil t)
-                    (buffer-substring-no-properties (point-min)
-                                                    (1- (match-beginning 0)))
-                  ;; Warn the user more agressively if no match was found.
-                  (when ac-clang-debug
-                    (message "clang failed with error %d:\n%s" res cmd))
-                  (buffer-string))))
-
-      (with-current-buffer buf
-        (let ((inhibit-read-only t))
-          (erase-buffer)
-          (insert (current-time-string)
-                  (format "\nclang failed with error %d:\n" res)
-                  cmd "\n\n")
-          (insert err)
-          (setq buffer-read-only t)
-          (goto-char (point-min))))))
 
   (defvar c-get-standard-include-dirs-command
     "echo | cpp -x c++ -Wp,-v 2>&1 | grep '^.*include' | grep -v '^\\(ignoring\\|#include\\)' | sed 's/^ //g'"
@@ -69,9 +45,6 @@
   (setq c-eldoc-includes (concat c-eldoc-includes " "
                                  (mapconcat 'identity (c-get-standard-include-dirs) " ")))
   (add-hook 'c-mode-common-hook 'yas-minor-mode-on)
-  (add-hook 'c-mode-common-hook 'turn-on-fixme-mode)
-  ;; ;;(add-hook 'c-mode-common-hook 'add-my-include-directories)
-  ;; )
 
   (defun add-my-include-directories ()
     (interactive)
@@ -84,16 +57,17 @@
                                          my-include-directories)
                                  ac-clang-flags)))
 
-(defun add-project-directories (&rest args)
-  (defvar my-include-directories nil)
-  (make-variable-buffer-local 'my-include-directories)
-  (setq my-include-directories
-        (mapcar (lambda (subdir)
-                  (concat (file-name-directory
-                           (file-truename (locate-dominating-file buffer-file-name ".dir-locals.el")))
-                          subdir))
-                args))
-  (add-my-include-directories))
+
+  (defun add-project-directories (&rest args)
+    (defvar my-include-directories nil)
+    (make-variable-buffer-local 'my-include-directories)
+    (setq my-include-directories
+          (mapcar (lambda (subdir)
+                    (concat (file-name-directory
+                             (file-truename (locate-dominating-file buffer-file-name ".dir-locals.el")))
+                            subdir))
+                  args))
+    (add-my-include-directories))
 
 )
 

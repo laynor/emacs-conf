@@ -7,11 +7,6 @@
 
 (require 'ipa)
 
-(evil-global-set-key 'normal (kbd "M-i M-i") 'ipa-toggle)
-(evil-global-set-key 'normal (kbd "M-i i") 'ipa-insert)
-(evil-global-set-key 'normal (kbd "M-i e") 'ipa-edit)
-(evil-global-set-key 'normal (kbd "M-i m") 'ipa-move)
-
 (defface ipa-face
   '((((class color))
      (:foreground "black" :background "thistle3" :weight bold))

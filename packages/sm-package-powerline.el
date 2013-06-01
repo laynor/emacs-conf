@@ -5,64 +5,7 @@
 
 (require 'powerline)
 
-(defface powerline-enotify-bg-face
-  '((((class color))
-     (:background "gray20" :foreground "white" :weight bold))
-    (t (:weight bold)))
-  "face to fontify Enotify Success messages"
-  :group 'powerline)
-
-(defface powerline-evil-insert-face
-  '((((class color))
-     (:background "green" :foreground "black" :weight bold))
-    (t (:weight bold)))
-  "face to fontify Enotify Success messages"
-  :group 'powerline)
-
-(defface powerline-evil-normal-face
-  '((((class color))
-     (:background "red" :foreground "black" :weight bold))
-    (t (:weight bold)))
-  "face to fontify Enotify Success messages"
-  :group 'powerline)
-
-(defface powerline-evil-visual-face
-  '((((class color))
-     (:background "yellow" :foreground "black" :weight bold))
-    (t (:weight bold)))
-  "face to fontify Enotify Success messages"
-  :group 'powerline)
-
-(defface powerline-evil-motion-face
-  '((((class color))
-     (:background "blue" :foreground "black" :weight bold))
-    (t (:weight bold)))
-  "face to fontify Enotify Success messages"
-  :group 'powerline)
-
-(defface powerline-evil-emacs-face
-  '((((class color))
-     (:background "blue violet" :foreground "black" :weight bold))
-    (t (:weight bold)))
-  "face to fontify Enotify Success messages"
-  :group 'powerline)
-
-(defface powerline-modified-flag-face
-  '((((class color))
-     (:weight bold :inherit 'powerline-active2))
-    (t (:weight bold)))
-  "face to fontify Enotify Success messages"
-  :group 'powerline)
-
-(add-hook 'post-command-hook (lambda ()
-                               (setq powerline-selected-window (selected-window))))
-
-(defun powerline-evil-face (active)
-  (let ((face (intern (concat "powerline-evil-" (symbol-name evil-state) "-face"))))
-    (cond ((and active (facep face))
-           face)
-          (active 'powerline-active2)
-          (t 'powerline-inactive2))))
+;;; powerline-raw-preserve
 
 (defun powerline-string-face-change-positions (string)
   (let ((x 0)
@@ -98,6 +41,13 @@
                           (powerline-string-intervals-by-face string))))
 
 (defun powerline-raw-preserve (str &optional face pad)
+  "Like powerline-raw, but preserves the face attributes in STR
+not defined in FACE.
+For example, if face only specifies a background attribute, the
+and STR has been propertized with a face that specifies a
+foreground attribute, the string will be displayed with the
+foreground specified by STR and the background specified by
+FACE. This includes the mouse over faces."
   (let ((rendered-str (format-mode-line str)))
     (powerline-merge-face-in--string
      (concat (when (and rendered-str (memq pad '(t l))) " ")
@@ -105,12 +55,78 @@
              (when (and rendered-str (memq pad '(t r))) " "))
      face)))
 
+;;; Evil integration
+(sm-integrate-with (:package evil)
 
-(defpowerline powerline-evil
-  (replace-regexp-in-string "[<> ]" "" (eval (evil-state-property evil-state :tag))))
+  (defface powerline-evil-insert-face
+    '((((class color))
+       (:background "green" :foreground "black" :weight bold))
+      (t (:weight bold)))
+    "face to fontify Enotify Success messages"
+    :group 'powerline)
 
-(defpowerline powerline-enotify
-  (apply #'concat enotify-mode-line-string))
+  (defface powerline-evil-normal-face
+    '((((class color))
+       (:background "red" :foreground "black" :weight bold))
+      (t (:weight bold)))
+    "face to fontify Enotify Success messages"
+    :group 'powerline)
+
+  (defface powerline-evil-visual-face
+    '((((class color))
+       (:background "yellow" :foreground "black" :weight bold))
+      (t (:weight bold)))
+    "face to fontify Enotify Success messages"
+    :group 'powerline)
+
+  (defface powerline-evil-motion-face
+    '((((class color))
+       (:background "blue" :foreground "black" :weight bold))
+      (t (:weight bold)))
+    "face to fontify Enotify Success messages"
+    :group 'powerline)
+
+  (defface powerline-evil-emacs-face
+    '((((class color))
+       (:background "blue violet" :foreground "black" :weight bold))
+      (t (:weight bold)))
+    "face to fontify Enotify Success messages"
+    :group 'powerline)
+
+  (defface powerline-modified-flag-face
+    '((((class color))
+       (:weight bold :inherit 'powerline-active2))
+      (t (:weight bold)))
+    "face to fontify Enotify Success messages"
+    :group 'powerline)
+
+  (defun powerline-evil-face (active)
+    (let ((face (intern (concat "powerline-evil-" (symbol-name evil-state) "-face"))))
+      (cond ((and active (facep face))
+             face)
+            (active 'powerline-active2)
+            (t 'powerline-inactive2))))
+
+  (defpowerline powerline-evil
+    (concat (replace-regexp-in-string "[<> ]" "" (eval (evil-state-property evil-state :tag))) " "))
+  )
+
+(powerline-evil 'powerline-evil-insert-face 'l)
+
+(sm-integrate-with (:package enotify)
+  (defface powerline-enotify-bg-face
+    '((((class color))
+       (:background "gray20" :foreground "white" :weight bold))
+      (t (:weight bold)))
+    "face to fontify Enotify Success messages"
+    :group 'powerline))
+
+
+
+;;; active modeline detection hack
+(add-hook 'post-command-hook (lambda ()
+                               (setq powerline-selected-window (selected-window))))
+
 
 
 (setq-default mode-line-format
@@ -120,7 +136,7 @@
                         (face1 (if active 'powerline-active1 'powerline-inactive1))
                         (face2 (if active 'powerline-active2 'powerline-inactive2))
                         (mode-line (if active 'mode-line 'mode-line-inactive))
-                        (pl-evil-face (powerline-evil-face active))
+                        (pl-evil-face (ignore-errors (powerline-evil-face active)))
                         (separator-left
                          (intern (format "powerline-%s-%s"
                                          powerline-default-separator
@@ -129,39 +145,39 @@
                          (intern (format "powerline-%s-%s"
                                          powerline-default-separator
                                          (cdr powerline-default-separator-dir))))
+                        (powerline-evil (ignore-errors (powerline-evil pl-evil-face 'l)))
+                        (lhs
+                         (list
+                          ;; NORMAL> foobar.txt > + > Fundamental >                 [ ] < 5: 0 < all
+                          ;; NORMAL>
 
-                        (lhs (list
-                              ;; NORMAL> foobar.txt > + > Fundamental >                 [ ] < 5: 0 < all
-                              ;; NORMAL>
-                              (powerline-evil pl-evil-face 'l)
-                              (powerline-raw " " pl-evil-face 'l)
-                              (funcall separator-left pl-evil-face mode-line)
-                              ;;(powerline-arrow-right pl-evil-face nil)
-                              ;; foobar.txt
-                              (powerline-raw "%z")
-                              (powerline-raw (mode-line-eol-desc))
-                              (powerline-buffer-id 'bold 'l)
-                              (powerline-raw " ")
-                              (funcall separator-left mode-line face2)
-                              ;; > * >
-                              (powerline-raw "%* " `((:weight bold :inherit ,face2)) 'l)
-                              ;; (powerline-buffer-size face2 'l)
-                              (funcall separator-left face2 face1)
+                          powerline-evil
+                          (and powerline-evil (funcall separator-left pl-evil-face mode-line))
+                          ;; foobar.txt
+                          (powerline-raw "%z")
+                          (powerline-raw (mode-line-eol-desc))
+                          (powerline-buffer-id 'bold 'l)
+                          (powerline-raw " ")
+                          (funcall separator-left mode-line face2)
+                          ;; > * >
+                          (powerline-raw "%* " `((:weight bold :inherit ,face2)) 'l)
+                          ;; (powerline-buffer-size face2 'l)
+                          (funcall separator-left face2 face1)
 
-                              ;; Fundamental .. >
-                              (powerline-major-mode face1 'l)
-                              (powerline-minor-modes face1 'l)
-                              (powerline-raw " " face1)
-                              (powerline-raw mode-line-process face1 'l)
+                          ;; Fundamental .. >
+                          (powerline-major-mode face1 'l)
+                          (powerline-minor-modes face1 'l)
+                          (powerline-raw " " face1)
+                          (powerline-raw mode-line-process face1 'l)
 
-                              (powerline-narrow face1 'l)
+                          (powerline-narrow face1 'l)
 
-                              (funcall separator-left face1 mode-line)
+                          (funcall separator-left face1 mode-line)
 
-                              (powerline-vc nil)
-                              (powerline-raw-preserve erc-modified-channels-object)
-                              ;; (powerline-raw (if (file-exists-p (scratch-palette-file)) "S" "") nil 'l)
-                              ))
+                          (powerline-vc nil)
+                          (powerline-raw-preserve erc-modified-channels-object)
+                          ;; (powerline-raw (if (file-exists-p (scratch-palette-file)) "S" "") nil 'l)
+                          ))
                         (rhs (list
                               ;; (powerline-raw global-mode-string nil 'r)
                               ;;(powerline-raw-preserve global-mode-string face1)
@@ -183,8 +199,8 @@
                               (powerline-raw " ")
 
                               (powerline-raw "%6p" nil 'r)
-                              (powerline-raw-preserve enotify-mode-line-string
-                                                      'powerline-enotify-bg-face 't)
+                              (ignore-errors (powerline-raw-preserve enotify-mode-line-string
+                                                                     'powerline-enotify-bg-face 't))
 
                               (powerline-hud face2 face1))))
                    (concat

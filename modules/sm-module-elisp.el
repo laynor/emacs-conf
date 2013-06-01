@@ -16,10 +16,10 @@
 
   ;; Activate minor modes
   (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode) ;eldoc
-  (add-hook 'emacs-lisp-mode-hook (lambda () (fic-ext-mode 1))) ;fic-ext-mode
   (add-hook 'emacs-lisp-mode-hook 'ac-emacs-lisp-mode-setup)
   (add-hook 'emacs-lisp-mode-hook '(lambda () (hl-sexp-mode 1)))
   (add-hook 'emacs-lisp-mode-hook 'highlight-cl-add-font-lock-keywords)
+  (add-hook 'emacs-lisp-mode-hook '(lambda () (elisp-slime-nav-mode 1)))
   (add-hook 'lisp-interaction-mode-hook 'highlight-cl-add-font-lock-keywords)
 
   ;; (add-hook 'emacs-lisp-mode-hook '(lambda () (pretty-symbols-mode 1)))
@@ -64,7 +64,12 @@
   (function (lambda ()
    (add-hook 'local-write-file-hooks
     'check-parens))))
- (evil-define-key 'normal emacs-lisp-mode-map (kbd "M-.") 'elisp-slime-nav-find-elisp-thing-at-point)
+
+ ;;;;;;;;;;;;;;;;;;;;;
+ ;;; evil integration
+ (sm-integrate-with (:package evil)
+   (evil-define-key 'normal emacs-lisp-mode-map (kbd "M-.") 'elisp-slime-nav-find-elisp-thing-at-point))
+
  )
 
 (sm-provide :module elisp)

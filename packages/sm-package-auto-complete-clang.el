@@ -24,9 +24,7 @@
 ;;; Kludge for objc
 (defun ac-template-action ()
   (interactive)
-  (message "sporchi")
   (unless (null ac-template-start-point)
-    (message "??? %S" ac-last-completion)
     (let ((pos (point)) sl (snp "")
           (s (get-text-property 0 'raw-args (cdr ac-last-completion))))
       (cond ((string= s "")
@@ -55,7 +53,6 @@
                     (message "Dude! You are too out! Please install a yasnippet or a snippet script:)"))))
              (t
              (unless (string= s "()")
-               (message "!!!! %S" s)
                (setq s (replace-regexp-in-string "{#" "" s))
                (setq s (replace-regexp-in-string "#}" "" s))
                ;;;KLUDGE -- objc argument list fix for yasnippet template
@@ -69,7 +66,6 @@
                       (setq s (replace-regexp-in-string "<#" "${" s))
                       (setq s (replace-regexp-in-string "#>" "}" s))
                       (setq s (replace-regexp-in-string ", \\.\\.\\." "}, ${..." s))
-                      (message ">>%S" s)
                       (condition-case nil
                           (yas/expand-snippet s ac-template-start-point pos) ;; 0.6.1c
                         (error
@@ -85,7 +81,29 @@
                      (t
                       (message "Dude! You are too out! Please install a yasnippet or a snippet script:)")))))))))
 
+  (defvar ac-clang-debug nil)
 
+  (defun ac-clang-handle-error (res args)
+    (goto-char (point-min))
+    (let* ((buf (get-buffer-create ac-clang-error-buffer-name))
+           (cmd (concat ac-clang-executable " " (mapconcat 'identity args " ")))
+           (pattern (format ac-clang-completion-pattern ""))
+           (err (if (re-search-forward pattern nil t)
+                    (buffer-substring-no-properties (point-min)
+                                                    (1- (match-beginning 0)))
+                  ;; Warn the user more agressively if no match was found.
+                  (when ac-clang-debug
+                    (message "clang failed with error %d:\n%s" res cmd))
+                  (buffer-string))))
 
+      (with-current-buffer buf
+        (let ((inhibit-read-only t))
+          (erase-buffer)
+          (insert (current-time-string)
+                  (format "\nclang failed with error %d:\n" res)
+                  cmd "\n\n")
+          (insert err)
+          (setq buffer-read-only t)
+          (goto-char (point-min))))))
 
 (sm-provide :package auto-complete-clang)

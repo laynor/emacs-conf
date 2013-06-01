@@ -3,10 +3,6 @@
             :package-manager nil
             :unmanaged-p t)
 
-(add-hook 'Man-mode-hook '(lambda ()
-                            (evil-change-state 'motion)
-                            (evil-local-set-key 'motion (kbd "RET") 'woman-follow)
-                            ))
 (defun woman-other-window (&optional topic re-cache)
   (interactive (list nil current-prefix-arg))
   (if (or (not (stringp topic)) (string-match "\\S " topic))
@@ -24,5 +20,4 @@
     (message "WoMan Error: No topic specified in non-interactive call")
     (ding)))
 
-(evil-global-set-key 'normal (kbd "K") 'woman-other-window)
 (sm-provide :package woman)
