@@ -53,12 +53,10 @@ In Insert state, insert a newline."
   (define-key evil-motion-state-map (kbd "SPC") 'evil-ace-jump-char-mode)
   (define-key evil-motion-state-map (kbd "C-SPC") 'evil-ace-jump-char-to-mode)
   (define-key evil-motion-state-map (kbd "M-SPC") 'evil-ace-jump-word-mode)
-    (defadvice evil-visual-line (before spc-for-line-jump activate)
+  (defadvice evil-visual-line (before spc-for-line-jump activate)
     (define-key evil-motion-state-map (kbd "SPC") #'evil-ace-jump-line-mode))
-
   (defadvice evil-visual-char (before spc-for-char-jump activate)
     (define-key evil-motion-state-map (kbd "SPC") #'evil-ace-jump-char-mode))
-
   (defadvice evil-visual-block (before spc-for-char-jump activate)
     (define-key evil-motion-state-map (kbd "SPC") #'evil-ace-jump-char-mode)))
 
