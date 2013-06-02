@@ -21,25 +21,6 @@
               (concat "-I" include-path))
             (split-string (shell-command-to-string c-get-standard-include-dirs-command) "\n" t)))
 
-  ;; (defun pj-include-dirs (pjbase)
-  ;;   (let ((pjbase (or pjbase (getenv "PJBASE"))))
-  ;;     (list
-  ;;      (concat pjbase "pjmedia/include")
-  ;;      (concat pjbase "pjlib/include")
-  ;;      (concat pjbase "pjlib-util/include")
-  ;;      (concat pjbase "pjsip/include")
-  ;;      (concat pjbase "pjnath/include"))))
-
-  ;; (defun pj-add-include-dirs (pjbase)
-  ;;   (interactive (list (read-directory-name "PJProject root path: " (or (getenv "PJBASE") (getenv "PWD")))))
-  ;;   (let ((pj-include-dirs (pj-include-dirs (file-truename (file-name-as-directory pjbase)))))
-  ;;     (setq c-eldoc-includes (concat c-eldoc-includes " "
-  ;;                                    (mapconcat 'identity pj-include-dirs " "))
-
-  ;;           ac-clang-flags (append (mapcar (lambda (ip) (concat "-I" ip))
-  ;;                                          pj-include-dirs)
-  ;;                                  ac-clang-flags))))
-
   (setq ac-clang-flags (c-get-standard-include-dirs))
 
   (setq c-eldoc-includes (concat c-eldoc-includes " "
