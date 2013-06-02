@@ -41,6 +41,7 @@
                        "s"
                        "shell-pop"
                        "smex"
+                       "surround"
                        ;; "smooth-scrolling"
                        "wgrep"
                        "whitespace"
