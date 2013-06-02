@@ -3,6 +3,8 @@
             :package-manager nil
             :unmanaged-p t)
 
+(require 'woman)
+
 (defun woman-other-window (&optional topic re-cache)
   (interactive (list nil current-prefix-arg))
   (if (or (not (stringp topic)) (string-match "\\S " topic))
