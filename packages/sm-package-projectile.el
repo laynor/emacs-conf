@@ -5,6 +5,14 @@
 
 (projectile-global-mode t)
 
+(sm-integrate-with (:package direx)
+  (defun projectile-direx ()
+    (interactive)
+    (popwin:direx (projectile-project-root)))
+  (global-set-key (kbd "C-c p D") 'projectile-direx)
+  (easy-menu-add-item nil '("Tools" "Projectile")
+                      ["Open project in direx" projectile-direx]
+                      "Find in project (grep)"))
 
 ;; (defvar projectile-project-cleaning-commands
 ;;   '(("./rebar clean" .
