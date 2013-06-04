@@ -30,6 +30,8 @@
                        "markdown-mode"
                        "markdown-mode+"
                        "melpa"
+                       "melpa-upstream-visit"
+                       "mode-icons"
                        "package"
                        "parenface"
                        "popup-git"
@@ -108,6 +110,7 @@ The number of dashes is calculated based on `*titled-comment-length*'.
   (add-hook 'before-save-hook (lambda () (delete-trailing-whitespace)))
 
 
+  (add-hook 'prog-mode-hook '(lambda () (yalinum-mode 1)))
 
   ;; Frame title
   (setq frame-title-format '(buffer-file-name "%b - emacs" ("%b - emacs")))
