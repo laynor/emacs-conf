@@ -50,6 +50,7 @@
                        "woman"
                        ;;"undohist"
                        "wgrep-ack"
+                       "yalinum"
                        )
            ;; set this to t if you want to manage this module yourself
            ;; instead of using the builtin package loading infrastructure

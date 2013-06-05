@@ -27,3 +27,5 @@
   ;;           ac-clang-flags (append (mapcar (lambda (ip) (concat "-I" ip))
   ;;                                          pj-include-dirs)
   ;;                                  ac-clang-flags))))
+* packages to try
+  hrb-mode
