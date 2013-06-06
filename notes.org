@@ -29,3 +29,9 @@
   ;;                                  ac-clang-flags))))
 * packages to try
   hrb-mode
+* elisp ideas
+  evil move by sexp
+  short command for adding parens to region/ remove paren level
+  smotitah init sequence
+  package rating widget
+  projectile: project list window with vcs status
