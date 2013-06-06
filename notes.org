@@ -35,3 +35,6 @@
   smotitah init sequence
   package rating widget
   projectile: project list window with vcs status
+* dice
+  Assertion failed: (mutex->owner == pj_thread_this()), function pj_mutex_unlock, file ../src/pj/os_core_unix.c, line 1287.
+  INFO: 19:06:26 /Users/alessan        pjsua  .....>>>> callback: on_call_state

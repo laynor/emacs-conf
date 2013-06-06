@@ -16,8 +16,12 @@
 
 (setq package-archives '(("melpa" . "http://melpa.milkbox.net/packages/")))
 
+(custom-set-faces
+ '(default ((t (:inherit nil :stipple nil :background "black" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 100 :width normal :foundry "apple" :family "Menlo"))))
+ '(mode-line ((t (:background "grey" :foreground "black" :height 120 :family "Consolas")))))
+
 (add-to-list 'load-path (concat user-emacs-directory "smotitah"))
-(setq sm-debug t)
+(setq sm-debug nil)
 (require 'smotitah)
 ;; (add-hook 'kill-emacs-hook 'sm-recompile-all)
 (sm-initialize)

@@ -4,7 +4,6 @@
             :unmanaged-p nil)
 
 (require 'dired-details+)
-(add-hook 'dired-mode-hook (lambda () (dired-hide-details-mode 1)))
-(define-key dired-mode-map (kbd "M-h") 'dired-hide-details-mode)
+;; (add-hook 'dired-mode-hook (lambda () (dired-hide-details-mode 1)))
 
 (sm-provide :package dired-details+)

@@ -23,7 +23,7 @@
 (sm-integrate-with elisp-slime-nav
   (diminish 'elisp-slime-nav-mode))
 
-(sm-integrate-with subword
+(sm-integrate-with subword-mode
   (diminish 'subword-mode))
 
 (sm-integrate-with abbrev
