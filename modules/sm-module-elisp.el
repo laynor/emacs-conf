@@ -14,6 +14,20 @@
     (interactive)
     (message "Point: %S" (point)))
 
+  ;;; REPL
+  (defun visit-ielm ()
+    "Create or visit a `ielm' buffer."
+    (interactive)
+    (let ((ielm-buffer (get-buffer "*ielm*")))
+      (unless (eq (current-buffer) ielm-buffer)
+        (if ielm-buffer
+            (switch-to-buffer-other-window ielm-buffer)
+          (split-window-sensibly (selected-window))
+          (other-window 1)
+          (ielm)))))
+
+  (global-set-key [(f5)] 'visit-ielm)
+
   ;; Activate minor modes
   (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode) ;eldoc
   (add-hook 'emacs-lisp-mode-hook 'ac-emacs-lisp-mode-setup)

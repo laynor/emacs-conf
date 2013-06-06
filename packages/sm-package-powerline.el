@@ -111,7 +111,6 @@ FACE. This includes the mouse over faces."
     (concat (replace-regexp-in-string "[<> ]" "" (eval (evil-state-property evil-state :tag))) " "))
   )
 
-(powerline-evil 'powerline-evil-insert-face 'l)
 
 (sm-integrate-with (:package enotify)
   (defface powerline-enotify-bg-face
@@ -125,9 +124,8 @@ FACE. This includes the mouse over faces."
 
 ;;; active modeline detection hack
 (add-hook 'post-command-hook (lambda ()
-                               (setq powerline-selected-window (selected-window))))
-
-
+                               (when (not (minibuffer-selected-window))
+                                 (setq powerline-selected-window (selected-window)))))
 
 (setq-default mode-line-format
               '("%e"
