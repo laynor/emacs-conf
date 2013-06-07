@@ -4,6 +4,8 @@
   git add file.txt
 * elisp
   Pattern Matching: pcase
+** Evil
+*** Sexp motion
 * Compilation mode
   Goto next/previous error: M-g n, M-g p
 * CL
