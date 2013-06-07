@@ -45,6 +45,7 @@ map-progress
 markdown-mode
 markdown-mode+
 melpa
+melpa-upstream-visit
 multiple-cursors
 nurumacs
 org-bullets

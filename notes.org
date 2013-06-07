@@ -1,3 +1,9 @@
+* faces for job mac
+(custom-set-faces
+ '(default ((t (:inherit nil :stipple nil :background "black" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 100 :width normal :foundry "apple" :family "Menlo"))))
+ '(mode-line ((t (:background "grey" :foreground "black" :height 120 :family "Consolas")))))
+
+
 * git
   Throw away upstream changes
   git checkout --ours file.txt
