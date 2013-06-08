@@ -15,6 +15,7 @@
                        "erc"
                        "undo-tree"
                        "evil"
+                       "evil-sexp"
                        "flx"
                        "fuzzy"
                        "gist"
