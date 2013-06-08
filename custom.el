@@ -113,7 +113,7 @@
  '(jedi:highlight-function-argument ((t (:inherit eldoc-highlight-function-argument))))
  '(magit-log-author ((t (:foreground "MediumPurple1"))))
  '(magit-log-sha1 ((t (:foreground "cornflower blue"))))
- '(mode-line ((t (:background "grey" :foreground "black" :height 120 :family "Consolas"))))
+ '(mode-line ((t (:background "grey" :foreground "black" :height 100 :family "Consolas"))))
  '(mode-line-inactive ((t (:inherit mode-line :background "grey30" :foreground "grey80" :weight light))))
  '(popup-scroll-bar-foreground-face ((t (:background "blue"))))
  '(powerline-enotify-bg-face ((t (:background "gray8" :foreground "grey75" :box (:line-width 1 :color "grey75" :style released-button) :slant italic :weight bold))))
