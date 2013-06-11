@@ -8,7 +8,7 @@
   )
 
 ;;; Modules to activate
-(sm-require-modules "base" "elisp" "dired" "lightware" "C" "objc" "erlang" "python" "common-lisp" "lua" "ruby" "diminish" "org" "job")
+(sm-require-modules "base" "elisp" "dired" "lightware" "C" "objc" "erlang" "python" "common-lisp" "lua" "ruby" "org" "job")
 
 ;;; After loading modules
 (sm-profile-post (job)

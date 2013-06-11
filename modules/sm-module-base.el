@@ -28,6 +28,7 @@
                        "ipa"
                        "magit"
                        "git-commit-mode"
+                       "git-messenger"
                        "markdown-mode"
                        "markdown-mode+"
                        "melpa"
