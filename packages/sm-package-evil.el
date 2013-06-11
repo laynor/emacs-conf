@@ -50,9 +50,11 @@ In Insert state, insert a newline."
       ad-do-it)))
 
 (sm-integrate-with (:package ace-jump-mode)
-  (define-key evil-motion-state-map (kbd "SPC") 'evil-ace-jump-char-mode)
-  (define-key evil-motion-state-map (kbd "C-SPC") 'evil-ace-jump-char-to-mode)
-  (define-key evil-motion-state-map (kbd "M-SPC") 'evil-ace-jump-word-mode)
+  (mapc (lambda (state)
+          (evil-global-set-key state (kbd "SPC") 'evil-ace-jump-char-mode)
+          (evil-global-set-key state (kbd "C-SPC") 'evil-ace-jump-line-mode)
+          (evil-global-set-key state (kbd "M-SPC")  'evil-ace-jump-word-mode))
+        '(normal motion))
   (defadvice evil-visual-line (before spc-for-line-jump activate)
     (define-key evil-motion-state-map (kbd "SPC") #'evil-ace-jump-line-mode))
   (defadvice evil-visual-char (before spc-for-char-jump activate)
@@ -85,5 +87,11 @@ In Insert state, insert a newline."
 
 (sm-integrate-with (:package dired-efap)
   (evil-define-key 'normal dired-mode-map (kbd "C-c C-c") 'dired-efap))
+
+(sm-integrate-with expand-region
+  (evil-global-set-key 'visual (kbd "M-]") 'er/expand-region)
+  (evil-global-set-key 'visual (kbd "M-[") 'er/contract-region))
+
+
 
 (sm-provide :package evil)

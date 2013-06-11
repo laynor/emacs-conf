@@ -5,43 +5,43 @@
 
 (require 'powerline)
 
-(defun pl/wrap-defun (name dir width let-vars body)
-  "Return powerline function list of NAME in DIR with WIDTH using LET-VARS and BODY."
-  (let* ((src-face (if (eq dir 'left) 'face1 'face2))
-         (dst-face (if (eq dir 'left) 'face2 'face1)))
-    `(defun ,(intern (format "powerline-%s-%s" name (symbol-name dir)))
-       (face1 face2 &optional height)
-       (when window-system
-         (unless height (setq height (pl/separator-height)))
-         (let* ,(append
-                 `((color1 (when ,src-face
-                             (pl/hex-color (face-attribute ,src-face :background))))
-                   (color2 (when ,dst-face
-                             (pl/hex-color (face-attribute ,dst-face :background))))
-                   (colori (when (and color1 color2) (pl/interpolate color1 color2)))
-                   (color1 (or color1 "None"))
-                   (color2 (or color2 "None"))
-                   (colori (or colori "None")))
-                 let-vars)
-           (create-image
-            ,(append
-              `(concat
-                (format "/* XPM */
-static char * %s_%s[] = {
-\"%s %s 3 1\",
-\"0 c %s\",
-\"1 c %s\",
-\"2 c %s\",
-"
-                        ,(replace-regexp-in-string "-" "_" name) (symbol-name ',dir)
-                        ,width height
-                        color1
-                        color2
-                        colori))
-              body
-              '("};"))
-            'xpm t :ascent 'center
-            :face (when (and face1 face2) ,dst-face)))))))
+;; (defun pl/wrap-defun (name dir width let-vars body)
+;;   "Return powerline function list of NAME in DIR with WIDTH using LET-VARS and BODY."
+;;   (let* ((src-face (if (eq dir 'left) 'face1 'face2))
+;;          (dst-face (if (eq dir 'left) 'face2 'face1)))
+;;     `(defun ,(intern (format "powerline-%s-%s" name (symbol-name dir)))
+;;        (face1 face2 &optional height)
+;;        (when window-system
+;;          (unless height (setq height (pl/separator-height)))
+;;          (let* ,(append
+;;                  `((color1 (when ,src-face
+;;                              (pl/hex-color (face-attribute ,src-face :background))))
+;;                    (color2 (when ,dst-face
+;;                              (pl/hex-color (face-attribute ,dst-face :background))))
+;;                    (colori (when (and color1 color2) (pl/interpolate color1 color2)))
+;;                    (color1 (or color1 "None"))
+;;                    (color2 (or color2 "None"))
+;;                    (colori (or colori "None")))
+;;                  let-vars)
+;;            (create-image
+;;             ,(append
+;;               `(concat
+;;                 (format "/* XPM */
+;; static char * %s_%s[] = {
+;; \"%s %s 3 1\",
+;; \"0 c %s\",
+;; \"1 c %s\",
+;; \"2 c %s\",
+;; "
+;;                         ,(replace-regexp-in-string "-" "_" name) (symbol-name ',dir)
+;;                         ,width height
+;;                         color1
+;;                         color2
+;;                         colori))
+;;               body
+;;               '("};"))
+;;             'xpm t :ascent 'center
+;;             :face (when (and face1 face2) ,dst-face)))))))
 
 ;;; powerline-raw-preserve
 
