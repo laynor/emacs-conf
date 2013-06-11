@@ -15,6 +15,7 @@
                        "erc"
                        "undo-tree"
                        "evil"
+                       "paredit"
                        "evil-sexp"
                        "flx"
                        "fuzzy"

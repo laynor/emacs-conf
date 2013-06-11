@@ -1,3 +1,12 @@
+(defun beginning-and-end-of-sexp ()
+  (let (b e)
+    (save-excursion
+      (backward-sexp)
+      (setq b (point))
+      (forward-sexp)
+      (setq e (point)))
+    (message "%S %S %S" b (point) e)))
+
 (evil-define-motion evil-forward-sexp (count)
   :type inclusive
   (dotimes (i (or count 1))
