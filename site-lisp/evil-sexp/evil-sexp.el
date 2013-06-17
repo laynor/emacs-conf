@@ -1,11 +1,9 @@
 (defun beginning-and-end-of-sexp ()
-  (let (b e)
-    (save-excursion
-      (backward-sexp)
-      (setq b (point))
-      (forward-sexp)
-      (setq e (point)))
-    (message "%S %S %S" b (point) e)))
+  (destructuring-bind (b . e)
+      (save-excursion
+        (forward-char)
+        (bounds-of-thing-at-point 'sexp))
+    (cons b e)))
 
 (evil-define-motion evil-forward-sexp (count)
   :type inclusive
