@@ -11,10 +11,11 @@
               ac-source-clang))
 
 (defadvice ac-clang-candidate (after ac-clang-candidate-show-signature-in-summary activate)
-  (setq ad-return-value
-        (mapcar (lambda (item) (propertize item
-                                           'summary (ac-clang-document item)))
-                ad-return-value)))
+  (when (not (eq major-mode 'c++-mode))
+    (setq ad-return-value
+          (mapcar (lambda (item) (propertize item
+                                             'summary (ac-clang-document item)))
+                  ad-return-value))))
 
 (defun my-ac-cc-mode-setup ()
   (setq ac-sources (append '(ac-source-clang ac-source-yasnippet) ac-sources)))
