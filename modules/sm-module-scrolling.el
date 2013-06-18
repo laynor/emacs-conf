@@ -1,7 +1,7 @@
 ;;;; Module scrolling
 (sm-module scrolling
            :unmanaged-p nil
-           :require-packages '("nurumacs" "smooth-scrolling"))
+           :require-packages '("sublimity" "smooth-scrolling"))
 
 (sm-module-pre (scrolling)
   ;; TODO insert your pre-package-initialization code here

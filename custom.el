@@ -80,6 +80,8 @@
  '(shell-pop-shell-type (quote ("eshell" "*eshell*" (lambda nil (eshell)))))
  '(shell-pop-universal-key "<f2>")
  '(show-paren-mode t)
+ '(sublimity-scroll-weight1 8)
+ '(sublimity-scroll-weight2 1.4)
  '(tool-bar-mode nil)
  '(tramp-default-method "ssh")
  '(uniquify-buffer-name-style (quote forward) nil (uniquify))
