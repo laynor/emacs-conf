@@ -12,7 +12,7 @@
 (sm-module-post (C)
 
   (defvar c-get-standard-include-dirs-command
-    "echo | cpp -x c++ -Wp,-v 2>&1 | grep '^.*include' | grep -v '^\\(ignoring\\|#include\\)' | sed 's/^ //g'"
+    "echo | cpp -x c++ -Wp,-v 2>&1 | grep '^.*include' | grep -v '^\\(ignoring\\|#\\)' | sed 's/^ //g'"
     "Command used to retrieve the standard C/C++ include directories.")
 
   (defun c-get-standard-include-dirs ()

@@ -34,9 +34,12 @@
     (insert ")\n")))
 
 
-(defadvice package-install (before track-manually-installed-packages (name) activate)
-  (push name package-manually-installed-packages)
-  (package-dump-manually-installed-packages))
+(defadvice package-install (before track-manually-installed-packages (package-or-name) activate)
+  (let ((name (if (and (fboundp 'package-desc-p)(package-desc-p package-or-name))
+		  (package-desc-name package-or-name)
+		package-or-name)))
+    (push name package-manually-installed-packages)
+    (package-dump-manually-installed-packages)))
 
 (defun package-depends (package)
   "Retrieves the packages PACKAGE depends on."

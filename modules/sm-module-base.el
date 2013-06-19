@@ -14,11 +14,12 @@
                        "direx"
                        "erc"
                        "undo-tree"
+                       "paredit"
                        "evil"
                        "evil-sexp"
                        "flx"
                        "fuzzy"
-                       "gist"
+                       ;;"gist"
                        "gitignore-mode"
                        "guide-key"
                        "hide-comnt"
@@ -31,7 +32,7 @@
                        "git-messenger"
                        "markdown-mode"
                        "markdown-mode+"
-                       "melpa"
+                       ;;"melpa"
                        "mode-icons"
                        "package"
                        "parenface"
@@ -113,7 +114,7 @@ The number of dashes is calculated based on `*titled-comment-length*'.
   (add-hook 'before-save-hook (lambda () (delete-trailing-whitespace)))
 
 
-  (add-hook 'prog-mode-hook '(lambda () (yalinum-mode 1)))
+  ;;(add-hook 'prog-mode-hook '(lambda () (yalinum-mode 1)))
 
   ;; Frame title
   (setq frame-title-format '(buffer-file-name "%b - emacs" ("%b - emacs")))

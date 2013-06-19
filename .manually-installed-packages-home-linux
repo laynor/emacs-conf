@@ -19,6 +19,7 @@ emacs-eclim
 epc
 erlang
 evil
+expand-region
 flx
 flycheck
 fuzzy
@@ -49,6 +50,7 @@ melpa-upstream-visit
 multiple-cursors
 nurumacs
 org-bullets
+paredit
 parenface
 persistent-soft
 popup
