@@ -16,8 +16,12 @@
   (setq ls-lisp-use-insert-directory-program nil)
   (setq browse-url-browser-function 'browse-url-default-macosx-browser)
   (require 'ls-lisp)
-  (custom-set-variables 
+  (custom-set-variables
     '(powerline-height 16))
+  (sm-integrate-with (:module python)
+    (setq jedi:server-command (list "/usr/local/bin/python"
+                                    jedi:server-script)))
+  (add-to-list 'auto-mode-alist '("^Podfile$" . 'ruby-mode))
   )
 
 ;;;; sm-base-profile end.
