@@ -59,7 +59,12 @@
  '(rsense-rurema-home "~/Documents/ruby-refm-1.9.2-dynamic-20110629/")
  '(safe-local-variable-values
    (quote
-    ((eval progn
+    ((eval setq python-shell-virtualenv-path
+           (file-truename "~/.virtualenvs/pyls"))
+     (eval setq python-shell-virtualenv-path "/Users/alessandro/.virtualenvs/pyls")
+     (python-shell-virtualenv-path expand-filename "~/.virtualenvs/pyls")
+     (eval add-project-directories "/include/" "/third_party/dice-pjsip/pjmedia/include" "/third_party/dice-pjsip/pjlib/include" "/third_party/dice-pjsip/pjlib-util/include" "/third_party/dice-pjsip/pjsip/include" "/third_party/dice-pjsip/pjnath/include")
+     (eval progn
            (message "stercoraro")
            (add-to-list
             (quote ac-clang-cflags)
