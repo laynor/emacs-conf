@@ -25,3 +25,6 @@
 [submodule "site-lisp/melpa-upstream-visit"]
 	path = site-lisp/melpa-upstream-visit
 	url = git@github.com:laynor/melpa-upstream-visit.git
+[submodule "site-lisp/dollaro"]
+	path = site-lisp/dollaro
+	url = git@github.com:laynor/dollaro.git
