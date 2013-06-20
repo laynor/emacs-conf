@@ -21,7 +21,7 @@
   (sm-integrate-with (:module python)
     (setq jedi:server-command (list "/usr/local/bin/python"
                                     jedi:server-script)))
-  (add-to-list 'auto-mode-alist '("^Podfile$" . 'ruby-mode))
+  (add-to-list 'auto-mode-alist '("Podfile\\'" . ruby-mode))
   )
 
 ;;;; sm-base-profile end.

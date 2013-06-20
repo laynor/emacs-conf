@@ -1,4 +1,4 @@
-;;; $.el --- simple text templates
+;;; dollaro.el --- simple text templates
 
 ;; Copyright (C) 2013  Alessandro Piras
 
@@ -135,5 +135,5 @@ not nil."
 ;; lexical-binding: t
 ;; End:
 
-(provide '$)
-;;; $.el ends here
+(provide 'dollaro)
+;;; dollaro.el ends here

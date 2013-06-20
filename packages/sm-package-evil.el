@@ -93,5 +93,44 @@ In Insert state, insert a newline."
   (evil-global-set-key 'visual (kbd "M-[") 'er/contract-region))
 
 
+;;; Temporary kludge
+
+(defun evil-read-key (&optional prompt)
+  "Read a key from the keyboard.
+Translates it according to the input method."
+  (let ((old-global-map (current-global-map))
+        (new-global-map (make-sparse-keymap))
+        ;;(overridinïg-terminal-local-map evil-read-key-map)
+        (overriding-local-map evil-read-key-map)
+        seq char cmd)
+    (unwind-protect
+        (condition-case nil
+            (progn
+              (define-key new-global-map [menu-bar]
+                (lookup-key global-map [menu-bar]))
+              (define-key new-global-map [tool-bar]
+                (lookup-key global-map [tool-bar]))
+              (add-to-list 'new-global-map
+                           (make-char-table 'display-table
+                                            'self-insert-command) t)
+              (use-global-map new-global-map)
+              (setq seq (read-key-sequence prompt nil t)
+                    char (aref seq 0)
+                    cmd (key-binding seq))
+              (while (arrayp cmd)
+                (setq char (aref cmd 0)
+                      cmd (key-binding cmd)))
+              (cond
+               ((eq cmd 'self-insert-command)
+                char)
+               (cmd
+                (call-interactively cmd))
+               (t
+                (error "No replacement character typed"))))
+          (quit
+           (when (fboundp 'evil-repeat-abort)
+             (evil-repeat-abort))
+           (signal 'quit nil)))
+      (use-global-map old-global-map))))
 
 (sm-provide :package evil)
