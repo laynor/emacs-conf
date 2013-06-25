@@ -2,7 +2,7 @@
 (sm-module elisp
            :unmanaged-p nil
            :require-packages '("elisp-slime-nav" "ale-fixme" "auto-complete" "hl-sexp" "highlight-cl"
-                               "litable" "ale-testing"))
+                               "litable" "ale-testing" "rainbow-mode" "edit-color-stamp"))
 
 (sm-module-pre (elisp)
   ;; TODO insert your pre-package-initialization code here
@@ -83,6 +83,10 @@
  ;;; evil integration
  (sm-integrate-with (:package evil)
    (evil-define-key 'normal emacs-lisp-mode-map (kbd "M-.") 'elisp-slime-nav-find-elisp-thing-at-point))
+
+ (sm-integrate-with (:package rainbow-mode)
+   (add-hook 'lisp-interaction-mode-hook #'(lambda () (rainbow-mode t)))
+   (add-hook 'emacs-lisp-mode-hook #'(lambda () (rainbow-mode t))))
 
  )
 
