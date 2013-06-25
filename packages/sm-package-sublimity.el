@@ -5,5 +5,6 @@
 
 (require 'sublimity nil t)
 (sublimity-scroll)
+(sublimity-global-mode)
 
 (sm-provide :package sublimity)
