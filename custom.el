@@ -27,7 +27,7 @@
  '(custom-enabled-themes (quote (ale-black-2)))
  '(custom-safe-themes
    (quote
-    ("0a1af5e5832a8e38710ce55f3f04342f890330e586e42557c18638f7b056410f" "7f96e6a6dd9b02aeae63cde2916f2725eaf91b44049cdc9cf608ceff4c2a3732" "238da0c6bc2420cac5f2b20f714a01f0e042ea3bd48146ad9fc6be6baf33594f" default)))
+    ("91d2e0d23703423c1da4fad78cfa9717335d1a4ebbb1710fc214743822a5c89f" "490739aa40b07e854d5d816443a01577f19dd382a759187d258e283ea988eafb" "0a1af5e5832a8e38710ce55f3f04342f890330e586e42557c18638f7b056410f" "7f96e6a6dd9b02aeae63cde2916f2725eaf91b44049cdc9cf608ceff4c2a3732" "238da0c6bc2420cac5f2b20f714a01f0e042ea3bd48146ad9fc6be6baf33594f" default)))
  '(custom-theme-directory "~/.emacs.d/themes/")
  '(dired-listing-switches "-alh")
  '(direx:closed-icon "▸ ")
@@ -45,6 +45,7 @@
  '(ido-auto-merge-delay-time 1.0)
  '(ido-default-buffer-method (quote selected-window))
  '(ido-enable-flex-matching t)
+ '(inhibit-startup-screen t)
  '(ipa-annotation-face (quote ipa-face))
  '(ipa-overlay-position "above")
  '(jedi:cut-summary-postfix "...")
@@ -60,25 +61,25 @@
  '(safe-local-variable-values
    (quote
     ((eval setq python-shell-virtualenv-path
-           (file-truename "~/.virtualenvs/pyls"))
+	   (file-truename "~/.virtualenvs/pyls"))
      (eval setq python-shell-virtualenv-path "/Users/alessandro/.virtualenvs/pyls")
      (python-shell-virtualenv-path expand-filename "~/.virtualenvs/pyls")
      (eval add-project-directories "/include/" "/third_party/dice-pjsip/pjmedia/include" "/third_party/dice-pjsip/pjlib/include" "/third_party/dice-pjsip/pjlib-util/include" "/third_party/dice-pjsip/pjsip/include" "/third_party/dice-pjsip/pjnath/include")
      (eval progn
-           (message "stercoraro")
-           (add-to-list
-            (quote ac-clang-cflags)
-            "-I/home/ale/src/C/prova"))
+	   (message "stercoraro")
+	   (add-to-list
+	    (quote ac-clang-cflags)
+	    "-I/home/ale/src/C/prova"))
      (eval add-project-directories "include/" "third_party/dice-pjsip/pjmedia/include" "/third_party/dice-pjsip/pjlib/include" "/third_party/dice-pjsip/pjlib-util/include" "/third_party/dice-pjsip/pjsip/include" "/third_party/dice-pjsip/pjnath/include")
      (eval add-project-directories "include/")
      (eval progn
-           (setq my-include-directories
-                 (list
-                  (concat
-                   (file-name-directory
-                    (file-truename load-file-name))
-                   "include/")))
-           (add-my-include-directories))
+	   (setq my-include-directories
+		 (list
+		  (concat
+		   (file-name-directory
+		    (file-truename load-file-name))
+		   "include/")))
+	   (add-my-include-directories))
      (c-auto-newline)
      (c-file-style . k&r))))
  '(scroll-bar-mode nil)
@@ -106,13 +107,13 @@
  '(ac-clang-candidate-face ((t (:background "lightgray" :foreground "navy" :underline "medium slate blue"))))
  '(diff-hl-change ((t (:background "slate blue" :foreground "blue3"))))
  '(diff-removed ((t (:inherit diff-changed :background "firebrick4"))))
- '(ediff-odd-diff-C ((t (:background "Dim Grey" :foreground "White"))))
+ '(ediff-odd-diff-C ((t (:background "Dim Grey" :foreground "White"))) t)
  '(eldoc-highlight-function-argument ((t (:inherit bold :box nil :underline "deeppink"))))
- '(factor-font-lock-comment ((t (:inherit font-lock-comment-face))))
- '(factor-font-lock-parsing-word ((t (:inherit font-lock-keyword-face))))
- '(factor-font-lock-stack-effect ((t (:foreground "green"))))
- '(factor-font-lock-string ((t (:inherit font-lock-string-face))))
- '(factor-font-lock-word ((t (:inherit font-lock-function-name-face))))
+ '(factor-font-lock-comment ((t (:inherit font-lock-comment-face))) t)
+ '(factor-font-lock-parsing-word ((t (:inherit font-lock-keyword-face))) t)
+ '(factor-font-lock-stack-effect ((t (:foreground "green"))) t)
+ '(factor-font-lock-string ((t (:inherit font-lock-string-face))) t)
+ '(factor-font-lock-word ((t (:inherit font-lock-function-name-face))) t)
  '(flx-highlight-face ((t (:inherit font-lock-keyword-face :underline t :weight bold))))
  '(flycheck-error ((t (:inherit error :underline t))))
  '(font-lock-comment-face ((t (:foreground "MediumPurple3" :slant italic))))
