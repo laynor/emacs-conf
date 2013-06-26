@@ -1,0 +1,19 @@
+/* $[filename]
+ *
+ * Author: $[user-name]
+ *  Email: $[user-email]
+ *   Date: $[date]
+ */
+
+#include "WProgram.h"
+
+void setup()
+{
+   Serial.begin(38400);
+}
+
+void loop()
+{
+   Serial.println("Hello $[user-name].");
+   delay(1000);
+}
