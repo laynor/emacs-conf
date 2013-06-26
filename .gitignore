@@ -26,3 +26,5 @@ semanticdb/
 /bookmarks
 /site-lisp/nxhtml
 /site-lisp/evil
+/url/
+.mc-lists.el
