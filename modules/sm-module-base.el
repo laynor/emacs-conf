@@ -24,6 +24,7 @@
                        "guide-key"
 		       ;;"helm"
                        "hide-comnt"
+		       "highlight-escape-sequences"
                        "httpcode"
                        "ido-hacks"
                        "ido-ubiquitous"
