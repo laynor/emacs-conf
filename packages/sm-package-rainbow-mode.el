@@ -6,6 +6,4 @@
 
 (require 'rainbow-mode)
 
-(add-hook 'emacs-lisp-mode-hook #'(lambda () (rainbow-mode t)))
-
 (sm-provide :package rainbow-mode)
