@@ -22,10 +22,12 @@
                        ;;"gist"
                        "gitignore-mode"
                        "guide-key"
+		       ;;"helm"
                        "hide-comnt"
                        "httpcode"
                        "ido-hacks"
                        "ido-ubiquitous"
+		       "ido-vertical-mode"
                        "ipa"
                        "magit"
                        "git-commit-mode"
@@ -144,6 +146,18 @@ The number of dashes is calculated based on `*titled-comment-length*'.
 
   )
 
+
+(defun eval-and-replace ()
+  "Replace the preceding sexp with its value."
+  (interactive)
+  (backward-kill-sexp)
+  (condition-case nil
+      (prin1 (eval (read (current-kill 0)))
+             (current-buffer))
+    (error (message "Invalid expression")
+           (insert (current-kill 0)))))
+
+(global-set-key (kbd "C-c e") 'eval-and-replace)
 
 (sm-provide :module base)
 ;;;; End base module
