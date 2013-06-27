@@ -31,3 +31,9 @@
 [submodule "site-lisp/dollaro"]
 	path = site-lisp/dollaro
 	url = git@github.com:laynor/dollaro.git
+[submodule "site-lisp/outorg"]
+	path = site-lisp/outorg
+	url = git@github.com:tj64/outorg.git
+[submodule "site-lisp/outshine"]
+	path = site-lisp/outshine
+	url = git@github.com:tj64/outshine.git
