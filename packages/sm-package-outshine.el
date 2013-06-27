@@ -3,6 +3,7 @@
             :package-manager nil
             :unmanaged-p t)
 
-;;; TODO insert your package initialization code here
+(add-to-list 'load-path (concat user-emacs-directory "site-lisp/outshine/"))
+(require 'outshine)
 
 (sm-provide :package outshine)
