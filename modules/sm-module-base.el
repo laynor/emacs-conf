@@ -15,6 +15,7 @@
                        "erc"
                        "undo-tree"
                        "paredit"
+		       "el-get"
                        "evil"
                        "evil-sexp"
                        "flx"
