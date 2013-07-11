@@ -44,6 +44,7 @@
  '(evil-motion-state-modes
    (quote
     (apropos-mode Buffer-menu-mode calendar-mode color-theme-mode command-history-mode compilation-mode dictionary-mode ert-results-mode help-mode Info-mode Man-mode speedbar-mode undo-tree-visualizer-mode view-mode woman-mode el-get-package-menu-mode)))
+ '(flycheck-flake8rc "~/.config/flake8")
  '(fringe-mode (quote (4 . 4)) nil (fringe))
  '(git-commit-summary-maxlen 90)
  '(global-diff-hl-mode t)
@@ -68,7 +69,15 @@
  '(rsense-rurema-home "~/Documents/ruby-refm-1.9.2-dynamic-20110629/")
  '(safe-local-variable-values
    (quote
-    ((eval setq python-shell-virtualenv-path
+    ((eval progn
+	   (add-project-directories
+	    (toolbos-includes)
+	    "1.0/src/")
+	   (c-set-style "hri"))
+     (eval add-project-directories
+	   (toolbos-includes)
+	   "1.0/src/")
+     (eval setq python-shell-virtualenv-path
 	   (file-truename "~/.virtualenvs/pyls"))
      (eval setq python-shell-virtualenv-path "/Users/alessandro/.virtualenvs/pyls")
      (python-shell-virtualenv-path expand-filename "~/.virtualenvs/pyls")
@@ -120,11 +129,11 @@
  '(diff-removed ((t (:inherit diff-changed :background "firebrick4"))))
  '(ediff-odd-diff-C ((t (:background "Dim Grey" :foreground "White"))) t)
  '(eldoc-highlight-function-argument ((t (:inherit bold :box nil :underline "deeppink"))))
- '(factor-font-lock-comment ((t (:inherit font-lock-comment-face))))
- '(factor-font-lock-parsing-word ((t (:inherit font-lock-keyword-face))))
- '(factor-font-lock-stack-effect ((t (:foreground "green"))))
- '(factor-font-lock-string ((t (:inherit font-lock-string-face))))
- '(factor-font-lock-word ((t (:inherit font-lock-function-name-face))))
+ '(factor-font-lock-comment ((t (:inherit font-lock-comment-face))) t)
+ '(factor-font-lock-parsing-word ((t (:inherit font-lock-keyword-face))) t)
+ '(factor-font-lock-stack-effect ((t (:foreground "green"))) t)
+ '(factor-font-lock-string ((t (:inherit font-lock-string-face))) t)
+ '(factor-font-lock-word ((t (:inherit font-lock-function-name-face))) t)
  '(flx-highlight-face ((t (:inherit font-lock-keyword-face :underline t :weight bold))))
  '(flycheck-error ((t (:inherit error :underline t))))
  '(font-lock-comment-face ((t (:foreground "MediumPurple3" :slant italic))))
