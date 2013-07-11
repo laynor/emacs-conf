@@ -29,6 +29,8 @@
 
   (defun add-my-include-directories ()
     (interactive)
+    (make-local-variable 'c-eldoc-includes)
+    (make-local-variable 'ac-clang-flags)
     (setq c-eldoc-includes (concat c-eldoc-includes " "
                                    (mapconcat '(lambda (dir) (concat "-I" dir))
                                               my-include-directories
@@ -44,9 +46,11 @@
     (make-variable-buffer-local 'my-include-directories)
     (setq my-include-directories
           (mapcar (lambda (subdir)
-                    (concat (file-name-directory
-                             (file-truename (locate-dominating-file buffer-file-name ".dir-locals.el")))
-                            subdir))
+		    (if (= ?/ (elt subdir 0))
+			subdir
+		      (concat (file-name-directory
+			       (file-truename (locate-dominating-file buffer-file-name ".dir-locals.el")))
+			      subdir)))
                   args))
     (add-my-include-directories))
 
