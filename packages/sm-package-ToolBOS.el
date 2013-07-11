@@ -91,4 +91,12 @@
                (backward-char)
                (delete-char 1)))))))
 
+(defcustom toolbos-core-root (concat (getenv "HGR") "/DevelopmentTools/ToolBOSCore/2.0/")
+  "The ToolBOSCore library root."
+  :group 'hri
+  :type 'directory)
+
+(defun toolbos-includes ()
+  (concat toolbos-core-root "include/"))
+
 (sm-provide :package ToolBOS)
