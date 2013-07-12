@@ -149,15 +149,16 @@ The number of dashes is calculated based on `*titled-comment-length*'.
   )
 
 
-(defun eval-and-replace ()
+(defun eval-and-replace (&optional arg)
   "Replace the preceding sexp with its value."
-  (interactive)
+  (interactive "P")
   (backward-kill-sexp)
+  (let ((print-fn (if arg 'princ 'prin1)))
   (condition-case nil
-      (prin1 (eval (read (current-kill 0)))
-             (current-buffer))
+      (funcall print-fn (eval (read (current-kill 0)))
+	       (current-buffer))
     (error (message "Invalid expression")
-           (insert (current-kill 0)))))
+           (insert (current-kill 0))))))
 
 (global-set-key (kbd "C-c e") 'eval-and-replace)
 
