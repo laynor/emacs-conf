@@ -2,13 +2,10 @@
 (sm-package ToolBOS
             :unmanaged-p t)
 
-;; This package requires Cedet to be loaded
-
-;; (ede-cpp-root-project "ToolBOSCore"
-;;                       :name "ToolBOS"
-;;                       :file "~/Projects/ToolBOSCore/ToolBOSCore/2.0/pkgInfo.py"
-;;                       :include-path  '("/include"
-;;                                        "/srcToolBOSCore"))
+(defgroup hri
+  nil
+  "HRI stuff, mostly C related."
+  :prefix 'hri-)
 
 (defun hri-see-project-files ()
   (interactive)
@@ -37,12 +34,12 @@
 (push '("\\TcshSrc$" . shell-script-mode) auto-mode-alist)
 (push '("\\BashSrc$" . shell-script-mode) auto-mode-alist)
 
-;; (defcustom hri-keywords '(("\\<\\(ANY_LOG\\)" 1 font-lock-comment-face t)
-;;                           ("\\<\\(ANY_REQUIRE\\)" 1 font-lock-comment-face t)
-;;                           ("\\<\\(ANY_REQUIRE_MSG\\)" 1 font-lock-comment-face t))
-;;   "Additional C keywords for HRI."
-;;   :type '(repeat (cons string face))
-;;   :group 'hri)
+(defcustom hri-keywords '(("\\<\\(ANY_LOG\\)" 1 font-lock-comment-face t)
+                          ("\\<\\(ANY_REQUIRE\\)" 1 font-lock-comment-face t)
+                          ("\\<\\(ANY_REQUIRE_MSG\\)" 1 font-lock-comment-face t))
+  "Additional C keywords for HRI."
+  :type '(repeat (cons string face))
+  :group 'hri)
 
 (defface hri-macros-face  '((t (:inherit font-lock-comment-face)))
   "Face used to highlight some HRI macros."
@@ -50,7 +47,6 @@
 
 (defun hri-add-keywords ()
   "adds a few special keywords for c and c++ modes"
-  ;
   (font-lock-add-keywords nil
    '(
      ; Add keywords here
@@ -91,12 +87,13 @@
                (backward-char)
                (delete-char 1)))))))
 
-(defcustom toolbos-core-root (concat (getenv "HGR") "/DevelopmentTools/ToolBOSCore/2.0/")
+(defcustom hri-toolbos-core-root (concat (getenv "HGR") "/DevelopmentTools/ToolBOSCore/2.0/")
   "The ToolBOSCore library root."
   :group 'hri
   :type 'directory)
 
-(defun toolbos-includes ()
+(defun hri-toolbos-includes ()
   (concat toolbos-core-root "include/"))
+
 
 (sm-provide :package ToolBOS)
