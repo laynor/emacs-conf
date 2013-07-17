@@ -40,6 +40,7 @@
                        "mode-icons"
                        "package"
                        "parenface"
+		       "persistent-soft"
                        "popup-git"
                        "powerline"
                        "pp-c-l"
