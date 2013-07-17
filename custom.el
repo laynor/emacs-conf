@@ -24,6 +24,7 @@
      (other . "gnu"))))
  '(column-number-mode t)
  '(comment-style (quote extra-line))
+ '(compilation-scroll-output (quote first-error))
  '(custom-enabled-themes (quote (ale-black-2)))
  '(custom-safe-themes
    (quote
@@ -48,6 +49,7 @@
  '(fringe-mode (quote (4 . 4)) nil (fringe))
  '(git-commit-summary-maxlen 90)
  '(global-diff-hl-mode t)
+ '(gtags-auto-update t)
  '(ido-auto-merge-delay-time 1.0)
  '(ido-default-buffer-method (quote selected-window))
  '(ido-enable-flex-matching t)
@@ -65,11 +67,34 @@
  '(org-export-odt-inline-image-extensions (quote ("png" "jpeg" "jpg" "gif" "svg")))
  '(powerline-height 16)
  '(projectile-ack-function (quote ag-regexp))
+ '(projectile-tags-command "gtags")
  '(python-shell-interpreter "python2")
+ '(recentf-max-menu-items 50)
+ '(recentf-mode t)
+ '(recentf-save-file "~/.emacs.d/.recentf")
  '(rsense-rurema-home "~/Documents/ruby-refm-1.9.2-dynamic-20110629/")
  '(safe-local-variable-values
    (quote
-    ((eval progn
+    ((c-file-style "hri")
+     (eval progn
+	   (setenv "MANPATH"
+		   (mapconcat
+		    (function identity)
+		    (remove-duplicates
+		     (split-string
+		      (concat
+		       (getenv "MANPATH")
+		       ":"
+		       (dir-locals-directory)
+		       "ToolBOSCore/2.0/doc/man/")
+		      ":" t)
+		     :test
+		     (function equal))
+		    ":"))
+	   (setenv "BST_CMAKE_OPTIONS" "-DCMAKE_BUILD_TYPE=Debug")
+	   (add-project-directories "ToolBOSCore/2.0/include/" "ToolBOSCore/2.0/srcToolBOSCore/" "ToolBOSCore/2.0/srcLogCollector/"))
+     (eval add-project-directories "ToolBOSCore/2.0/include/" "ToolBOSCore/2.0/srcToolBOSCore/" "ToolBOSCore/2.0/srcLogCollector/")
+     (eval progn
 	   (add-project-directories
 	    (toolbos-includes)
 	    "1.0/src/")
@@ -149,4 +174,5 @@
  '(mode-line-inactive ((t (:inherit mode-line :background "grey30" :foreground "grey80" :weight light))))
  '(popup-scroll-bar-foreground-face ((t (:background "blue"))))
  '(powerline-enotify-bg-face ((t (:background "gray8" :foreground "grey75" :box (:line-width 1 :color "grey75" :style released-button) :slant italic :weight bold))))
- '(region ((t (:background "#382D7B")))))
+ '(region ((t (:background "#382D7B"))))
+ '(ruby-dev-repl-prompt-face ((t (:inherit default :foreground "SpringGreen1")))))
