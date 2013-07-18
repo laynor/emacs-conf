@@ -19,6 +19,7 @@
                        "evil"
                        "evil-sexp"
                        "flx"
+		       "flx-ido"
                        "fuzzy"
                        ;;"gist"
                        "gitignore-mode"
