@@ -141,20 +141,19 @@ Replace the _ in the template directory names with a /."
 		     (funcall hri-completing-read-function "Package type: " hri-package-types nil t)
 		     (read-from-minibuffer "Package Name: ")
 		     (read-from-minibuffer "Version: ")))
+  (message "Calling with %S" (list base-directory package-type package-name version))
   (let ((path (concat base-directory "/" package-name "/" version)))
     (cond ((file-exists-p path)
 	   (error "Cannot create an HRI package at '%s': the directory already exists."
 		  path))
-	  (t (let ((buf (get-buffer-create " hri-create-package-output"))
-		   (default-directory base-directory))
-	       (with-current-buffer buf
-		 (call-process "BST.py" nil buf t
+	  (t (let ((default-directory base-directory))
+	       (with-temp-buffer
+		 (call-process "BST.py" nil (current-buffer) t
 			       "-n"
 			       (replace-regexp-in-string "/" "_" package-type)
 			       package-name
 			       version)
-		 (message (buffer-string)))
-	       (kill-buffer buf))
+		 (message (buffer-string))))
 	     (when (eq major-mode 'dired-mode)
 	       (revert-buffer))))))
 
