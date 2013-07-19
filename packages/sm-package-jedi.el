@@ -9,6 +9,8 @@
 ;; (setq jedi:tooltip-method '(pos-tip))
 (setq jedi:server-command (list "python2" jedi:server-script))
 
+(define-key jedi-mode-map (kbd "M-.") 'jedi:goto-definition)
+
 (autoload 'jedi:setup "jedi" nil t)
 (defadvice jedi:ac-direct-matches (after jedi:remove-summary activate)
   (setq ad-return-value

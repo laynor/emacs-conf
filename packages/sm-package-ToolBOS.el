@@ -2,13 +2,10 @@
 (sm-package ToolBOS
             :unmanaged-p t)
 
-;; This package requires Cedet to be loaded
-
-;; (ede-cpp-root-project "ToolBOSCore"
-;;                       :name "ToolBOS"
-;;                       :file "~/Projects/ToolBOSCore/ToolBOSCore/2.0/pkgInfo.py"
-;;                       :include-path  '("/include"
-;;                                        "/srcToolBOSCore"))
+(defgroup hri
+  nil
+  "HRI stuff, mostly C related."
+  :prefix 'hri-)
 
 (defun hri-see-project-files ()
   (interactive)
@@ -37,12 +34,12 @@
 (push '("\\TcshSrc$" . shell-script-mode) auto-mode-alist)
 (push '("\\BashSrc$" . shell-script-mode) auto-mode-alist)
 
-;; (defcustom hri-keywords '(("\\<\\(ANY_LOG\\)" 1 font-lock-comment-face t)
-;;                           ("\\<\\(ANY_REQUIRE\\)" 1 font-lock-comment-face t)
-;;                           ("\\<\\(ANY_REQUIRE_MSG\\)" 1 font-lock-comment-face t))
-;;   "Additional C keywords for HRI."
-;;   :type '(repeat (cons string face))
-;;   :group 'hri)
+(defcustom hri-keywords '(("\\<\\(ANY_LOG\\)" 1 font-lock-comment-face t)
+                          ("\\<\\(ANY_REQUIRE\\)" 1 font-lock-comment-face t)
+                          ("\\<\\(ANY_REQUIRE_MSG\\)" 1 font-lock-comment-face t))
+  "Additional C keywords for HRI."
+  :type '(repeat (cons string face))
+  :group 'hri)
 
 (defface hri-macros-face  '((t (:inherit font-lock-comment-face)))
   "Face used to highlight some HRI macros."
@@ -50,7 +47,6 @@
 
 (defun hri-add-keywords ()
   "adds a few special keywords for c and c++ modes"
-  ;
   (font-lock-add-keywords nil
    '(
      ; Add keywords here
@@ -90,5 +86,79 @@
              (when (char-equal (char-before (1- (point))) ?\()
                (backward-char)
                (delete-char 1)))))))
+
+(defcustom hri-toolbos-core-root (concat (getenv "HGR") "/DevelopmentTools/ToolBOSCore/2.0/")
+  "The ToolBOSCore library root."
+  :group 'hri
+  :type 'directory)
+
+(defun hri-toolbos-includes ()
+  (concat toolbos-core-root "include/"))
+
+(defcustom hri-completing-read-directory-function
+  (if ido-mode
+      'ido-read-directory-name
+    read-directory-name)
+  "The function used to read a directory name from the minibuffer."
+  :group 'hri
+  :type 'function)
+
+(defcustom hri-completing-read-function
+  (if ido-mode
+      'ido-completing-read
+    completing-read)
+  "The function used for completing read."
+  :group 'hri
+  :type 'function)
+
+(defcustom hri-package-types
+  '("C/BBCM"
+    "C/BBDM"
+    "C/Library"
+    "C/MainProgram"
+    "Cpp/Class"
+    "Cpp/MainProgram"
+    "External/with/compilation"
+    "External/without/compilation"
+    "HDot/Application/HighLevel"
+    "HDot/Application/LowLevel"
+    "HDot/Application/Sampling"
+    "HDot/Component/Approximation/Model"
+    "HDot/Component/Evaluation/MultiObjective"
+    "HDot/Component/Evaluation/SingleObjective"
+    "HDot/Component/Optimizer"
+    "HDot/Component/SamplingPlan"
+    "master")
+  "Package types supported by BST.py.
+Replace the _ in the template directory names with a /."
+  :group 'hri
+  :type '(repeat string))
+
+(defun hri-create-package (base-directory package-type package-name version)
+  (interactive (list (if (eq major-mode 'dired-mode)
+			 (dired-current-directory)
+		       (funcall hri-completing-read-directory-function "Base Directory: " nil nil t nil))
+		     (funcall hri-completing-read-function "Package type: " hri-package-types nil t)
+		     (read-from-minibuffer "Package Name: ")
+		     (read-from-minibuffer "Version: ")))
+  (let ((path (concat base-directory "/" package-name "/" version)))
+    (cond ((file-exists-p path)
+	   (error "Cannot create an HRI package at '%s': the directory already exists."
+		  path))
+	  (t (let ((buf (get-buffer-create " hri-create-package-output"))
+		   (default-directory base-directory))
+	       (with-current-buffer buf
+		 (call-process "BST.py" nil buf t
+			       "-n"
+			       (replace-regexp-in-string "/" "_" package-type)
+			       package-name
+			       version)
+		 (message (buffer-string)))
+	       (kill-buffer buf))
+	     (when (eq major-mode 'dired-mode)
+	       (revert-buffer))))))
+
+
+
 
 (sm-provide :package ToolBOS)

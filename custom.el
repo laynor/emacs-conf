@@ -24,6 +24,7 @@
      (other . "gnu"))))
  '(column-number-mode t)
  '(comment-style (quote extra-line))
+ '(compilation-scroll-output (quote first-error))
  '(custom-enabled-themes (quote (ale-black-2)))
  '(custom-safe-themes
    (quote
@@ -44,12 +45,14 @@
  '(evil-motion-state-modes
    (quote
     (apropos-mode Buffer-menu-mode calendar-mode color-theme-mode command-history-mode compilation-mode dictionary-mode ert-results-mode help-mode Info-mode Man-mode speedbar-mode undo-tree-visualizer-mode view-mode woman-mode el-get-package-menu-mode)))
+ '(flycheck-flake8rc "~/.config/flake8")
  '(fringe-mode (quote (4 . 4)) nil (fringe))
  '(git-commit-summary-maxlen 90)
  '(global-diff-hl-mode t)
  '(haskell-mode-hook
    (quote
     (turn-on-haskell-indentation turn-on-font-lock turn-on-eldoc-mode imenu-add-menubar-index)))
+ '(gtags-auto-update t)
  '(ido-auto-merge-delay-time 1.0)
  '(ido-default-buffer-method (quote selected-window))
  '(ido-enable-flex-matching t)
@@ -67,11 +70,42 @@
  '(org-export-odt-inline-image-extensions (quote ("png" "jpeg" "jpg" "gif" "svg")))
  '(powerline-height 16)
  '(projectile-ack-function (quote ag-regexp))
+ '(projectile-tags-command "gtags")
  '(python-shell-interpreter "python2")
+ '(recentf-max-menu-items 50)
+ '(recentf-mode t)
+ '(recentf-save-file "~/.emacs.d/.recentf")
  '(rsense-rurema-home "~/Documents/ruby-refm-1.9.2-dynamic-20110629/")
  '(safe-local-variable-values
    (quote
-    ((eval setq python-shell-virtualenv-path
+    ((c-file-style "hri")
+     (eval progn
+	   (setenv "MANPATH"
+		   (mapconcat
+		    (function identity)
+		    (remove-duplicates
+		     (split-string
+		      (concat
+		       (getenv "MANPATH")
+		       ":"
+		       (dir-locals-directory)
+		       "ToolBOSCore/2.0/doc/man/")
+		      ":" t)
+		     :test
+		     (function equal))
+		    ":"))
+	   (setenv "BST_CMAKE_OPTIONS" "-DCMAKE_BUILD_TYPE=Debug")
+	   (add-project-directories "ToolBOSCore/2.0/include/" "ToolBOSCore/2.0/srcToolBOSCore/" "ToolBOSCore/2.0/srcLogCollector/"))
+     (eval add-project-directories "ToolBOSCore/2.0/include/" "ToolBOSCore/2.0/srcToolBOSCore/" "ToolBOSCore/2.0/srcLogCollector/")
+     (eval progn
+	   (add-project-directories
+	    (toolbos-includes)
+	    "1.0/src/")
+	   (c-set-style "hri"))
+     (eval add-project-directories
+	   (toolbos-includes)
+	   "1.0/src/")
+     (eval setq python-shell-virtualenv-path
 	   (file-truename "~/.virtualenvs/pyls"))
      (eval setq python-shell-virtualenv-path "/Users/alessandro/.virtualenvs/pyls")
      (python-shell-virtualenv-path expand-filename "~/.virtualenvs/pyls")
@@ -123,11 +157,11 @@
  '(diff-removed ((t (:inherit diff-changed :background "firebrick4"))))
  '(ediff-odd-diff-C ((t (:background "Dim Grey" :foreground "White"))) t)
  '(eldoc-highlight-function-argument ((t (:inherit bold :box nil :underline "deeppink"))))
- '(factor-font-lock-comment ((t (:inherit font-lock-comment-face))))
- '(factor-font-lock-parsing-word ((t (:inherit font-lock-keyword-face))))
- '(factor-font-lock-stack-effect ((t (:foreground "green"))))
- '(factor-font-lock-string ((t (:inherit font-lock-string-face))))
- '(factor-font-lock-word ((t (:inherit font-lock-function-name-face))))
+ '(factor-font-lock-comment ((t (:inherit font-lock-comment-face))) t)
+ '(factor-font-lock-parsing-word ((t (:inherit font-lock-keyword-face))) t)
+ '(factor-font-lock-stack-effect ((t (:foreground "green"))) t)
+ '(factor-font-lock-string ((t (:inherit font-lock-string-face))) t)
+ '(factor-font-lock-word ((t (:inherit font-lock-function-name-face))) t)
  '(flx-highlight-face ((t (:inherit font-lock-keyword-face :underline t :weight bold))))
  '(flycheck-error ((t (:inherit error :underline t))))
  '(font-lock-comment-face ((t (:foreground "MediumPurple3" :slant italic))))
@@ -143,4 +177,5 @@
  '(mode-line-inactive ((t (:inherit mode-line :background "grey30" :foreground "grey80" :weight light))))
  '(popup-scroll-bar-foreground-face ((t (:background "blue"))))
  '(powerline-enotify-bg-face ((t (:background "gray8" :foreground "grey75" :box (:line-width 1 :color "grey75" :style released-button) :slant italic :weight bold))))
- '(region ((t (:background "#382D7B")))))
+ '(region ((t (:background "#382D7B"))))
+ '(ruby-dev-repl-prompt-face ((t (:inherit default :foreground "SpringGreen1")))))

@@ -14,6 +14,32 @@
                       ["Open project in direx" projectile-direx]
                       "Find in project (grep)"))
 
+(sm-integrate-with xgtags
+  (define-key projectile-mode-map  (kbd "C-c p r") 'xgtags-query-replace-regexp))
+
+(defvar projectile--compile-history-cache-location
+  "projectile-compile-history/")
+(defun projectile-compile-project ()
+  "Run project compilation command."
+  (interactive)
+  (let* ((project-root (projectile-project-root))
+	 (cache-location (directory-file-name
+			  (replace-regexp-in-string
+			   "/+" "/"
+			   (concat projectile--compile-history-cache-location
+				   (projectile-project-root)))))
+	 (stored-compilation-cmds (persistent-soft-fetch 'compile-cmds
+							 cache-location))
+	 (compile-history stored-compilation-cmds)
+         (compilation-cmd (compilation-read-command (projectile-compilation-command project-root))))
+    (cd project-root)
+    (puthash project-root compilation-cmd projectile-compilation-cmd-map)
+    (persistent-soft-store 'compile-cmds (remove-duplicates
+					  (cons compilation-cmd stored-compilation-cmds)
+					  :test #'equal)
+			   cache-location)
+    (compilation-start compilation-cmd)))
+
 ;; (defvar projectile-project-cleaning-commands
 ;;   '(("./rebar clean" .
 ;;      (lambda (dir)
