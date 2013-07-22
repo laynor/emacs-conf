@@ -49,6 +49,9 @@
  '(fringe-mode (quote (4 . 4)) nil (fringe))
  '(git-commit-summary-maxlen 90)
  '(global-diff-hl-mode t)
+ '(haskell-mode-hook
+   (quote
+    (turn-on-haskell-indentation turn-on-font-lock turn-on-eldoc-mode imenu-add-menubar-index)))
  '(gtags-auto-update t)
  '(ido-auto-merge-delay-time 1.0)
  '(ido-default-buffer-method (quote selected-window))
