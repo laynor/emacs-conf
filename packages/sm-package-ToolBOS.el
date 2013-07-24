@@ -34,26 +34,50 @@
 (push '("\\TcshSrc$" . shell-script-mode) auto-mode-alist)
 (push '("\\BashSrc$" . shell-script-mode) auto-mode-alist)
 
-(defcustom hri-keywords '(("\\<\\(ANY_LOG\\)" 1 font-lock-comment-face t)
-                          ("\\<\\(ANY_REQUIRE\\)" 1 font-lock-comment-face t)
-                          ("\\<\\(ANY_REQUIRE_MSG\\)" 1 font-lock-comment-face t))
-  "Additional C keywords for HRI."
-  :type '(repeat (cons string face))
-  :group 'hri)
-
 (defface hri-macros-face  '((t (:inherit font-lock-comment-face)))
   "Face used to highlight some HRI macros."
   :group 'hri)
 
+(defface hri-info-face '((t (:inherit default)))
+  "Face used to highlight ANY_LOG_INFO"
+  :group 'hri)
+
+(defface hri-warning-face '((t (:inherit (font-lock-warning-face))))
+  "Face used to highlight ANY_LOG_WARNING."
+  :group 'hri)
+
+(defface hri-error-face '((t (:inherit error)))
+  "Face used to highlight ANY_LOG_ERROR"
+  :group 'hri)
+
+(defface hri-self-face '((t (:inherit font-lock-keyword-face)))
+  "Face used to highlight the 'self' parameter in hri code."
+  :group 'hri)
+
+(defcustom hri-macros '("ANY_LOG"
+			"ANY_REQUIRE"
+			"ANY_REQUIRE_MSG"
+			"ANY_VALID_REQUIRE"
+			"ANY_VALID_UNSET"
+			"ANY_VALID_SET"
+			"ANY_VALID_REQUIRE")
+  "HRI specific macros to highlight using `hri-macros-face'"
+  :type '(repeat string)
+  :group 'hri)
+
+(defun hri--build-font-lock-keyword-list ()
+  (mapcar (lambda (kw)
+	    (cons (concat "\\<\\(" kw "\\)\\>") ''hri-macros-face))
+	  hri-macros))
+
 (defun hri-add-keywords ()
   "adds a few special keywords for c and c++ modes"
-  (font-lock-add-keywords nil
-   '(
-     ; Add keywords here
-     ("\\<\\(ANY_LOG\\)\\>" . 'hri-macros-face )
-     ("\\<\\(ANY_REQUIRE_MSG\\)\\>" . 'hri-macros-face )
-     ("\\<\\(ANY_REQUIRE\\)\\>" . 'hri-macros-face )
-     )))
+  (let ((kwlist (hri--build-font-lock-keyword-list)))
+    (font-lock-add-keywords nil (append '(("\\<\\(ANY_LOG_INFO\\)\\>" . 'hri-info-face)
+					  ("\\<\\(ANY_LOG_WARNING\\)\\>" . 'hri-warning-face)
+					  ("\\<\\(ANY_LOG_ERROR\\)\\>" . 'hri-error-face)
+					  ("\\<\\(self\\)\\>" . 'hri-self-face))
+					kwlist))))
 
 (add-hook 'c-mode-hook 'hri-add-keywords)
 (add-hook 'c-mode-hook (lambda () (c-toggle-auto-newline 1)))
