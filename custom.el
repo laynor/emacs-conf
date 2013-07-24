@@ -78,7 +78,40 @@
  '(rsense-rurema-home "~/Documents/ruby-refm-1.9.2-dynamic-20110629/")
  '(safe-local-variable-values
    (quote
-    ((c-file-style "hri")
+    ((eval progn
+	   (setenv "MANPATH"
+		   (mapconcat
+		    (function identity)
+		    (remove-duplicates
+		     (split-string
+		      (concat
+		       (getenv "MANPATH")
+		       ":"
+		       (dir-locals-directory)
+		       "ToolBOSCore/2.0/doc/man/")
+		      ":" t)
+		     :test
+		     (function equal))
+		    ":"))
+	   (add-project-directories "ToolBOSCore/2.0/include/" "ToolBOSCore/2.0/srcToolBOSCore/" "ToolBOSCore/2.0/srcLogCollector/"))
+     (eval progn
+	   (setenv "MANPATH"
+		   (mapconcat
+		    (function identity)
+		    (remove-duplicates
+		     (split-string
+		      (concat
+		       (getenv "MANPATH")
+		       ":"
+		       (dir-locals-directory)
+		       "ToolBOSCore/2.0/doc/man/")
+		      ":" t)
+		     :test
+		     (function equal))
+		    ":"))
+	   (setenv "BST_CMAKE_OPTIONS" "-DCMAKE_BUILD_TYPE=Debug")
+	   (add-project-directories "/home/alessandro/src/ToolBOSCore/ToolBOSCore/2.0/include/" "/home/alessandro/src/ToolBOSCore/ToolBOSCore/2.0/srcToolBOSCore/" "/home/alessandro/src/ToolBOSCore/ToolBOSCore/2.0/srcLogCollector/"))
+     (c-file-style "hri")
      (eval progn
 	   (setenv "MANPATH"
 		   (mapconcat

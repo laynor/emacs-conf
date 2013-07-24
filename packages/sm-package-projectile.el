@@ -23,6 +23,7 @@
   "Run project compilation command."
   (interactive)
   (let* ((project-root (projectile-project-root))
+	 (buffers (projectile-project-buffers))
 	 (cache-location (directory-file-name
 			  (replace-regexp-in-string
 			   "/+" "/"
@@ -30,9 +31,14 @@
 				   (projectile-project-root)))))
 	 (stored-compilation-cmds (persistent-soft-fetch 'compile-cmds
 							 cache-location))
+
 	 (compile-history stored-compilation-cmds)
          (compilation-cmd (compilation-read-command (projectile-compilation-command project-root))))
+
     (cd project-root)
+    (save-some-buffers nil (lambda ()
+			     (and (buffer-file-name)
+				  (memq (current-buffer) buffers))))
     (puthash project-root compilation-cmd projectile-compilation-cmd-map)
     (persistent-soft-store 'compile-cmds (remove-duplicates
 					  (cons compilation-cmd stored-compilation-cmds)
