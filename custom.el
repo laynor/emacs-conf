@@ -49,10 +49,10 @@
  '(fringe-mode (quote (4 . 4)) nil (fringe))
  '(git-commit-summary-maxlen 90)
  '(global-diff-hl-mode t)
+ '(gtags-auto-update t)
  '(haskell-mode-hook
    (quote
     (turn-on-haskell-indentation turn-on-font-lock turn-on-eldoc-mode imenu-add-menubar-index)))
- '(gtags-auto-update t)
  '(ido-auto-merge-delay-time 1.0)
  '(ido-default-buffer-method (quote selected-window))
  '(ido-enable-flex-matching t)
@@ -79,6 +79,36 @@
  '(safe-local-variable-values
    (quote
     ((eval progn
+	   (setenv "MANPATH"
+		   (mapconcat
+		    (function identity)
+		    (remove-duplicates
+		     (split-string
+		      (concat
+		       (getenv "MANPATH")
+		       ":" "/home/alessandro/local/opt/toolbos/man/")
+		      ":" t)
+		     :test
+		     (function equal))
+		    ":"))
+	   (add-project-directories "ToolBOSCore/2.0/include/" "ToolBOSCore/2.0/srcToolBOSCore/" "ToolBOSCore/2.0/srcLogCollector/"))
+     (eval progn
+	   (setenv "MANPATH"
+		   (mapconcat
+		    (function identity)
+		    (remove-duplicates
+		     (split-string
+		      (concat
+		       (getenv "MANPATH")
+		       ":"
+		       (dir-locals-directory)
+		       "/home/alessandro/local/opt/toolbos/man/")
+		      ":" t)
+		     :test
+		     (function equal))
+		    ":"))
+	   (add-project-directories "ToolBOSCore/2.0/include/" "ToolBOSCore/2.0/srcToolBOSCore/" "ToolBOSCore/2.0/srcLogCollector/"))
+     (eval progn
 	   (setenv "MANPATH"
 		   (mapconcat
 		    (function identity)
@@ -201,6 +231,7 @@
  '(font-lock-fic-face ((t (:inherit font-lock-comment-face :background "Red" :foreground "Yellow" :weight bold))))
  '(font-lock-preprocessor-face ((t (:inherit font-lock-builtin-face :foreground "#ff0033"))))
  '(font-lock-string-face ((t (:foreground "blue violet"))))
+ '(font-lock-warning-face ((t (:inherit error :foreground "goldenrod"))))
  '(highlight-indentation-face ((t (:inherit fringe :background "grey8"))) t)
  '(hl-sexp-face ((t (:background "gray7"))))
  '(jedi:highlight-function-argument ((t (:inherit eldoc-highlight-function-argument))))
