@@ -15,4 +15,9 @@
 
 (global-set-key [f6] 'slime)
 
+;;; Show hyperspec in eww
+(defadvice slime-hyperspec-lookup (around browse-with-eww activate)
+  (flet ((browse-url (url) (eww-browse-url url)))
+    ad-do-it))
+
 (sm-provide :package slime)

@@ -2,6 +2,7 @@
 (sm-package enotify
             :package-manager nil
             :unmanaged-p t)
+
 (setq enotify-mode-line-suffix "")
 (setq enotify-mode-line-prefix "")
 
