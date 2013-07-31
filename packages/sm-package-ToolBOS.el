@@ -24,8 +24,10 @@
 		(statement-block-intro . +)
 		(statement-cont . +)
 		(case-label . +)
+		(label . *)
 		(topmost-intro . 0)
 		(topmost-intro-cont . 0))))
+
 (setq c-default-style "hri")
 
 (push '("\\packageVar$" . makefile-mode) auto-mode-alist)
