@@ -28,7 +28,7 @@
  '(custom-enabled-themes (quote (ale-black-2)))
  '(custom-safe-themes
    (quote
-    ("91d2e0d23703423c1da4fad78cfa9717335d1a4ebbb1710fc214743822a5c89f" "490739aa40b07e854d5d816443a01577f19dd382a759187d258e283ea988eafb" "0a1af5e5832a8e38710ce55f3f04342f890330e586e42557c18638f7b056410f" "7f96e6a6dd9b02aeae63cde2916f2725eaf91b44049cdc9cf608ceff4c2a3732" "238da0c6bc2420cac5f2b20f714a01f0e042ea3bd48146ad9fc6be6baf33594f" default)))
+    ("fb40d3205d941d8e54050cc7f70f9aca3046bde2ba2929d3f09f1ae02d248ae5" "91d2e0d23703423c1da4fad78cfa9717335d1a4ebbb1710fc214743822a5c89f" "490739aa40b07e854d5d816443a01577f19dd382a759187d258e283ea988eafb" "0a1af5e5832a8e38710ce55f3f04342f890330e586e42557c18638f7b056410f" "7f96e6a6dd9b02aeae63cde2916f2725eaf91b44049cdc9cf608ceff4c2a3732" "238da0c6bc2420cac5f2b20f714a01f0e042ea3bd48146ad9fc6be6baf33594f" default)))
  '(custom-theme-directory "~/.emacs.d/themes/")
  '(dired-listing-switches "-alh")
  '(direx:closed-icon "▸ ")
@@ -79,6 +79,20 @@
  '(safe-local-variable-values
    (quote
     ((eval progn
+	   (setenv "MANPATH"
+		   (mapconcat
+		    (function identity)
+		    (remove-duplicates
+		     (split-string
+		      (concat
+		       (getenv "MANPATH")
+		       ":" "/home/alessandro/local/opt/toolbos/man/")
+		      ":" t)
+		     :test
+		     (function equal))
+		    ":"))
+	   (add-project-directories "ToolBOSCore/2.0/include/" "ToolBOSCore/2.0/srcToolBOSCore/" "ToolBOSCore/2.0/srcLogCollector/" "/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0.x86_64/include/"))
+     (eval progn
 	   (setenv "MANPATH"
 		   (mapconcat
 		    (function identity)
@@ -213,7 +227,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "black" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 100 :width normal :foundry "xos4" :family "Consolas"))))
+ '(default ((t (:inherit nil :stipple nil :background "black" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 100 :width normal :foundry "microsoft" :family "Terminus"))))
  '(ac-candidate-face ((t (:background "lightgray" :foreground "black" :underline "light slate blue"))))
  '(ac-clang-candidate-face ((t (:background "lightgray" :foreground "navy" :underline "medium slate blue"))))
  '(diff-hl-change ((t (:background "slate blue" :foreground "blue3"))))
@@ -241,5 +255,6 @@
  '(mode-line-inactive ((t (:inherit mode-line :background "grey30" :foreground "grey80" :weight light))))
  '(popup-scroll-bar-foreground-face ((t (:background "blue"))))
  '(powerline-enotify-bg-face ((t (:background "gray8" :foreground "grey75" :box (:line-width 1 :color "grey75" :style released-button) :slant italic :weight bold))))
+ '(pp^L-highlight ((t (:background "dim gray" :foreground "purple4"))))
  '(region ((t (:background "#382D7B"))))
  '(ruby-dev-repl-prompt-face ((t (:inherit default :foreground "SpringGreen1")))))
