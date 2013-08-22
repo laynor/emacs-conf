@@ -41,11 +41,38 @@
 				  (memq (current-buffer) buffers))))
     (puthash project-root compilation-cmd projectile-compilation-cmd-map)
     (persistent-soft-store 'compile-cmds (remove-duplicates
-					  (cons compilation-cmd stored-compilation-cmds)
-					  :test #'equal)
+					  (cons (s-trim compilation-cmd) stored-compilation-cmds)
+					  :test #'equal
+					  :from-end t)
 			   cache-location)
     (compilation-start compilation-cmd)))
 
+(defun projectile--file-counterpart (basename)
+  (let* ((basename-sans-extension (file-name-sans-extension basename))
+	 (extension (file-name-extension basename))
+	 (counterpart-extension (cond ((equal extension "c") "h")
+				      ((equal extension "h") "c"))))
+    (concat basename-sans-extension "." counterpart-extension)))
+
+(defun projectile--find-file-with-find (filename)
+  (split-string (shell-command-to-string  (format "find %S -name %S"
+						  (projectile-project-root)
+						  filename))
+		"\n" t))
+
+
+
+(defun projectile-switch-to-counterpart ()
+  (interactive)
+  (let* ((project-files (projectile-current-project-files))
+	 (basename (file-name-nondirectory (buffer-file-name)))
+	 (counterpart-basename (projectile--file-counterpart basename))
+	 (counterpart (car (remove-if-not (lambda (file)
+					    (equal (file-name-nondirectory file)
+						   counterpart-basename))
+					  project-files))))
+    (when counterpart
+      (find-file counterpart))))
 ;; (defvar projectile-project-cleaning-commands
 ;;   '(("./rebar clean" .
 ;;      (lambda (dir)
