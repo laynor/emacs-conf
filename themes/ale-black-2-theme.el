@@ -67,7 +67,7 @@
  '(paren-face ((t (:foreground "dim gray"))))
  '(popup-scroll-bar-foreground-face ((t (:background "blue"))))
  '(powerline-enotify-bg-face ((t (:background "gray8" :foreground "grey75" :box (:line-width 1 :color "grey75" :style released-button) :slant italic :weight bold))))
- '(pp^L-highlight ((t (:foreground "#440044" :box (:line-width 1 :style pressed-button)))))
+ ;;'(pp^L-highlight ((t (:foreground "#440044" :box (:line-width 1 :style pressed-button)))))
  '(region ((t (:background "#382D7B"))))
  '(show-paren-mismatch ((t (:background "white" :foreground "red"))))
  '(slime-repl-inputed-output-face ((t (:foreground "maroon1"))))
