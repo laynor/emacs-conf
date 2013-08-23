@@ -1,28 +1,29 @@
 ;;; pp-c-l.el --- Display Control-l characters in a pretty way
-;; 
+;;
 ;; Filename: pp-c-l.el
 ;; Description: Display Control-l characters in a buffer in a pretty way
 ;; Author: Drew Adams
 ;; Maintainer: Drew Adams
-;; Copyright (C) 2007-2012, Drew Adams, all rights reserved.
+;; Copyright (C) 2007-2013, Drew Adams, all rights reserved.
 ;; Created: Thu Feb 08 20:28:09 2007
-;; Version: 1.0
-;; Last-Updated: Thu Aug 23 16:35:38 2012 (-0700)
+;; Version: 0
+;; Package-Requires: ()
+;; Last-Updated: Tue Jul 23 16:49:59 2013 (-0700)
 ;;           By: dradams
-;;     Update #: 204
-;; URL: http://www.emacswiki.org/emacs-en/pp-c-l.el
-;; Doc URL: http://emacswiki.org/emacs/PrettyControlL
+;;     Update #: 209
+;; URL: http://www.emacswiki.org/pp-c-l.el
+;; Doc URL: http://emacswiki.org/PrettyControlL
 ;; Keywords: display, convenience, faces
-;; Compatibility: GNU Emacs: 20.x, 21.x, 22.x, 23.x
-;; 
+;; Compatibility: GNU Emacs: 20.x, 21.x, 22.x, 23.x, 24.x
+;;
 ;; Features that might be required by this library:
 ;;
 ;;   None
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; 
-;;; Commentary: 
-;; 
+;;
+;;; Commentary:
+;;
 ;;  Faces defined here:
 ;;
 ;;    `pp^L-highlight'.
@@ -58,7 +59,7 @@
 ;;  new value to take effect.
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; 
+;;
 ;;; Change Log:
 ;;
 ;; 2011/01/04 dadams
@@ -80,29 +81,29 @@
 ;;     pp^L-make-glyph-code: If make-glyph-code exists, use that (alias).
 ;; 2007/05/28 dadams
 ;;     pp^L-make-glyph-code: Reported Emacs 23 bug to Emacs.
-;;       Fixed to work also with Emacs 23+, per Kenichi Handa's suggestion.  
+;;       Fixed to work also with Emacs 23+, per Kenichi Handa's suggestion.
 ;; 2007/02/08 dadams
 ;;     Created.
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; 
+;;
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
 ;; published by the Free Software Foundation; either version 2, or
 ;; (at your option) any later version.
-;; 
+;;
 ;; This program is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ;; General Public License for more details.
-;; 
+;;
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program; see the file COPYING.  If not, write to
 ;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth
 ;; Floor, Boston, MA 02110-1301, USA.
-;; 
+;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; 
+;;
 ;;; Code:
 
 ;;;;;;;;;;;;;;;;;;;;
@@ -223,13 +224,13 @@ Don't forget to mention your Emacs and library versions."))
             (if pretty-control-l-mode
                 (add-hook 'window-configuration-change-hook 'refresh-pretty-control-l)
               (remove-hook 'window-configuration-change-hook 'refresh-pretty-control-l))
-            (walk-windows 
- 	     (lambda (window)
- 	       (let ((display-table  (or (window-display-table window)
+            (walk-windows
+             (lambda (window)
+               (let ((display-table  (or (window-display-table window)
                                          (make-display-table))))
- 		 (aset display-table ?\014 (and pretty-control-l-mode
+                 (aset display-table ?\014 (and pretty-control-l-mode
                                                 (pp^L-^L-display-table-entry window)))
- 		 (set-window-display-table window display-table)))
+                 (set-window-display-table window display-table)))
              'no-minibuf
              'visible)))
 
@@ -243,7 +244,7 @@ With ARG, turn pretty display of `^L' on if and only if ARG is positive."
     (if pretty-control-l-mode
         (add-hook 'window-configuration-change-hook 'refresh-pretty-control-l)
       (remove-hook 'window-configuration-change-hook 'refresh-pretty-control-l))
-    (walk-windows 
+    (walk-windows
      (lambda (window)
        (let ((display-table  (or (window-display-table window) (make-display-table))))
          (aset display-table ?\014 (and pretty-control-l-mode
@@ -257,7 +258,7 @@ With ARG, turn pretty display of `^L' on if and only if ARG is positive."
   "Reinitialize `pretty-control-l-mode', if on, to update the display."
   (interactive)
   (when pretty-control-l-mode (pretty-control-l-mode t)))
-  
+
 ;;;;;;;;;;;;;;;;;;;;
 
 (provide 'pp-c-l)

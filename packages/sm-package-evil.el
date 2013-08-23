@@ -133,4 +133,8 @@ Translates it according to the input method."
            (signal 'quit nil)))
       (use-global-map old-global-map))))
 
+(define-key evil-ex-completion-map (kbd "C-p") 'previous-complete-history-element)
+(define-key evil-ex-completion-map (kbd "M-p") 'previous-complete-history-element)
+(define-key evil-ex-completion-map (kbd "M-n") 'next-complete-history-element)
+
 (sm-provide :package evil)

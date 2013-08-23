@@ -6,6 +6,9 @@
 ;;   (when (eq package 'mediawiki)
 ;;     (debug))
 ;;   (message "PACKAGE %s" package))
+(defun local-repo (package-name)
+  (concat user-emacs-directory "site-lisp/" package-name "/"))
+
 (setq-default evil-intercept-esc 'always)
 (add-to-list 'load-path user-emacs-directory)
 ;; (setq custom-file (concat user-emacs-directory *active-profile* ".el"))
