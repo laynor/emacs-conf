@@ -1,5 +1,4 @@
 (require 'cl)
-(defvar *emacs-load-start* (current-time))
 
 ;; (setq *active-profile* (or (getenv "EMACS_PROFILE")
 ;; 			   "default-profile"))
@@ -27,10 +26,14 @@
 ;(unless (server-running-p)
   ;(message "mufu"))
   ;; (server-start))
-(message "Startup time: %ds."
-         (destructuring-bind (hi lo ms ps)
-             (current-time)
-           (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
+(add-hook 'after-init-hook (lambda ()
+			     (setq initial-scratch-message
+				   (format ";; This buffer is for notes you don't want to save, and for Lisp evaluation.
+;; If you want to create a file, visit that file with C-x C-f,
+;; then enter the text in that file's own buffer.
+;; Initialization time: %s." (emacs-init-time)))
+
+			     (message "Startup time: %s" (emacs-init-time))))
 
 (setq gc-cons-threshold 20000000)
 
