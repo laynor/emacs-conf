@@ -2,11 +2,11 @@
 (sm-profile-pre (job-mac)
   (setq custom-file (concat user-emacs-directory "custom.el"))
   (setq erlang-root-dir "~/local/lib/erlang")
-  (setq exec-path (cons "~/local/lib/erlang/bin" exec-path))
+  (setq exec-path (append (list "/Applications/Emacs.app/Contents/MacOS/bin/" "/usr/local/bin" "~/local/lib/erlang/bin") exec-path))
   )
 
 ;;; Modules to activate
-(sm-require-modules "base" "elisp" "dired"  "C" "erlang" "python" "org" "mac")
+(sm-require-modules "base" "elisp" "dired"  "C" "objc" "erlang" "python" "org" "job" "mac")
 
 ;;; After loading modules
 (sm-profile-post (job-mac)

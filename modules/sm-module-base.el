@@ -28,7 +28,7 @@
                        "hide-comnt"
 		       "highlight-escape-sequences"
                        "httpcode"
-                       "ido-hacks"
+                       ;;"ido-hacks"
                        "ido-ubiquitous"
 		       "ido-vertical-mode"
                        "ipa"
