@@ -1,7 +1,7 @@
 ;;;; Module common-lisp
 (sm-module common-lisp
            :unmanaged-p nil
-           :require-packages '(slime))
+           :require-packages '(slime ac-slime))
 
 (sm-module-pre (common-lisp)
   )
