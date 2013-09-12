@@ -40,6 +40,7 @@
                        ;;"melpa"
                        "mode-icons"
                        ;;"package"
+		       "page-move"
                        "parenface"
 		       "pcache"
 		       "persistent-soft"
@@ -68,16 +69,20 @@
 
 
 ;;;; Remove these 2 blocks if the module is unmanaged
+
 (sm-module-pre (base)
   (ido-mode t)
   )
 
+
 (sm-module-post (base)
+  
   ;;; ------------------------------------- Scrolling -------------------------------------
   ;; (setq scroll-step 1)
   ;; (setq scroll-conservatively 1000)
   ;; (setq auto-window-vscroll nil)
 
+  
   ;;; --------------------------------- Smotitah aliases ----------------------------------
   (defalias 'em 'sm-edit-module)
   (defalias 'ep 'sm-edit-package)
@@ -94,6 +99,7 @@
 
   (defun insert-titled-comment (string)
     "Inserts a comment in the stile
+
 ;;;; --------------------------------- STRING expansion ----------------------------------
 The number of dashes is calculated based on `*titled-comment-length*'.
 "
@@ -106,14 +112,16 @@ The number of dashes is calculated based on `*titled-comment-length*'.
       (insert (format "%s%s %s %s\n" comment-prefix dashes-left string dashes-right))))
 
 
-  ;;; --------------------------------- before-save-hook ----------------------------------
+
+ ;;; --------------------------------- before-save-hook ----------------------------------
   (add-hook 'before-save-hook (lambda () (unless (or (ignore-errors makefile-mode)
                                                      (memq major-mode '(ipa-mode
                                                                         makefile-mode)))
                                            (delete-trailing-whitespace))))
 
 
-  ;;; ---------------------------------- Bindings ----------------------------------
+
+ ;;; ---------------------------------- Bindings ----------------------------------
   (define-key key-translation-map (kbd "C-.") (kbd "M-TAB"))
   (global-set-key [f7] 'magit-status)
   (global-set-key (kbd "C-\:") 'message-point)
@@ -149,21 +157,23 @@ The number of dashes is calculated based on `*titled-comment-length*'.
 
   (global-set-key [(f9)] 'open-notes-file)
 
+  (global-set-key [(f8)] 'goto-page)
+  (defun eval-and-replace (&optional arg)
+    "Replace the preceding sexp with its value."
+    (interactive "P")
+    (backward-kill-sexp)
+    (let ((print-fn (if arg 'princ 'prin1)))
+      (condition-case nil
+	  (funcall print-fn (eval (read (current-kill 0)))
+		   (current-buffer))
+	(error (message "Invalid expression")
+	       (insert (current-kill 0))))))
+
+  (global-set-key (kbd "C-c e") 'eval-and-replace)
+
   )
 
 
-(defun eval-and-replace (&optional arg)
-  "Replace the preceding sexp with its value."
-  (interactive "P")
-  (backward-kill-sexp)
-  (let ((print-fn (if arg 'princ 'prin1)))
-  (condition-case nil
-      (funcall print-fn (eval (read (current-kill 0)))
-	       (current-buffer))
-    (error (message "Invalid expression")
-           (insert (current-kill 0))))))
-
-(global-set-key (kbd "C-c e") 'eval-and-replace)
 
 (sm-provide :module base)
 ;;;; End base module

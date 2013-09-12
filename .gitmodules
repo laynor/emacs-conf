@@ -34,3 +34,6 @@
 [submodule "site-lisp/outshine"]
 	path = site-lisp/outshine
 	url = git@github.com:tj64/outshine.git
+[submodule "site-lisp/slime-js"]
+	path = site-lisp/slime-js
+	url = git@github.com:Gozala/slime-js.git
