@@ -1,7 +1,7 @@
 ;;;; Module python
 (sm-module python
            :unmanaged-p nil
-           :require-packages '(auto-complete jedi flycheck ale-fixme enotify yasnippet))
+           :require-packages '(auto-complete jedi flycheck ale-fixme enotify yasnippet virtualenvwrapper))
 
 (sm-module-pre (python)
   )
