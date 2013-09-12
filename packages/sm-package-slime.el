@@ -6,7 +6,23 @@
 (setq slime-net-coding-system 'utf-8-unix)
 (setq slime-lisp-implementations
       '((sbcl ("sbcl"))
+	(kawa ("/opt/java6/bin/java"
+               "-Xss950k" ; compiler needs more stack
+	       "-cp" "/home/ale/local/src/kawa/kawa-1.13.1.jar:/opt/java6/lib/tools.jar"
+	       "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n"
+	       "kawa.repl" "-s" "--output-format" "readable-scheme")
+              :init kawa-slime-init)
         (clojure ("clojure") :init swank-clojure-init)))
+
+(defun kawa-slime-init (file _)
+  (setq slime-protocol-version 'ignore)
+  (let* ((compiled "/home/ale/local/src/slime/contrib/swank-kawa.zip")
+	 (source "/home/ale/local/src/slime/contrib/swank-kawa.scm")
+	 (swank (if (file-exists-p compiled)
+		    `(load ,(expand-file-name compiled))
+		  `(require ,(expand-file-name source)))))
+    (format "%S\n"
+	    `(begin ,swank (start-swank ,file)))))
 
 (require 'slime-autoloads)
 (slime-setup '(slime-fancy slime-asdf))
