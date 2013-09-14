@@ -37,7 +37,10 @@
     nil))
 
 (defun* goto-page (page-id &optional (matchp 'string-match-p))
-  (interactive  (list (ido-completing-read "Goto Page: " (buffer-page-identifiers) nil t)))
+  (interactive  (list (let ((bpi (buffer-page-identifiers)))
+                        (if bpi
+                            (ido-completing-read "Goto Page: " bpi nil t)
+                          (error "No pages on this buffer")))))
   (let ((pos (page-pos page-id matchp)))
     (when pos
       (goto-char pos))))
