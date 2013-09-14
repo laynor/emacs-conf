@@ -59,6 +59,7 @@
  '(ido-ignore-files
    (quote
     ("\\`CVS/" "\\`#" "\\`.#" "\\`\\.\\./" "\\`\\./" ".*~$")))
+ '(indent-tabs-mode nil)
  '(inhibit-startup-screen t)
  '(ipa-annotation-face (quote ipa-face))
  '(ipa-overlay-position "above")
