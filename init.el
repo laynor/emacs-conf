@@ -1,4 +1,5 @@
 (require 'cl)
+(setq sm-profile "home-linux")
 
 ;; (setq *active-profile* (or (getenv "EMACS_PROFILE")
 ;; 			   "default-profile"))
@@ -29,14 +30,16 @@
 ;(unless (server-running-p)
   ;(message "mufu"))
   ;; (server-start))
+;; (add-to-list 'load-path (local-repo "dollaro/"))
+;; (load "dollaro")
 (add-hook 'after-init-hook (lambda ()
 			     (setq initial-scratch-message
-				   (format ";; This buffer is for notes you don't want to save, and for Lisp evaluation.
-;; If you want to create a file, visit that file with C-x C-f,
-;; then enter the text in that file's own buffer.
-;; Initialization time: %s." (emacs-init-time)))
-
-			     (message "Startup time: %s" (emacs-init-time))))
+                                   ($:fill-template (f-read-text
+                                                     (concat user-emacs-directory
+                                                             "scratch-template.$"))
+                                                    `((init-time . ,(emacs-init-time))
+                                                      (emacs-profile . ,sm-profile))))
+                             (message "Startup time: %s" (emacs-init-time))))
 
 (setq gc-cons-threshold 20000000)
 

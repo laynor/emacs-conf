@@ -12,6 +12,7 @@
                        "diminish"
                        "dired"
                        "direx"
+                       "dollaro"
                        "erc"
                        "undo-tree"
                        "paredit"
