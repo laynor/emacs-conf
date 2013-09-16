@@ -28,3 +28,5 @@ semanticdb/
 /site-lisp/evil
 /url/
 .mc-lists.el
+/notes.org
+/site-lisp/starttls-0.10/
