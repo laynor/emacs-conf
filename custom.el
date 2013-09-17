@@ -257,6 +257,6 @@
  '(mode-line-inactive ((t (:inherit mode-line :background "grey30" :foreground "grey80" :weight light))))
  '(popup-scroll-bar-foreground-face ((t (:background "blue"))))
  '(powerline-enotify-bg-face ((t (:background "gray8" :foreground "grey75" :box (:line-width 1 :color "grey75" :style released-button) :slant italic :weight bold))))
- '(pp^L-highlight ((t (:background "dim gray" :foreground "purple4"))))
+ '(pp^L-highlight ((t (:background "#120c14" :foreground "black"))))
  '(region ((t (:background "#382D7B"))))
  '(ruby-dev-repl-prompt-face ((t (:inherit default :foreground "SpringGreen1")))))
