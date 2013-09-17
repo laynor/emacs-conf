@@ -17,8 +17,12 @@
 (sm-integrate-with xgtags
   (define-key projectile-mode-map  (kbd "C-c p r") 'xgtags-query-replace-regexp))
 
+(sm-integrate-with magit
+  (define-key projectile-mode-map (kbd "C-c p m") 'projectile-magit-to-project))
+
 (defvar projectile--compile-history-cache-location
   "projectile-compile-history/")
+
 (defun projectile-compile-project ()
   "Run project compilation command."
   (interactive)
@@ -31,10 +35,9 @@
 				   (projectile-project-root)))))
 	 (stored-compilation-cmds (persistent-soft-fetch 'compile-cmds
 							 cache-location))
-
 	 (compile-history stored-compilation-cmds)
-         (compilation-cmd (compilation-read-command (projectile-compilation-command project-root))))
-
+         (compilation-cmd (compilation-read-command
+                           (projectile-compilation-command project-root))))
     (cd project-root)
     (save-some-buffers nil (lambda ()
 			     (and (buffer-file-name)
@@ -46,6 +49,14 @@
 					  :from-end t)
 			   cache-location)
     (compilation-start compilation-cmd)))
+
+(defun projectile-magit-to-project (project-to-switch)
+  "Switch to a project we have seen before."
+  (interactive "P")
+  (let* ((project-to-switch
+         (projectile-completing-read "Magit to project: "
+                                     projectile-known-projects)))
+    (magit-status project-to-switch)))
 
 (defun projectile--file-counterpart (basename)
   (let* ((basename-sans-extension (file-name-sans-extension basename))
@@ -115,5 +126,7 @@
 ;;   (case arg
 ;;     (4 (projectile-run-project-command projectile-project-cleaning-commands))
 ;;     (otherwise (projectile-run-project-command projectile-project-compilation-commands))))
+
+
 
 (sm-provide :package projectile)
