@@ -212,6 +212,8 @@
  '(starttls-extra-arguments (quote ("--insecure")))
  '(sublimity-scroll-weight1 8)
  '(sublimity-scroll-weight2 1.4)
+ '(switch-window-increase 8)
+ '(switch-window-shortcut-style (quote qwerty))
  '(tool-bar-mode nil)
  '(tramp-default-method "ssh")
  '(uniquify-buffer-name-style (quote forward) nil (uniquify))

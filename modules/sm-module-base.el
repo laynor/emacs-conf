@@ -58,6 +58,7 @@
                        "shell-pop"
                        "smex"
                        "surround"
+                       "switch-window"
                        ;; "smooth-scrolling"
                        "wgrep"
                        "whitespace"
@@ -174,6 +175,7 @@ The number of dashes is calculated based on `*titled-comment-length*'.
 
   (global-set-key (kbd "C-c e") 'eval-and-replace)
 
+  (global-set-key (kbd "C-x o") 'switch-window)
   )
 
 
