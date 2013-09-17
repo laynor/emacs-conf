@@ -63,11 +63,22 @@
 
 (defun only-alphanum (str)
   (let ((pos (get-text-property 0 'goto-page-pos str)))
-    (replace-regexp-in-string "[^[:alnum:]]+"
-                              (propertize " " 'goto-page-pos pos)
+    (replace-regexp-in-string "[^[:alnum:] ]"
+                              (propertize "" 'goto-page-pos pos)
                               str)))
 
-(setq goto-page-page-id-format-fn 'only-alphanum)
+(defun my-goto-page-decorator (str)
+  (let ((str (only-alphanum str)))
+    (destructuring-bind (line_ whitespace rest)
+        (s-match "\\([ ]*\\)\\(.*$\\)" str)
+      (let ((wslen (length whitespace)))
+        (if (> wslen 1)
+            (concat (s-repeat (- wslen 2) " ")
+                    "├ "
+                    rest)
+          str)))))
+
+(setq goto-page-page-id-format-fn 'my-goto-page-decorator)
 
 (defun* goto-page (page-id &optional (matchp 'string-match-p) (format-page-id-fn 'only-alphanum))
   (interactive  (list (let ((bpi (mapcar goto-page-page-id-format-fn
