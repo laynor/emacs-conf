@@ -4,30 +4,24 @@
             :unmanaged-p t)
 
 (defun next-page (&optional count)
-  (forward-page count)
-  (and (/= (point) (point-max))
-       (point)))
+  (interactive)
+  (ignore-errors (search-forward (kbd "C-l"))))
 
 (defmacro* dopage ((page-identifier &optional index) &body body)
   (let ((page-id-beg (gensym))
         (page-id-end (gensym))
         (buffer-end (gensym))
         (idx (or index (gensym)))
-        (next-page-pos (gensym))
-        (next-page (gensym)))
-    `(flet ((,next-page (&optional count)
-                        (forward-page count)
-                        (and (/= (point) (point-max))
-                             (point))))
-       (save-excursion
-         (goto-char (point-min))
-         (do* ((,next-page-pos (next-page) (next-page))
-               (,idx 0 (1+ ,idx)))
-             ((not ,next-page-pos))
-           (let* ((,page-id-beg (line-beginning-position 2))
-                  (,page-id-end (line-end-position 2))
-                  (,page-identifier (buffer-substring-no-properties ,page-id-beg ,page-id-end)))
-             ,@body))))))
+        (next-page-pos (gensym)))
+    `(save-excursion
+       (goto-char (point-min))
+       (do* ((,next-page-pos (next-page) (next-page))
+             (,idx 0 (1+ ,idx)))
+           ((not ,next-page-pos))
+         (let* ((,page-id-beg (line-beginning-position 2))
+                (,page-id-end (line-end-position 2))
+                (,page-identifier (buffer-substring-no-properties ,page-id-beg ,page-id-end)))
+           ,@body)))))
 
 (defun find-page-if (page-id matchp)
   (block foo
@@ -41,7 +35,7 @@
 
 (setq goto-page-eob-identifier (propertize "END" 'goto-page-pos 'point-max 'face 'error))
 
-(defun page-start-pos (page-id matchp)
+(defun page-start-pos (page-id)
   (let ((pos (get-text-property 0 'goto-page-pos page-id)))
     (cond ((number-or-marker-p pos)
            pos)
@@ -63,9 +57,11 @@
 
 (defun only-alphanum (str)
   (let ((pos (get-text-property 0 'goto-page-pos str)))
-    (replace-regexp-in-string "[^[:alnum:] ]"
-                              (propertize "" 'goto-page-pos pos)
-                              str)))
+    (if (s-match (concat "^[[:space:]]*" comment-start) str)
+        (replace-regexp-in-string "[^[:alnum:] ]"
+                                  (propertize "" 'goto-page-pos pos)
+                                  str)
+      str)))
 
 (defun my-goto-page-decorator (str)
   (let ((str (only-alphanum str)))
@@ -73,9 +69,10 @@
         (s-match "\\([ ]*\\)\\(.*$\\)" str)
       (let ((wslen (length whitespace)))
         (if (> wslen 1)
-            (concat (s-repeat (- wslen 2) " ")
-                    "├ "
-                    rest)
+            (propertize (concat (s-repeat (- wslen 2) " ")
+                                "├ "
+                                rest)
+                        'goto-page-pos (get-text-property 0 'goto-page-pos str))
           str)))))
 
 (setq goto-page-page-id-format-fn 'my-goto-page-decorator)
@@ -88,7 +85,7 @@
                                          (string-match pid id))
                                        bpi)
                               (error "No pages on this buffer"))))))
-  (let* ((pos (page-start-pos page-id matchp)))
+  (let* ((pos (page-start-pos page-id)))
     (when pos
       (goto-char pos))))
 
