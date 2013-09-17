@@ -5,20 +5,32 @@
 
 (projectile-global-mode t)
 
+(defmacro* define-projectile-command (command-name lambda-list menu-item keybinding &body body)
+  `(progn (defun ,command-name ,lambda-list
+            ,@body)
+          (define-key projectile-mode-map ,keybinding ',command-name)
+          (easy-menu-add-item nil
+                              '("Tools" "Projectile")
+                              (vector ,menu-item ',command-name)
+                              "Find in project (grep)")))
+
 (sm-integrate-with (:package direx)
-  (defun projectile-direx ()
+  (define-projectile-command projectile-direx () "Open project in Direx" (kbd "C-c p M")
     (interactive)
-    (popwin:direx (projectile-project-root)))
-  (global-set-key (kbd "C-c p D") 'projectile-direx)
-  (easy-menu-add-item nil '("Tools" "Projectile")
-                      ["Open project in direx" projectile-direx]
-                      "Find in project (grep)"))
+    (popwin:direx (projectile-project-root))))
+
 
 (sm-integrate-with xgtags
   (define-key projectile-mode-map  (kbd "C-c p r") 'xgtags-query-replace-regexp))
 
 (sm-integrate-with magit
-  (define-key projectile-mode-map (kbd "C-c p m") 'projectile-magit-to-project))
+  (define-projectile-command projectile-magit-to-project (arg)
+    "Open project in magit" (kbd "C-c p m")
+    (interactive "P")
+    (let* ((project-to-switch
+            (projectile-completing-read "Magit to project: "
+                                        projectile-known-projects)))
+      (magit-status project-to-switch))))
 
 (defvar projectile--compile-history-cache-location
   "projectile-compile-history/")
@@ -50,13 +62,6 @@
 			   cache-location)
     (compilation-start compilation-cmd)))
 
-(defun projectile-magit-to-project (project-to-switch)
-  "Switch to a project we have seen before."
-  (interactive "P")
-  (let* ((project-to-switch
-         (projectile-completing-read "Magit to project: "
-                                     projectile-known-projects)))
-    (magit-status project-to-switch)))
 
 (defun projectile--file-counterpart (basename)
   (let* ((basename-sans-extension (file-name-sans-extension basename))
