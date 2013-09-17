@@ -67,12 +67,8 @@
                        "wgrep-ack"
                        "yalinum"
                        )
-           ;; set this to t if you want to manage this module yourself
-           ;; instead of using the builtin package loading infrastructure
            :unmanaged-p nil)
 
-
-;;;; Remove these 2 blocks if the module is unmanaged
 
 (sm-module-pre (base)
   (ido-mode t)
@@ -81,61 +77,42 @@
 
 (sm-module-post (base)
   
-  ;;; ------------------------------------- Scrolling -------------------------------------
+;;;; -- Scrolling --
   ;; (setq scroll-step 1)
   ;; (setq scroll-conservatively 1000)
   ;; (setq auto-window-vscroll nil)
 
   
-  ;;; --------------------------------- Smotitah aliases ----------------------------------
+;;;; -- Smotitah aliases --
   (defalias 'em 'sm-edit-module)
   (defalias 'ep 'sm-edit-package)
   (defalias 'epr 'sm-edit-profile)
 
-  ;; insert titled comment
-  (defvar *titled-comment-length* 90
-    "Total width of comments inserted with `insert-titled-comment'")
-
-  (defun length-of-region(start end)
-    "Places the length of the current region in the kill ring."
-    (interactive "r")
-    (kill-new (message "%S" (- end start))))
-
-  (defun insert-titled-comment (string)
-    "Inserts a comment in the stile
 
-;;;; --------------------------------- STRING expansion ----------------------------------
-The number of dashes is calculated based on `*titled-comment-length*'.
-"
-    (interactive "PsTitle: ")
-    (let* ((clen (length string))
-           (comment-prefix (format "%s " (s-repeat 4 comment-start)))
-           (remaining-space (- *titled-comment-length* (length comment-prefix) (+ 2 clen)))
-           (dashes-left (s-repeat (floor (/ remaining-space 2.0)) "-"))
-           (dashes-right (s-repeat (ceiling (/ remaining-space 2.0)) "-")))
-      (insert (format "%s%s %s %s\n" comment-prefix dashes-left string dashes-right))))
+;;;; -- Key Bindings --
 
+  ;;; F Keys
+  (global-set-key [(f7)] 'magit-status)
+  (global-set-key [(f8)] 'goto-page)
+  (global-set-key [(f9)] 'open-notes-file)
 
-
- ;;; --------------------------------- before-save-hook ----------------------------------
-  (add-hook 'before-save-hook (lambda () (unless (or (ignore-errors makefile-mode)
-                                                     (memq major-mode '(ipa-mode
-                                                                        makefile-mode)))
-                                           (delete-trailing-whitespace))))
-
-
-
- ;;; ---------------------------------- Bindings ----------------------------------
+  ;;; Alias C-. to M-TAB
   (define-key key-translation-map (kbd "C-.") (kbd "M-TAB"))
-  (global-set-key [f7] 'magit-status)
-  (global-set-key (kbd "C-\:") 'message-point)
+
+  ;;; Elisp testing
+  (global-set-key (kbd "C->") 'message-point)
+
+  ;;; Buffer/window navigation
+  (global-set-key (kbd "C-x o") 'switch-window)
   (global-set-key (kbd "C-x C-b") 'ibuffer)
-  (add-hook 'before-save-hook (lambda () (delete-trailing-whitespace)))
 
+  ;;; Editing
+  (global-set-key (kbd "C-c e") 'eval-and-replace)
 
-  ;;(add-hook 'prog-mode-hook '(lambda () (yalinum-mode 1)))
+
+;;;; -- Random configuration --
 
-  ;; Frame title
+  ;;; Frame title
   (setq frame-title-format '(buffer-file-name "%b - emacs" ("%b - emacs")))
 
   ;;; AUTO-MODES
@@ -143,8 +120,20 @@ The number of dashes is calculated based on `*titled-comment-length*'.
 
   ;;; Unique buffer names
   (require 'uniquify)
+
+  ;;; let M-{b,f} move by subwords
   (global-subword-mode 1)
 
+  ;;; - before-save-hook -
+  ;;; remove trailing whitespace
+  (add-hook 'before-save-hook (lambda () (unless (or (ignore-errors makefile-mode)
+                                                     (memq major-mode '(ipa-mode
+                                                                        makefile-mode)))
+                                           (delete-trailing-whitespace))))
+
+;;;;  Custom commands
+
+  ;;; Comments
   (defun insert-title (fill title)
     (interactive "cFill with: \nsEnter string:")
     (let* ((l (length title))
@@ -155,13 +144,26 @@ The number of dashes is calculated based on `*titled-comment-length*'.
       (insert title)
       (dotimes (i (ceiling n))
         (insert fill))))
-  (defun open-notes-file ()
-    (interactive)
-    (find-file-other-window "~/.emacs.d/notes.org"))
 
-  (global-set-key [(f9)] 'open-notes-file)
+  ;; insert titled comment
+  (defvar *titled-comment-length* 90
+    "Total width of comments inserted with `insert-titled-comment'")
 
-  (global-set-key [(f8)] 'goto-page)
+  (defun insert-titled-comment (string)
+    "Inserts a comment in the stile
+  ;;;; ------------------------------ STRING expansion -------------------------------
+The number of dashes is calculated based on `*titled-comment-length*'.
+"
+    (interactive "sTitle: ")
+    (let* ((clen (length string))
+           (comment-prefix (format "%s " (s-repeat 4 comment-start)))
+           (remaining-space (- *titled-comment-length* (length comment-prefix) (+ 2 clen)))
+           (dashes-left (s-repeat (floor (/ remaining-space 2.0)) "-"))
+           (dashes-right (s-repeat (ceiling (/ remaining-space 2.0)) "-")))
+      (insert (format "%s%s %s %s\n" comment-prefix dashes-left string dashes-right))))
+
+
+  ;;; Lisp interaction
   (defun eval-and-replace (&optional arg)
     "Replace the preceding sexp with its value."
     (interactive "P")
@@ -173,12 +175,22 @@ The number of dashes is calculated based on `*titled-comment-length*'.
 	(error (message "Invalid expression")
 	       (insert (current-kill 0))))))
 
-  (global-set-key (kbd "C-c e") 'eval-and-replace)
+  ;;; Elisp testing
+  (defun message-point()
+    "Display the value of (point) in the minibuffer."
+    (interactive)
+    (message "Point: %S" (point)))
 
-  (global-set-key (kbd "C-x o") 'switch-window)
+  (defun length-of-region(start end)
+    "Places the length of the current region in the kill ring."
+    (interactive "r")
+    (kill-new (message "%S" (- end start))))
+
+  ;;; Random stuff
+  (defun open-notes-file ()
+    (interactive)
+    (find-file-other-window "~/.emacs.d/notes.org"))
   )
-
-
 
 (sm-provide :module base)
 ;;;; End base module
