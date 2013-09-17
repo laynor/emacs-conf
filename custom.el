@@ -242,6 +242,7 @@
  '(factor-font-lock-word ((t (:inherit font-lock-function-name-face))))
  '(flx-highlight-face ((t (:inherit font-lock-keyword-face :underline t :weight bold))))
  '(flycheck-error ((t (:inherit error :underline t))))
+ '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face :foreground "MediumPurple1" :weight bold))))
  '(font-lock-comment-face ((t (:foreground "MediumPurple3" :slant italic))))
  '(font-lock-fic-face ((t (:inherit font-lock-comment-face :background "Red" :foreground "Yellow" :weight bold))))
  '(font-lock-preprocessor-face ((t (:inherit font-lock-builtin-face :foreground "#ff0033"))))
