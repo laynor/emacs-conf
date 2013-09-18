@@ -9,10 +9,6 @@
   )
 
 (sm-module-post (elisp)
-  ;; Utility function to display point value on minibuffer
-  (defun message-point()
-    (interactive)
-    (message "Point: %S" (point)))
 
   ;;; REPL
   (defun visit-ielm ()
