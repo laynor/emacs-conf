@@ -22,6 +22,9 @@
 
 ;;; Commentary:
 
+;;; TODO: undo support
+;;; TODO: region support
+
 ;;
 
 ;;; Code:
@@ -77,6 +80,8 @@ expands to
 (defvar lpe::search-in-summary nil)
 (defvar lpe::*tag->packages* (ht-create))
 (defvar lpe::*package->tags* (ht-create))
+(defvar lpe::*last-applied-tags* nil)
+
 
 
 ;;;;  Persistence
@@ -187,11 +192,49 @@ expands to
 
 ;;;;  Filters
 
+(defvar lpe::*filters-history* nil)
+
+(setq lpe::*filters-history-pos* 0)
+
+(defstruct (lpe::filter (:constructor lpe::make-filter)
+                        (:copier lpe::copy-filter))
+  function
+  string)
+
+  ;; (setq lpe::*current-filter* filter-str)
+  ;; (setq lpe::*filterfn* filter-fn))
 
 (defun lpe::set-filter (filter-fn filter-str)
-  (setq lpe::*current-filter* filter-str)
-  (setq lpe::*filterfn* filter-fn))
+  (push (lpe::make-filter :function filter-fn
+                          :string filter-str)
+        lpe::*filters-history*)
+  (setq lpe::*filters-history-pos* 0))
 
+(defun lpe::current-filter ()
+  (nth lpe::*filters-history-pos* lpe::*filters-history*))
+
+(defun lpe::current-filter-function ()
+  (and (lpe::current-filter)
+       (lpe::filter-function (lpe::current-filter))))
+
+(defun lpe::current-filter-string ()
+  (or (and (lpe::current-filter)
+           (lpe::filter-string (lpe::current-filter)))
+      ""))
+
+(defun lpe:filters-history-forward ()
+  (interactive)
+  (if (zerop lpe::*filters-history-pos*)
+      (error "Already at the newest filter.")
+    (decf lpe::*filters-history-pos*)
+    (lpe::update-all)))
+
+(defun lpe:filters-history-backward ()
+  (interactive)
+  (if (>= lpe::*filters-history-pos* (1- (length lpe::*filters-history*)))
+      (error "End of history.")
+    (incf lpe::*filters-history-pos*)
+    (lpe::update-all)))
 
 ;; filter syntax:
 ;; tag1,tag2,tag3,!tag4/tag5 = tag1 and tag2 and tag3 and (not tag4) or tag5
@@ -256,7 +299,7 @@ expands to
                (pkg (package-desc-name pkg-desc))
                (tags (lpe::package->tags pkg)))
           (lpe::update-progress)
-          (when (or (and lpe::*filterfn* (not (funcall lpe::*filterfn* pkg-desc tags)))
+          (when (or (and (lpe::current-filter-function) (not (funcall (lpe::current-filter-function) pkg-desc tags)))
                     (and (not lpe::*show-hidden-p*) (member "hidden" tags)))
             (push entry to-hide))))
       (setq tabulated-list-entries (set-difference tabulated-list-entries to-hide :test 'equal))))
@@ -264,7 +307,7 @@ expands to
 
 (defun lpe::process-line ()
   (let ((tags (lpe::tags-at-point)))
-    (when (or (and lpe::*filterfn* (not (funcall lpe::*filterfn* (lpe::package-desc-at-point) tags)))
+    (when (or (and (lpe::current-filter-function) (not (funcall (lpe::current-filter-function) (lpe::package-desc-at-point) tags)))
               (and (not lpe::*show-hidden-p*) (member "hidden" tags)))
       ;; Saving position to avoid going back to beginning of buffer
       (let ((next-pos (line-beginning-position 2)))
@@ -275,42 +318,53 @@ expands to
 
 
 ;;;;  Minibuffer
+;;; TODO: provide long/short info
 
 
 (defun lpe::update-minibuffer-info()
   (interactive)
-  (message (format "%-40s | %-40s"
+  (message (format "%s\n%s\n%s" ;; "%-40s | %-40s | %-40s"
                    (lpe::format-tags)
-                   (lpe::format-filter))))
+                   (lpe::format-filter)
+                   (lpe::format-last-applied-tags))))
 
 
 (defun lpe::filter-type ()
-  (concat (cond ((s-starts-with? "/" lpe::*current-filter*)
+  (concat (cond ((s-starts-with? "/" (lpe::current-filter-string))
                  (concat "Names" (if lpe::search-in-summary "/Summary" "")))
-                ((null lpe::*filterfn*)
+                ((null (lpe::current-filter-function))
                  "All")
                 (t "Tags"))
           (if lpe::*show-hidden-p* "+Hidden" "")))
 
 
 (defun lpe::format-filter ()
-  (concat (propertize (format "Filter[%s]: " (lpe::filter-type))
+  (format "%-25s %40s"
+          (propertize (format "Filter[%s]: " (lpe::filter-type))
                       'face '((:foreground "dodger-blue")))
-          (propertize lpe::*current-filter*
+          (propertize (lpe::current-filter-string)
                       'face '((:foreground "dim grey")))))
 
 
 (defun lpe::format-tags ()
-  (format (concat (propertize "Tags: " 'face '((:foreground "green"))) "%s")
-          (s-join ", " (lpe::tags-at-point))))
+  (format "%-25s%40s"
+          (propertize "Tags: " 'face '((:foreground "green")))
+          (s-join "," (lpe::tags-at-point))))
+
+(defun lpe::format-last-applied-tags ()
+  (format "%-25s %40s"
+          (propertize "Apply with .: " 'face '((:foreground "Red")))
+          (s-join "," lpe::*last-applied-tags*)))
 
 
 ;;;;  User commands
+
 
 (defun lpe::all-tags ()
   (let (all-tags)
     (union (list "hidden")
                (ht-keys lpe::*tag->packages*) :test 'equal)))
+
 
 (defun* lpe:tag (taglist &optional add)
   (interactive (list (completing-read-multiple "Tags (comma separated): "
@@ -318,6 +372,7 @@ expands to
                                                nil nil
                                                (s-join "," (lpe::package->tags
                                                              (lpe::package-at-point))))))
+  (setf lpe::*last-applied-tags* taglist)
   (let* ((pkg (lpe::package-at-point))
          (oldtags (lpe::package->tags pkg)))
 
@@ -369,6 +424,9 @@ expands to
         (not lpe::search-in-summary))
   (lpe::update-all))
 
+(defun lpe:apply-last-tags ()
+  (interactive)
+  (lpe:tag lpe::*last-applied-tags*))
 
 ;;;;  Post command hook
 
@@ -411,6 +469,15 @@ expands to
 (define-key list-packages-ext-mode-map (kbd "g") (lambda () (interactive)
                                                    (revert-buffer)
                                                    (lpe::update-all)))
+(define-key list-packages-ext-mode-map
+  (kbd "<XF86Back>")
+  'lpe:filters-history-backward)
+
+(define-key list-packages-ext-mode-map
+  (kbd "<XF86Forward>")
+  'lpe:filters-history-forward)
+
+(define-key list-packages-ext-mode-map (kbd ".") 'lpe:apply-last-tags)
 
 (define-key list-packages-ext-mode-map (kbd "k")
   (lambda ()
@@ -425,5 +492,5 @@ expands to
        (lpe::update-all))))
 
 
-(provide 'list-package-extras)
+(provide 'list-package-ext)
 ;;; list-package-extras.el ends here
