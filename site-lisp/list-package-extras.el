@@ -348,7 +348,7 @@ expands to
   (lpe::update-minibuffer-info))
 
 
-(defun lpe::show-hidden-toggle ()
+(defun lpe:show-hidden-toggle ()
   (interactive)
   (setq lpe::*show-hidden-p* (not lpe::*show-hidden-p*))
   (lpe::update-all))
@@ -415,7 +415,7 @@ expands to
 (define-key list-packages-ext-mode-map (kbd "t") 'lpe:tag)
 (define-key list-packages-ext-mode-map (kbd "f") 'lpe:filter)
 (define-key list-packages-ext-mode-map (kbd "F") 'lpe:filter-with-regex)
-(define-key list-packages-ext-mode-map (kbd "H") 'lpe::show-hidden-toggle)
+(define-key list-packages-ext-mode-map (kbd "H") 'lpe:show-hidden-toggle)
 (define-key list-packages-ext-mode-map (kbd "v") 'lpe:search-in-summary-toggle)
 (define-key list-packages-ext-mode-map (kbd "g") (lambda () (interactive)
                                                    (revert-buffer)
