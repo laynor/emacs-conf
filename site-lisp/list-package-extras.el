@@ -130,12 +130,12 @@ expands to
   (setq lpe::*package->tags* (make-hash-table :test 'equal)))
 
 
-(defun lpe::tag->packages (tag)
-  (gethash tag lpe::*tag->packages*))
+(defmacro lpe::tag->packages (tag)
+  `(gethash ,tag lpe::*tag->packages*))
 
 
-(defun lpe::package->tags (package)
-  (gethash package lpe::*package->tags*))
+(defmacro lpe::package->tags (package)
+  `(gethash ,package lpe::*package->tags*))
 
 
 (defun lpe::package-desc-at-point ()
@@ -285,13 +285,12 @@ expands to
 
 
 (defun lpe::filter-type ()
-  (concat
-   (cond ((s-starts-with? "/" lpe::*current-filter*)
-          (concat "Names" (if lpe::search-in-summary "/Summary" "")))
-         ((null lpe::*filterfn*)
-          "All")
-         (t "Tags")))
-  (if lpe::*show-hidden-p* "+Hidden" ""))
+  (concat (cond ((s-starts-with? "/" lpe::*current-filter*)
+                 (concat "Names" (if lpe::search-in-summary "/Summary" "")))
+                ((null lpe::*filterfn*)
+                 "All")
+                (t "Tags"))
+          (if lpe::*show-hidden-p* "+Hidden" "")))
 
 
 (defun lpe::format-filter ()
@@ -313,17 +312,26 @@ expands to
     (union (list "hidden")
                (ht-keys lpe::*tag->packages*) :test 'equal)))
 
-(defun lpe:tag (taglist)
+(defun* lpe:tag (taglist &optional add)
   (interactive (list (completing-read-multiple "Tags (comma separated): "
                                                (lpe::all-tags)
                                                nil nil
                                                (s-join "," (lpe::package->tags
                                                              (lpe::package-at-point))))))
-  (dolist (tag taglist)
-    (lpe::tag-package (downcase (s-trim tag)) (lpe::package-at-point)))
-  (lpe::process-line)
-  (lpe::save-state)
-  (lpe::update-minibuffer-info))
+  (let* ((pkg (lpe::package-at-point))
+         (oldtags (lpe::package->tags pkg)))
+
+    (when (not add)
+      (dolist (tag oldtags)
+        (setf (lpe::package->tags pkg) nil)
+        (setf (lpe::tag->packages tag)
+              (remove pkg (lpe::tag->packages tag)))))
+
+    (dolist (tag taglist)
+      (lpe::tag-package (downcase (s-trim tag)) pkg))
+    (lpe::process-line)
+    (lpe::save-state)
+    (lpe::update-minibuffer-info)))
 
 
 (defun lpe:show-hidden-toggle ()
@@ -403,6 +411,11 @@ expands to
 (define-key list-packages-ext-mode-map (kbd "g") (lambda () (interactive)
                                                    (revert-buffer)
                                                    (lpe::update-all)))
+
+(define-key list-packages-ext-mode-map (kbd "k")
+  (lambda ()
+    (interactive)
+    (lpe:tag '("hidden") t)))
 
 (define-key list-packages-ext-mode-map (kbd "C")
   '(lambda ()
