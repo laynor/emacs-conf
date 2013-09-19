@@ -338,7 +338,9 @@ expands to
 
 
 (defun lpe:tag (tags)
-  (interactive "sTags (comma separated): ")
+  (interactive (list (read-from-minibuffer "Tags (comma separated): "
+                                           (s-join ", " (lpe::package->tags
+                                                         (lpe::package-at-point))))))
   (let ((taglist (s-split "," tags)))
     (dolist (tag taglist)
       (lpe::tag-package (downcase (s-trim tag)) (lpe::package-at-point))))
