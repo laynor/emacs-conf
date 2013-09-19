@@ -38,6 +38,7 @@
                        "magit"
                        "git-commit-mode"
                        "git-messenger"
+                       "list-packages-ext"
                        "markdown-mode"
                        "markdown-mode+"
                        ;;"melpa"
