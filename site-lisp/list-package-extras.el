@@ -1,8 +1,8 @@
 ;;; list-package-extras.el --- Extras for list-packages  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2013  Alessandro
+;; Copyright (C) 2013  Alessandro Piras
 
-;; Author: Alessandro <ale@pignegna>
+;; Author: Alessandro Piras <laynor@gmail.com>
 ;; Keywords: convenience, tools
 ;; Package-Requires: ((s "1.6.0"))
 ;; Version 1.0
@@ -75,42 +75,28 @@ expands to
 (defvar lpe::*show-hidden-p* nil)
 (defvar lpe::*current-filter* "")
 (defvar lpe::search-in-summary nil)
-(defvar lpe::*tag->packages* (make-hash-table))
-(defvar lpe::*package->tags* (make-hash-table))
+(defvar lpe::*tag->packages* (ht-create))
+(defvar lpe::*package->tags* (ht-create))
 
 
 ;;;;  Persistence
 
 (defvar lpe::*cache-location* "list-packages-ext-mode")
 
-;; (defun projectile-compile-project ()
-;;   "Run project compilation command."
-;;   (interactive)
-;;   (let* ((project-root (projectile-project-root))
-;; 	 (buffers (projectile-project-buffers))
-;; 	 (cache-location (directory-file-name
-;; 			  (replace-regexp-in-string
-;; 			   "/+" "/"
-;; 			   (concat projectile--compile-history-cache-location
-;; 				   (projectile-project-root)))))
-;; 	 (stored-compilation-cmds (persistent-soft-fetch 'compile-cmds
-;; 							 cache-location))
-;; 	 (compile-history stored-compilation-cmds)
-;;          (compilation-cmd (compilation-read-command
-;;                            (projectile-compilation-command project-root))))
-;;     (cd project-root)
-;;     (save-some-buffers nil (lambda ()
-;; 			     (and (buffer-file-name)
-;; 				  (memq (current-buffer) buffers))))
-;;     (puthash project-root compilation-cmd projectile-compilation-cmd-map)
-;;     (persistent-soft-store 'compile-cmds (remove-duplicates
-;; 					  (cons (s-trim compilation-cmd) stored-compilation-cmds)
-;; 					  :test #'equal
-;; 					  :from-end t)
-;; 			   cache-location)
-;;     (compilation-start compilation-cmd)))
+(defun lpe::save-state ()
+  (persistent-soft-store 'lpe::*tag->packages*
+                         (ht-to-alist lpe::*tag->packages*)
+                         lpe::*cache-location*)
+  (persistent-soft-store 'lpe::*package->tags*
+                         (ht-to-alist lpe::*package->tags*)
+                         lpe::*cache-location*))
 
-
+(defun lpe::resume-state ()
+  (let ((t->p (persistent-soft-fetch 'lpe::*tag->packages* lpe::*cache-location*))
+        (p->t (persistent-soft-fetch 'lpe::*package->tags* lpe::*cache-location*)))
+    (setq lpe::*tag->packages* (or (and t->p (ht-from-alist t->p)) (ht-create)))
+    (setq lpe::*package->tags* (or (and p->t (ht-from-alist p->t)) (ht-create)))))
+
 ;;;;  Minor mode
 
 
@@ -128,6 +114,7 @@ expands to
 (defun lpe:activate ()
   (apply 'run-hooks list-packages-ext-mode-hook)
   (add-hook 'post-command-hook 'lpe::post-command-hook)
+  (lpe::resume-state)
   (lpe::update-all))
 
 
@@ -335,8 +322,7 @@ expands to
   (dolist (tag taglist)
     (lpe::tag-package (downcase (s-trim tag)) (lpe::package-at-point)))
   (lpe::process-line)
-  (when (called-interactively-p 'any)
-    (message "%S" (lpe::tags-at-point)))
+  (lpe::save-state)
   (lpe::update-minibuffer-info))
 
 
@@ -381,6 +367,7 @@ expands to
 
 (defun lpe::post-command-hook ()
   (when (and (eq major-mode 'package-menu-mode)
+             list-packages-ext-mode
              (s-blank? (current-message)))
     (lpe::update-minibuffer-info)))
 
