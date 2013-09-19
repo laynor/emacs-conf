@@ -74,7 +74,6 @@ expands to
 (defvar lpe::*filterfn* nil)
 (defvar lpe::*show-hidden-p* nil)
 (defvar lpe::*current-filter* "")
-(defvar lpe::*old-point-position* nil)
 (defvar lpe::search-in-summary nil)
 (defvar lpe::*tag->packages* (make-hash-table))
 (defvar lpe::*package->tags* (make-hash-table))
@@ -244,8 +243,6 @@ expands to
 
 ;;;;  Buffer processing
 
-(setq i 0)
-
 
 (let ((current-progress 0)
       (progress-message ""))
@@ -384,12 +381,7 @@ expands to
 
 (defun lpe::post-command-hook ()
   (when (and (eq major-mode 'package-menu-mode)
-             (s-blank? (with-current-buffer (window-buffer (minibuffer-window))
-                         (buffer-string))))
-  ;; (when
-  ;;            (or (not lpe::*old-point-position*)
-  ;;                (/= (point) lpe::*old-point-position*)))
-    ;; (setq lpe::*old-point-position* (point))
+             (s-blank? (current-message)))
     (lpe::update-minibuffer-info)))
 
 (defun minibuffer-string ()
