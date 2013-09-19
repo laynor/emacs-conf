@@ -26,7 +26,7 @@
 
 ;;; Code:
 
-;;;; Macros
+;;;;  Macros
 
 (require 'cl)
 (require 's)
@@ -66,7 +66,9 @@ expands to
 
 
 
-;;;; Variables
+;;;;  Variables
+
+
 (defvar list-packages-ext-mode-map (make-sparse-keymap))
 (defvar lpe::*overlays* nil)
 (defvar lpe::*filterfn* nil)
@@ -74,14 +76,11 @@ expands to
 (defvar lpe::*current-filter* "")
 (defvar lpe::*old-point-position* nil)
 (defvar lpe::search-in-summary nil)
-(defvar lpe::*tag->packages*
-  (make-hash-table))
-
-(defvar lpe::*package->tags*
-  (make-hash-table))
+(defvar lpe::*tag->packages* (make-hash-table))
+(defvar lpe::*package->tags* (make-hash-table))
 
 
-;;;; Persistence
+;;;;  Persistence
 
 (defvar lpe::*cache-location* "list-packages-ext-mode")
 
@@ -113,7 +112,7 @@ expands to
 ;;     (compilation-start compilation-cmd)))
 
 
-;;;; Minor mode
+;;;;  Minor mode
 
 
 (define-minor-mode list-packages-ext-mode
@@ -137,7 +136,7 @@ expands to
   (remove-hook 'post-command-hook 'lpe::post-command-hook))
 
 
-;;;; Tags
+;;;;  Tags
 
 
 (defun lpe::clear-tags ()
@@ -158,7 +157,8 @@ expands to
 
 
 (defun lpe::package-at-point ()
-  (package-desc-name (lpe::package-desc-at-point)))
+  (let ((pd (lpe::package-desc-at-point)))
+    (and pd (package-desc-name pd))))
 
 
 (defun lpe::tags-at-point ()
@@ -176,7 +176,7 @@ expands to
     (puthash package tags-of-package lpe::*package->tags*)))
 
 
-;;;; Line hiding
+;;;;  Line hiding
 
 
 (defun lpe::overlay-new (beg end)
@@ -187,18 +187,19 @@ expands to
 
 (defvar lpe::*hidden-entries*)
 
+(defun lpe::hide-package (pkg)
+  (setq tabulated-list-entries (remove-if (lambda (entry)
+                                            (eq pkg (package-desc-name (car entry))))
+                                          tabulated-list-entries)))
 (defun lpe::hide-line ()
-  (let ((id (tabulated-list-get-id)))
-    (setq tabulated-list-entries (remove-if (lambda (entry) (eq id (car entry)))
-                                            tabulated-list-entries))
-    ))
+  (lpe::hide-package (lpe::package-at-point)))
 
 (defun lpe::show-all-lines ()
   (interactive)
   (revert-buffer))
 
 
-;;;; filters
+;;;;  Filters
 
 
 (defun lpe::set-filter (filter-fn filter-str)
@@ -241,7 +242,7 @@ expands to
 
 
 
-;;;; Buffer processing
+;;;;  Buffer processing
 
 (setq i 0)
 
@@ -249,11 +250,11 @@ expands to
 (let ((current-progress 0)
       (progress-message ""))
 
-  (defun start-progress (message)
+  (defun lpe::start-progress (message)
     (setq progress-message message)
     (setq current-progress 0))
 
-  (defun update-progress ()
+  (defun lpe::update-progress ()
     (let* ((n (round (* 33 (/ (float (point)) (point-max))))))
       (when (/= n current-progress)
         (setq current-progress n)
@@ -262,29 +263,48 @@ expands to
                          (concat (s-repeat n "=") ">")))))))
 
 
-
 (defun lpe::process-buffer ()
-  (save-excursion
     (lpe::show-all-lines)
-    (goto-char (point-min))
-    (cl-flet ((finished () (null (lpe::package-desc-at-point))))
-      (start-progress "Filtering :")
-      (while (not (finished))
-        (update-progress)
-        (let ((next-pos (line-beginning-position 2)))
-          (lpe::process-line)
-          (goto-char next-pos))))))
+    (lpe::start-progress  "Filtering: ")
+    (let (to-hide)
+      (dolist (entry tabulated-list-entries)
+        (let* ((pkg-desc (car entry))
+               (pkg (package-desc-name pkg-desc))
+               (tags (lpe::package->tags pkg)))
+          (lpe::update-progress)
+          (when (or (and lpe::*filterfn* (not (funcall lpe::*filterfn* pkg-desc tags)))
+                    (and (not lpe::*show-hidden-p*) (member "hidden" tags)))
+            (push entry to-hide))))
+      (setq tabulated-list-entries (set-difference tabulated-list-entries to-hide :test 'equal))))
+
+
+  ;; (save-excursion
+  ;;   (lpe::show-all-lines)
+  ;;   (goto-char (point-min))
+  ;;   (cl-flet ((finished () (null (lpe::package-desc-at-point))))
+  ;;     (lpe::start-progress "Filtering :")
+  ;;     (while (not (finished))
+  ;;       (lpe::update-progress)
+  ;;       (let ((next-pos (line-beginning-position 2)))
+  ;;         (lpe::process-line)
+  ;;         (goto-char next-pos))))))
 
 
 (defun lpe::process-line ()
   (let ((tags (lpe::tags-at-point)))
     (when (or (and lpe::*filterfn* (not (funcall lpe::*filterfn* (lpe::package-desc-at-point) tags)))
               (and (not lpe::*show-hidden-p*) (member "hidden" tags)))
-      (lpe::hide-line))))
+      ;; Saving position to avoid going back to beginning of buffer
+      (let ((next-pos (line-beginning-position 2)))
+        (lpe::hide-line)
+        (goto-char next-pos))
+      (tabulated-list-print t))))
 
 
 
-;;;; Minibuffer
+;;;;  Minibuffer
+
+
 (defun lpe::update-minibuffer-info()
   (interactive)
   (message (format "%-40s | %-40s"
@@ -301,6 +321,7 @@ expands to
          (t "Tags")))
   (if lpe::*show-hidden-p* "+Hidden" ""))
 
+
 (defun lpe::format-filter ()
   (concat (propertize (format "Filter[%s]: " (lpe::filter-type))
                       'face '((:foreground "dodger-blue")))
@@ -308,12 +329,12 @@ expands to
                       'face '((:foreground "dim grey")))))
 
 
-
 (defun lpe::format-tags ()
   (format (concat (propertize "Tags: " 'face '((:foreground "green"))) "%s")
           (s-join ", " (lpe::tags-at-point))))
+
 
-;;; User commands
+;;;;  User commands
 
 
 (defun lpe:tag (tags)
@@ -363,7 +384,7 @@ expands to
   (lpe::update-all))
 
 
-;;;; Post command hook
+;;;;  Post command hook
 
 
 (defun lpe::post-command-hook ()
@@ -374,7 +395,7 @@ expands to
     (lpe::update-minibuffer-info)))
 
 
-;;;; Kludges
+;;;;  Kludges
 
 
 (defun disable-smooth-scroll ()
@@ -388,7 +409,7 @@ expands to
           'disable-smooth-scroll)
 
 
-;;;; Keybindings
+;;;;  Keybindings
 
 
 (define-key list-packages-ext-mode-map (kbd "t") 'lpe:tag)
@@ -396,6 +417,10 @@ expands to
 (define-key list-packages-ext-mode-map (kbd "F") 'lpe:filter-with-regex)
 (define-key list-packages-ext-mode-map (kbd "H") 'lpe::show-hidden-toggle)
 (define-key list-packages-ext-mode-map (kbd "v") 'lpe:search-in-summary-toggle)
+(define-key list-packages-ext-mode-map (kbd "g") (lambda () (interactive)
+                                                   (revert-buffer)
+                                                   (lpe::update-all)))
+
 (define-key list-packages-ext-mode-map (kbd "C")
   '(lambda ()
      (interactive)
