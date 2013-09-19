@@ -30,7 +30,7 @@
 
 (require 'cl)
 (require 's)
-;;(require 'ht)
+(require 'ht)
 (require 'persistent-soft)
 
 (defmacro* lpe::equal-case (exp &body clauses)
@@ -258,7 +258,7 @@ expands to
     (let* ((n (round (* 33 (/ (float (point)) (point-max))))))
       (when (/= n current-progress)
         (setq current-progress n)
-        (message (format "%s: |%-33s|"
+        (message (format "%s |%-33s|"
                          progress-message
                          (concat (s-repeat n "=") ">")))))))
 
@@ -276,18 +276,6 @@ expands to
                     (and (not lpe::*show-hidden-p*) (member "hidden" tags)))
             (push entry to-hide))))
       (setq tabulated-list-entries (set-difference tabulated-list-entries to-hide :test 'equal))))
-
-
-  ;; (save-excursion
-  ;;   (lpe::show-all-lines)
-  ;;   (goto-char (point-min))
-  ;;   (cl-flet ((finished () (null (lpe::package-desc-at-point))))
-  ;;     (lpe::start-progress "Filtering :")
-  ;;     (while (not (finished))
-  ;;       (lpe::update-progress)
-  ;;       (let ((next-pos (line-beginning-position 2)))
-  ;;         (lpe::process-line)
-  ;;         (goto-char next-pos))))))
 
 
 (defun lpe::process-line ()
@@ -336,14 +324,19 @@ expands to
 
 ;;;;  User commands
 
+(defun lpe::all-tags ()
+  (let (all-tags)
+    (union (list "hidden")
+               (ht-keys lpe::*tag->packages*) :test 'equal)))
 
-(defun lpe:tag (tags)
-  (interactive (list (read-from-minibuffer "Tags (comma separated): "
-                                           (s-join ", " (lpe::package->tags
-                                                         (lpe::package-at-point))))))
-  (let ((taglist (s-split "," tags)))
-    (dolist (tag taglist)
-      (lpe::tag-package (downcase (s-trim tag)) (lpe::package-at-point))))
+(defun lpe:tag (taglist)
+  (interactive (list (completing-read-multiple "Tags (comma separated): "
+                                               (lpe::all-tags)
+                                               nil nil
+                                               (s-join "," (lpe::package->tags
+                                                             (lpe::package-at-point))))))
+  (dolist (tag taglist)
+    (lpe::tag-package (downcase (s-trim tag)) (lpe::package-at-point)))
   (lpe::process-line)
   (when (called-interactively-p 'any)
     (message "%S" (lpe::tags-at-point)))
@@ -391,11 +384,20 @@ expands to
 
 (defun lpe::post-command-hook ()
   (when (and (eq major-mode 'package-menu-mode)
-             (or (not lpe::*old-point-position*)
-                 (/= (point) lpe::*old-point-position*)))
-    (setq lpe::*old-point-position* (point))
+             (s-blank? (with-current-buffer (window-buffer (minibuffer-window))
+                         (buffer-string))))
+  ;; (when
+  ;;            (or (not lpe::*old-point-position*)
+  ;;                (/= (point) lpe::*old-point-position*)))
+    ;; (setq lpe::*old-point-position* (point))
     (lpe::update-minibuffer-info)))
 
+(defun minibuffer-string ()
+  (interactive)
+  (message "%S" (with-current-buffer (window-buffer (minibuffer-window)) (buffer-string)) ))
+
+(define-key list-packages-ext-mode-map (kbd "a")
+  'minibuffer-string)
 
 ;;;;  Kludges
 
@@ -426,9 +428,9 @@ expands to
 (define-key list-packages-ext-mode-map (kbd "C")
   '(lambda ()
      (interactive)
-     (when (yes-or-no-p "Are you sure you want to clear all the tags?")
+     (when (yes-or-no-p "Are you sure you want to clear all the tags? ")
        (lpe::clear-tags)
-       (lpe::process-buffer))))
+       (lpe::update-all))))
 
 
 (provide 'list-package-extras)
