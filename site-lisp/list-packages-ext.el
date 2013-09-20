@@ -152,6 +152,14 @@ Provides:
 
 ;;;;  Tags
 
+(defun lpe::tag-match (tag-1 tag-2)
+  (let ((t1 (replace-regexp-in-string "^!?" "" tag-1))
+        (t2 (replace-regexp-in-string "^!?" "" tag-2)))
+    (equal t1 t2)))
+
+(defun lpe::tag-negated? (tag)
+  (s-starts-with? "!" tag))
+
 
 (defun lpe::clear-tags ()
   (setq lpe::*tag->packages* (make-hash-table :test 'equal))
@@ -194,7 +202,7 @@ Provides:
   (let* ((packages-with-tag (gethash tag lpe::*tag->packages*))
          (tags-of-package (gethash package lpe::*package->tags*)))
 
-    (cond ((s-starts-with? "!" tag)
+    (cond ((lpe::tag-negated? tag)
            (let ((tag (subseq tag 1)))
              (message "Removing tag %s" tag)
              (setf tags-of-package (remove* tag tags-of-package :test 'equal))
@@ -316,12 +324,8 @@ Provides:
   (let* ((tag-sets-strings (s-split "/" filter-str))
          (tag-sets (mapcar (lambda (tss)
                              (let* ((tags (s-split "," tss))
-                                    (required-tags (remove-if (lambda (tag)
-                                                                (s-starts-with? "!" tag))
-                                                              tags))
-                                    (required-absent-tags (set-difference tags required-tags
-                                                                          :test 'equal)))
-                               (cons required-tags required-absent-tags)))
+                                    (required-tags (remove-if 'lpe::tag-negated? tags))
+                                    (required-absent-tags (remove-if-not 'lpe::tag-negated? tags)))                               (cons required-tags required-absent-tags)))
                            tag-sets-strings)))
     (lambda (_package-desc tags)
       (some (lambda (tagset)
@@ -513,8 +517,7 @@ Provides:
                                (s-join "," (lpe::package->tags
                                             (lpe::package-at-point)))))
                             add-mode-p)))
-  (assert (or add (every (lambda (tag) (not (s-starts-with? "!" tag)))
-                         taglist))
+  (assert (or add (not (find-if 'lpe::tag-negated? taglist)))
           nil
           "Tag names cannot start with !")
 
@@ -575,7 +578,7 @@ Provides:
 ;;; filtering
 
 (defun lpe:filter (filter-str)
-  (interactive "sFilter (tag expression): ")
+  (interactive (list (lpe::read-tag-expression)))
   (cond ((s-blank? filter-str)
          (lpe::show-all-lines)
          (lpe::set-filter nil "None")
@@ -623,6 +626,44 @@ Provides:
   (interactive)
   (revert-buffer)
   (lpe::update-all))
+
+
+
+;;;;  Tags Completion
+
+(defvar lpe:*all-tags*)
+
+(defun lpe::complete-tag-expression (string)
+  (let* ((tag-groups (s-split "/" string))
+         (last-tag-group (s-split "," (car (last tag-groups))))
+         (last-tag (car (last last-tag-group)))
+         (completed-text (s-join "/" (append (butlast tag-groups)
+                                             (list (s-join "," (butlast last-tag-group)))))))
+    (mapcar (lambda (tag)
+              (propertize
+               (concat completed-text (and (not (s-blank? completed-text))
+                                           (not (s-ends-with? "/" completed-text))
+                                           ",") tag)
+               'display (let ((tag (substring tag 0))
+                              (ll (length last-tag)))
+                          (when (> (length tag) ll)
+                            (set-text-properties ll (1+ ll)
+                                                 '(face completions-first-difference)
+                                                 tag))
+                          tag)))
+            (remove-if-not (lambda (s)
+                             (and (not (find s (butlast last-tag-group) :test 'lpe::tag-match))
+                                  (s-starts-with? last-tag s)))
+                           (mapcar (lambda (candidate)
+                                     (concat (if (lpe::tag-negated? last-tag) "!" "")
+                                             candidate))
+                                   lpe:*all-tags*)))))
+
+(defun lpe::read-tag-expression ()
+  (interactive)
+  (let ((lpe:*all-tags* (lpe::all-tags)))
+    (completing-read "Filter (tag expression): "
+                     (completion-table-dynamic 'lpe::complete-tag-expression))))
 
 
 ;;;;  Post command hook
