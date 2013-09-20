@@ -115,7 +115,8 @@ expands to
 
 
 (define-minor-mode list-packages-ext-mode
-  "Activate extras for list-packages"
+  "Some extras for the *Packages* buffer (see `list-packages').
+\\{list-packages-ext-mode-map}"
   :global nil :group 'list-packages-ext
   :map list-packages-ext-mode-map
   :lighter "LPE"
@@ -314,7 +315,7 @@ expands to
       (and notes notes))))
 
 
-;;;; Notes
+;;;;  Notes
 
 (defmacro lpe::package->notes (package)
   `(ht-get lpe::*package->notes* ,package))
@@ -412,7 +413,6 @@ expands to
                        ""))))
 
 
-
 (defun lpe::filter-type ()
   (concat (cond ((s-starts-with? "/" (lpe::current-filter-string))
                  (concat "Names" (if lpe::search-in-summary "/Summary" "")))
@@ -435,12 +435,14 @@ expands to
           (propertize "Tags: " 'face '((:foreground "green")))
           (s-join "," (lpe::tags-at-point))))
 
+
 (defun lpe::format-last-applied-tags ()
   (format "%-25s %40s"
           (propertize "Apply with .: " 'face '((:foreground "Red")))
           (s-join "," lpe::*last-applied-tags*)))
 
 
+;;;;  User commands
 
 ;;; Tagging
 
@@ -475,6 +477,15 @@ expands to
   (lpe::save-state)
   (lpe::update-minibuffer-info))
 
+(defun lpe:hide-package ()
+  (interactive)
+  (lpe::tag% '("hidden") (if (region-active-p)
+                         (lpe::packages-in-region (region-beginning)
+                                                  (region-end))
+                       (list (lpe::package-at-point)))
+             t)
+  (lpe::save-state)
+  (lpe::update-minibuffer-info))
 
 (defun lpe:apply-last-tags ()
   (interactive)
@@ -486,6 +497,11 @@ expands to
   (setq lpe::*show-hidden-p* (not lpe::*show-hidden-p*))
   (lpe::update-all))
 
+(defun lpe:clear-all-tags ()
+  (interactive)
+  (when (yes-or-no-p "Are you sure you want to clear all the tags? ")
+    (lpe::clear-tags)
+    (lpe::update-all)))
 
 ;;; filtering
 
@@ -534,6 +550,11 @@ expands to
     (lpe::update-all)))
 
 
+(defun lpe:refresh
+  (interactive)
+  (revert-buffer)
+  (lpe::update-all))
+
 
 ;;;;  Post command hook
 
@@ -573,26 +594,16 @@ expands to
         ("F" lpe:filter-with-regex)
         ("H" lpe:show-hidden-toggle)
         ("v" lpe:search-in-summary-toggle)
-        ("g" (lambda () (interactive)
-               (revert-buffer)
-               (lpe::update-all)))
+        ("g" lpe:refresh)
         ("<XF86Back>" lpe:filters-history-backward)
         ("<XF86Forward>" lpe:filters-history-forward)
         ("<M-right>" lpe:filters-history-forward)
         ("<M-left>" lpe:filters-history-backward)
         ("." lpe:apply-last-tags)
         ("e" lpe:edit-package-notes)
-        ("k"
-         (lambda ()
-           (interactive)
-           (lpe:tag '("hidden") t)))
+        ("k" lpe:hide-package)
 
-        ("C"
-         (lambda ()
-           (interactive)
-           (when (yes-or-no-p "Are you sure you want to clear all the tags? ")
-             (lpe::clear-tags)
-             (lpe::update-all)))))))
+        ("C" lpe:clear-all-tags))))
 
 
 (provide 'list-package-ext)
