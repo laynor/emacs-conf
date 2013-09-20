@@ -138,7 +138,7 @@ expands to
 
 (defun lpe::update-all ()
   (lpe::show-all-lines)
-  (lpe::process-buffer)
+  (lpe::process-table)
   (tabulated-list-print t)
   (lpe::update-minibuffer-info))
 
@@ -370,7 +370,7 @@ expands to
                          (concat (s-repeat n "=") ">")))))))
 
 
-(defun lpe::process-buffer ()
+(defun lpe::process-table ()
     (lpe::show-all-lines)
     (lpe::start-progress  "Filtering: ")
     (let (to-hide)
