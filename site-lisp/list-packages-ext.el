@@ -80,6 +80,7 @@ expands to
 (defvar lpe::search-in-summary nil)
 (defvar lpe::*tag->packages* (ht-create))
 (defvar lpe::*package->tags* (ht-create))
+(defvar lpe::*package->notes* (ht-create))
 (defvar lpe::*last-applied-tags* nil)
 
 
@@ -94,13 +95,20 @@ expands to
                          lpe::*cache-location*)
   (persistent-soft-store 'lpe::*package->tags*
                          (ht-to-alist lpe::*package->tags*)
+                         lpe::*cache-location*)
+  (persistent-soft-store 'lpe::*package->notes*
+                         (ht-to-alist lpe::*package->notes*)
                          lpe::*cache-location*))
+
 
 (defun lpe::resume-state ()
   (let ((t->p (persistent-soft-fetch 'lpe::*tag->packages* lpe::*cache-location*))
-        (p->t (persistent-soft-fetch 'lpe::*package->tags* lpe::*cache-location*)))
+        (p->t (persistent-soft-fetch 'lpe::*package->tags* lpe::*cache-location*))
+        (p->n (persistent-soft-fetch 'lpe::*package->notes* lpe::*cache-location*)))
     (setq lpe::*tag->packages* (or (and t->p (ht-from-alist t->p)) (ht-create)))
-    (setq lpe::*package->tags* (or (and p->t (ht-from-alist p->t)) (ht-create)))))
+    (setq lpe::*package->tags* (or (and p->t (ht-from-alist p->t)) (ht-create)))
+    (setq lpe::*package->notes* (or (and p->n (ht-from-alist p->n)) (ht-create)))))
+
 
 
 ;;;;  Minor mode
@@ -299,6 +307,48 @@ expands to
              (s-match regex (package-desc-summary package-desc))))))
 
 
+(defun lpe::packages-with-notes-filter ()
+  (lambda (package-desc _tags)
+    (let* ((pkg (package-desc-name package-desc))
+           (notes (lpe::package->notes pkg)))
+      (and notes notes))))
+
+
+;;;; Notes
+
+(defmacro lpe::package->notes (package)
+  `(ht-get lpe::*package->notes* ,package))
+
+(defvar lpe:*package* nil)
+(make-variable-buffer-local 'lpe:*package*)
+
+(defun lpe:edit-package-notes (package)
+  (interactive (list (lpe::package-at-point)))
+  (let ((buf (get-buffer-create (format "*Notes for %s*" package))))
+    (with-current-buffer buf
+      (erase-buffer)
+      (let ((notes (lpe::package->notes package)))
+        (when notes
+          (insert notes)))
+      (org-mode)
+      (setq lpe:*package* package)
+      (message "package %S %S" package lpe:*package*)
+      (local-set-key (kbd "C-c C-c") 'lpe:save-package-notes))
+    (switch-to-buffer-other-window buf)))
+
+(defun lpe:save-package-notes ()
+  (interactive)
+  (let ((notes (buffer-string)))
+    (cond ((s-blank? notes)
+           (ht-remove lpe::*package->notes* lpe:*package*))
+
+          (t (ht-set lpe::*package->notes*
+                     lpe:*package*
+                     notes)
+             (lpe::save-state))))
+  (set-buffer-modified-p nil)
+  (kill-buffer)
+  (switch-to-buffer-other-window "*Packages*"))
 
 
 ;;;;  Buffer processing
@@ -353,10 +403,14 @@ expands to
 
 (defun lpe::update-minibuffer-info()
   (interactive)
-  (message (format "%s\n%s\n%s" ;; "%-40s | %-40s | %-40s"
+  (message (format "%s\n%s\n%s\n%s" ;; "%-40s | %-40s | %-40s"
                    (lpe::format-tags)
                    (lpe::format-filter)
-                   (lpe::format-last-applied-tags))))
+                   (lpe::format-last-applied-tags)
+                   (or (ignore-errors
+                         (car (s-lines (lpe::package->notes (lpe::package-at-point)))))
+                       ""))))
+
 
 
 (defun lpe::filter-type ()
@@ -387,7 +441,6 @@ expands to
           (s-join "," lpe::*last-applied-tags*)))
 
 
-;;;;  User commands
 
 ;;; Tagging
 
@@ -441,7 +494,12 @@ expands to
   (cond ((s-blank? filter-str)
          (lpe::show-all-lines)
          (lpe::set-filter nil "None")
-         (lpe::update-minibuffer-info))
+         (lpe::update-all))
+        ((s-equals? "with-notes" filter-str)
+         (lpe::show-all-lines)
+         (lpe::set-filter (lpe::packages-with-notes-filter)
+                          "Packages with notes only")
+         (lpe::update-all))
         (t
          (lpe::set-filter (lpe::parse-filter filter-str) filter-str)
          (lpe::update-all))))
@@ -474,6 +532,7 @@ expands to
       (error "End of history.")
     (incf lpe::*filters-history-pos*)
     (lpe::update-all)))
+
 
 
 ;;;;  Post command hook
@@ -522,6 +581,7 @@ expands to
         ("<M-right>" lpe:filters-history-forward)
         ("<M-left>" lpe:filters-history-backward)
         ("." lpe:apply-last-tags)
+        ("e" lpe:edit-package-notes)
         ("k"
          (lambda ()
            (interactive)
