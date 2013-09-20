@@ -102,6 +102,7 @@ expands to
     (setq lpe::*tag->packages* (or (and t->p (ht-from-alist t->p)) (ht-create)))
     (setq lpe::*package->tags* (or (and p->t (ht-from-alist p->t)) (ht-create)))))
 
+
 ;;;;  Minor mode
 
 
@@ -125,6 +126,13 @@ expands to
 
 (defun lpe:deactivate ()
   (remove-hook 'post-command-hook 'lpe::post-command-hook))
+
+
+(defun lpe::update-all ()
+  (lpe::show-all-lines)
+  (lpe::process-buffer)
+  (tabulated-list-print t)
+  (lpe::update-minibuffer-info))
 
 
 ;;;;  Tags
@@ -182,6 +190,26 @@ expands to
     (puthash tag packages-with-tag lpe::*tag->packages*)
     (puthash package tags-of-package lpe::*package->tags*)))
 
+
+(defun lpe::all-tags ()
+  (let (all-tags)
+    (union (list "hidden")
+               (ht-keys lpe::*tag->packages*) :test 'equal)))
+
+(defun* lpe::tag% (taglist packages add)
+  (setf lpe::*last-applied-tags* taglist)
+  (dolist (pkg packages)
+    (let ((oldtags (lpe::package->tags pkg)))
+      (when (not add)
+        (dolist (tag oldtags)
+          (setf (lpe::package->tags pkg) nil)
+          (setf (lpe::tag->packages tag)
+                (remove pkg (lpe::tag->packages tag)))))
+
+      (dolist (tag taglist)
+        (lpe::tag-package (downcase (s-trim tag)) pkg))
+      (lpe::process-line))))
+
 
 ;;;;  Line hiding
 
@@ -223,31 +251,20 @@ expands to
         lpe::*filters-history*)
   (setq lpe::*filters-history-pos* 0))
 
+
 (defun lpe::current-filter ()
   (nth lpe::*filters-history-pos* lpe::*filters-history*))
+
 
 (defun lpe::current-filter-function ()
   (and (lpe::current-filter)
        (lpe::filter-function (lpe::current-filter))))
 
+
 (defun lpe::current-filter-string ()
   (or (and (lpe::current-filter)
            (lpe::filter-string (lpe::current-filter)))
       ""))
-
-(defun lpe:filters-history-forward ()
-  (interactive)
-  (if (zerop lpe::*filters-history-pos*)
-      (error "Already at the newest filter.")
-    (decf lpe::*filters-history-pos*)
-    (lpe::update-all)))
-
-(defun lpe:filters-history-backward ()
-  (interactive)
-  (if (>= lpe::*filters-history-pos* (1- (length lpe::*filters-history*)))
-      (error "End of history.")
-    (incf lpe::*filters-history-pos*)
-    (lpe::update-all)))
 
 ;; filter syntax:
 ;; tag1,tag2,tag3,!tag4/tag5 = tag1 and tag2 and tag3 and (not tag4) or tag5
@@ -372,26 +389,7 @@ expands to
 
 ;;;;  User commands
 
-
-(defun lpe::all-tags ()
-  (let (all-tags)
-    (union (list "hidden")
-               (ht-keys lpe::*tag->packages*) :test 'equal)))
-
-
-(defun* lpe::tag% (taglist packages add)
-  (setf lpe::*last-applied-tags* taglist)
-  (dolist (pkg packages)
-    (let ((oldtags (lpe::package->tags pkg)))
-      (when (not add)
-        (dolist (tag oldtags)
-          (setf (lpe::package->tags pkg) nil)
-          (setf (lpe::tag->packages tag)
-                (remove pkg (lpe::tag->packages tag)))))
-
-      (dolist (tag taglist)
-        (lpe::tag-package (downcase (s-trim tag)) pkg))
-      (lpe::process-line))))
+;;; Tagging
 
 (defun* lpe:tag (taglist &optional add)
   (interactive (let ((add-mode-p (or (and current-prefix-arg
@@ -425,18 +423,18 @@ expands to
   (lpe::update-minibuffer-info))
 
 
+(defun lpe:apply-last-tags ()
+  (interactive)
+  (lpe:tag lpe::*last-applied-tags*))
+
 
 (defun lpe:show-hidden-toggle ()
   (interactive)
   (setq lpe::*show-hidden-p* (not lpe::*show-hidden-p*))
   (lpe::update-all))
 
-(defun lpe::update-all ()
-  (lpe::show-all-lines)
-  (lpe::process-buffer)
-  (tabulated-list-print t)
-  (lpe::update-minibuffer-info))
 
+;;; filtering
 
 (defun lpe:filter (filter-str)
   (interactive "sFilter (tag expression): ")
@@ -461,9 +459,22 @@ expands to
         (not lpe::search-in-summary))
   (lpe::update-all))
 
-(defun lpe:apply-last-tags ()
+
+(defun lpe:filters-history-forward ()
   (interactive)
-  (lpe:tag lpe::*last-applied-tags*))
+  (if (zerop lpe::*filters-history-pos*)
+      (error "Already at the newest filter.")
+    (decf lpe::*filters-history-pos*)
+    (lpe::update-all)))
+
+
+(defun lpe:filters-history-backward ()
+  (interactive)
+  (if (>= lpe::*filters-history-pos* (1- (length lpe::*filters-history*)))
+      (error "End of history.")
+    (incf lpe::*filters-history-pos*)
+    (lpe::update-all)))
+
 
 ;;;;  Post command hook
 
@@ -474,25 +485,20 @@ expands to
              (s-blank? (current-message)))
     (lpe::update-minibuffer-info)))
 
-(defun minibuffer-string ()
-  (interactive)
-  (message "%S" (with-current-buffer (window-buffer (minibuffer-window)) (buffer-string)) ))
-
-(define-key list-packages-ext-mode-map (kbd "a")
-  'minibuffer-string)
 
 ;;;;  Kludges
 
+(eval-after-load 'smooth-scrolling
+  (progn
+    (defun disable-smooth-scroll ()
+      (ad-disable-advice 'next-line 'after 'smooth-scroll-up)
+      (ad-disable-advice 'previous-line 'after 'smooth-scroll-down)
+      (ad-activate 'next-line)
+      (ad-activate 'previous-line))
 
-(defun disable-smooth-scroll ()
-  (ad-disable-advice 'next-line 'after 'smooth-scroll-up)
-  (ad-disable-advice 'previous-line 'after 'smooth-scroll-down)
-  (ad-activate 'next-line)
-  (ad-activate 'previous-line))
 
-
-(add-hook 'list-packages-ext-mode-hook
-          'disable-smooth-scroll)
+    (add-hook 'list-packages-ext-mode-hook
+              'disable-smooth-scroll)))
 
 
 ;;;;  Keybindings
