@@ -116,6 +116,11 @@ expands to
 
 (define-minor-mode list-packages-ext-mode
   "Some extras for the *Packages* buffer (see `list-packages').
+Provides:
+- package tagging
+- package hiding (with the tag 'hidden'
+- package filtering by tag expressions/regexp
+- package annotations
 \\{list-packages-ext-mode-map}"
   :global nil :group 'list-packages-ext
   :map list-packages-ext-mode-map
@@ -141,6 +146,7 @@ expands to
   (lpe::show-all-lines)
   (lpe::process-table)
   (tabulated-list-print t)
+  (lpe::update-star-overlays)
   (lpe::update-minibuffer-info))
 
 
@@ -216,18 +222,11 @@ expands to
                 (remove pkg (lpe::tag->packages tag)))))
 
       (dolist (tag taglist)
-        (lpe::tag-package (downcase (s-trim tag)) pkg))
-      (lpe::process-line))))
+        (lpe::tag-package (downcase (s-trim tag)) pkg)))))
 
 
 ;;;;  Line hiding
 
-
-(defun lpe::overlay-new (beg end)
-  (let ((ov (make-overlay beg end)))
-    (overlay-put ov 'evaporate t)
-    (push ov lpe::*overlays*)
-    ov))
 
 (defvar lpe::*hidden-entries*)
 
@@ -240,7 +239,43 @@ expands to
 
 (defun lpe::show-all-lines ()
   (interactive)
+  (lpe::clear-star-overlays)
   (revert-buffer))
+
+
+;;;;  Starring
+
+(defvar lpe:*star-fringe-bitmap* 'filled-rectangle)
+
+(defface lpe:star-fringe-face
+  '((t (:foreground "yellow")))
+  "face to fontify Enotify Success messages"
+  :group 'package)
+
+(defun lpe::star-overlay-new (beg end)
+  (let ((ov (make-overlay beg end)))
+    (overlay-put ov 'evaporate t)
+    (overlay-put ov 'before-string (propertize " " 'display `((left-fringe
+                                                               ,lpe:*star-fringe-bitmap*
+                                                               lpe:star-fringe-face))))
+    (push ov lpe::*overlays*)
+    ov))
+
+(defun lpe::update-star-overlays ()
+  (lpe::clear-star-overlays)
+  (save-excursion
+    (goto-char (point-min))
+    (let ((pkg (lpe::package-at-point)))
+      (while pkg
+        (when (member "starred" (lpe::package->tags pkg))
+          (lpe::star-overlay-new (line-beginning-position) (line-end-position)))
+        (goto-char (line-beginning-position 2))
+        (setq pkg (lpe::package-at-point))))))
+
+(defun lpe::clear-star-overlays ()
+  (dolist (ov lpe::*overlays*)
+    (delete-overlay ov))
+  (setq lpe::*overlays* nil))
 
 
 ;;;;  Filters
@@ -333,7 +368,6 @@ expands to
           (insert notes)))
       (org-mode)
       (setq lpe:*package* package)
-      (message "package %S %S" package lpe:*package*)
       (local-set-key (kbd "C-c C-c") 'lpe:save-package-notes))
     (switch-to-buffer-other-window buf)))
 
@@ -366,9 +400,9 @@ expands to
     (let* ((n (round (* 33 (/ (float (point)) (point-max))))))
       (when (/= n current-progress)
         (setq current-progress n)
-        (message (format "%s |%-33s|"
-                         progress-message
-                         (concat (s-repeat n "=") ">")))))))
+        (lpe::message (format "%s |%-33s|"
+                              progress-message
+                              (concat (s-repeat n "=") ">")))))))
 
 
 (defun lpe::process-table ()
@@ -387,30 +421,45 @@ expands to
 
 
 (defun lpe::process-line ()
-  (let ((tags (lpe::tags-at-point)))
-    (when (or (and (lpe::current-filter-function) (not (funcall (lpe::current-filter-function) (lpe::package-desc-at-point) tags)))
-              (and (not lpe::*show-hidden-p*) (member "hidden" tags)))
-      ;; Saving position to avoid going back to beginning of buffer
-      (let ((next-pos (line-beginning-position 2)))
-        (lpe::hide-line)
-        (goto-char next-pos))
-      (tabulated-list-print t))))
+  (let ((tags (lpe::tags-at-point))
+        ;; Saving position to avoid going back to beginning of buffer
+        (next-pos (line-beginning-position 2)))
+    (cond ((or (and (lpe::current-filter-function)
+                    (not (funcall (lpe::current-filter-function)
+                                  (lpe::package-desc-at-point)
+                                  tags)))
+               (and (not lpe::*show-hidden-p*) (member "hidden" tags)))
+           (lpe::hide-line)
+           (goto-char next-pos)
+           (tabulated-list-print t))
+          ((member "starred" tags)
+           (lpe::star-overlay-new (line-beginning-position) (line-end-position))
+           (goto-char next-pos))
+          (t (message "smufutu")))))
 
 
 
 ;;;;  Minibuffer
 ;;; TODO: provide long/short info
 
+(defun lpe::message (&rest args)
+  ;; In emacs 19.29 and later, and XEmacs 19.13 and later, all messages
+  ;; are recorded in a log.  Do not put eldoc messages in that log since
+  ;; they are Legion.
+  ;; Emacs way of preventing log messages.
+  (let ((message-log-max nil))
+    (apply 'message args)))
+
 
 (defun lpe::update-minibuffer-info()
   (interactive)
-  (message (format "%s\n%s\n%s\n%s" ;; "%-40s | %-40s | %-40s"
-                   (lpe::format-tags)
-                   (lpe::format-filter)
-                   (lpe::format-last-applied-tags)
-                   (or (ignore-errors
-                         (car (s-lines (lpe::package->notes (lpe::package-at-point)))))
-                       ""))))
+  (lpe::message "%s\n%s\n%s\n%s" ;; "%-40s | %-40s | %-40s"
+                (lpe::format-tags)
+                (lpe::format-filter)
+                (lpe::format-last-applied-tags)
+                (or (ignore-errors
+                      (car (s-lines (lpe::package->notes (lpe::package-at-point)))))
+                    "")))
 
 
 (defun lpe::filter-type ()
@@ -439,7 +488,7 @@ expands to
 (defun lpe::format-last-applied-tags ()
   (format "%-25s %40s"
           (propertize "Apply with .: " 'face '((:foreground "Red")))
-          (s-join "," lpe::*last-applied-tags*)))
+          (s-join "," (or lpe::*last-applied-tags* ""))))
 
 
 ;;;;  User commands
@@ -485,11 +534,29 @@ expands to
                        (list (lpe::package-at-point)))
              t)
   (lpe::save-state)
+  (goto-char (line-beginning-position 2))
+  (lpe::update-all)
   (lpe::update-minibuffer-info))
+
 
 (defun lpe:apply-last-tags ()
   (interactive)
   (lpe:tag lpe::*last-applied-tags*))
+
+
+(defun lpe:star ()
+  (interactive)
+  (lpe::tag% '("starred")
+             (if (region-active-p)
+                 (lpe::packages-in-region (region-beginning)
+                                          (region-end))
+               (list (lpe::package-at-point)))
+             t)
+  (lpe::save-state)
+  (if (region-active-p)
+      (lpe::update-all)
+    (lpe::process-line))
+  (lpe::update-minibuffer-info))
 
 
 (defun lpe:show-hidden-toggle ()
@@ -497,11 +564,13 @@ expands to
   (setq lpe::*show-hidden-p* (not lpe::*show-hidden-p*))
   (lpe::update-all))
 
+
 (defun lpe:clear-all-tags ()
   (interactive)
   (when (yes-or-no-p "Are you sure you want to clear all the tags? ")
     (lpe::clear-tags)
     (lpe::update-all)))
+
 
 ;;; filtering
 
@@ -550,7 +619,7 @@ expands to
     (lpe::update-all)))
 
 
-(defun lpe:refresh
+(defun lpe:refresh ()
   (interactive)
   (revert-buffer)
   (lpe::update-all))
@@ -599,11 +668,13 @@ expands to
         ("<XF86Forward>" lpe:filters-history-forward)
         ("<M-right>" lpe:filters-history-forward)
         ("<M-left>" lpe:filters-history-backward)
+        ("s" lpe:star)
         ("." lpe:apply-last-tags)
         ("e" lpe:edit-package-notes)
         ("k" lpe:hide-package)
 
         ("C" lpe:clear-all-tags))))
+
 
 
 (provide 'list-package-ext)
