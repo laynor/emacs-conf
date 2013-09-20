@@ -35,31 +35,47 @@
 (defvar projectile--compile-history-cache-location
   "projectile-compile-history/")
 
+(defun projectile--project-pcache-location (project)
+  (concat
+   (replace-regexp-in-string
+    "/$" ""
+    (replace-regexp-in-string
+     "/+" "/"
+     (format "%s%s"
+             projectile--compile-history-cache-location
+             project)))
+   "/cache"))
+
+
+(defun projectile--compilation-history (&optional project)
+  (persistent-soft-fetch 'compilation-history
+                         (projectile--project-pcache-location project)))
+
+(defun projectile--remember-compilation-command (project command)
+  (let* ((old-history (projectile--compilation-history project))
+         (cleaned-history (remove-duplicates
+                           (cons (s-trim command) old-history)
+                           :test #'equal
+                           :from-end t)))
+    (puthash project-root compilation-cmd projectile-compilation-cmd-map)
+    (persistent-soft-store 'compilation-history cleaned-history
+                           (projectile--project-pcache-location project))))
+
 (defun projectile-compile-project ()
   "Run project compilation command."
   (interactive)
   (let* ((project-root (projectile-project-root))
-	 (buffers (projectile-project-buffers))
-	 (cache-location (directory-file-name
-			  (replace-regexp-in-string
-			   "/+" "/"
-			   (concat projectile--compile-history-cache-location
-				   (projectile-project-root)))))
-	 (stored-compilation-cmds (persistent-soft-fetch 'compile-cmds
-							 cache-location))
+	 (project-buffers (projectile-project-buffers))
+	 (stored-compilation-cmds (projectile--compilation-history project-root))
 	 (compile-history stored-compilation-cmds)
          (compilation-cmd (compilation-read-command
                            (projectile-compilation-command project-root))))
     (cd project-root)
     (save-some-buffers nil (lambda ()
 			     (and (buffer-file-name)
-				  (memq (current-buffer) buffers))))
-    (puthash project-root compilation-cmd projectile-compilation-cmd-map)
-    (persistent-soft-store 'compile-cmds (remove-duplicates
-					  (cons (s-trim compilation-cmd) stored-compilation-cmds)
-					  :test #'equal
-					  :from-end t)
-			   cache-location)
+				  (memq (current-buffer) project-buffers))))
+    (projectile--remember-compilation-command project-root
+                                              compilation-cmd)
     (compilation-start compilation-cmd)))
 
 
@@ -76,8 +92,6 @@
 						  filename))
 		"\n" t))
 
-
-
 (defun projectile-switch-to-counterpart ()
   (interactive)
   (let* ((project-files (projectile-current-project-files))
@@ -89,49 +103,6 @@
 					  project-files))))
     (when counterpart
       (find-file counterpart))))
-;; (defvar projectile-project-cleaning-commands
-;;   '(("./rebar clean" .
-;;      (lambda (dir)
-;;        (file-exists-p (expand-file-name "rebar" dir))))
-;;     ("rebar clean" .
-;;      (lambda (dir)
-;;        (and (executable-find "rebar")
-;;             (file-exists-p (expand-file-name "rebar.config" dir)))))
-;;     ("make clean" .
-;;      (lambda (dir)
-;;        (or (file-exists-p (expand-file-name "GNUmakefile"))
-;;            (file-exists-p (expand-file-name "Makefile" dir)))))
-;;     )
-;;   "A list of pairs of commands and prerequisite lambdas to perform project cleaning.")
-;; (add-to-list 'projectile-project-compilation-commands
-;;      (cons "make"
-;;            (lambda (dir)
-;;              (file-exists-p (expand-file-name "GNUmakefile" dir)))))
-
-;; (add-to-list 'projectile-project-test-commands
-;;              (cons "make test"
-;;                    (lambda (dir)
-;;                      (file-exists-p (expand-file-name "GNUmakefile" dir)))))
-
-
-;; ;; Rake
-;; (add-to-list 'projectile-project-compilation-commands
-;;              (cons "rake build"
-;;                    (lambda (dir)
-;;                      (file-exists-p (expand-file-name "Rakefile" dir)))))
-
-;; (add-to-list 'projectile-project-test-commands
-;;              (cons "rake spec"
-;;                    (lambda (dir)
-;;                      (file-exists-p (expand-file-name "Rakefile" dir)))))
-
-;; (defun projectile-compile-project (&optional arg)
-;;   "Run project compilation command."
-;;   (interactive "p")
-;;   (case arg
-;;     (4 (projectile-run-project-command projectile-project-cleaning-commands))
-;;     (otherwise (projectile-run-project-command projectile-project-compilation-commands))))
-
 
 
 (sm-provide :package projectile)
