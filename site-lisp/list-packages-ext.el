@@ -151,6 +151,17 @@ expands to
   (let ((pd (lpe::package-desc-at-point)))
     (and pd (package-desc-name pd))))
 
+(defun lpe::packages-in-region (beg end)
+  (let (packages
+        (beg (min beg end))
+        (end (max beg end)))
+    (save-excursion
+      (goto-char beg)
+      (while (< (point) end)
+        (goto-char (line-beginning-position))
+        (push (lpe::package-at-point) packages)
+        (next-line)))
+    packages))
 
 (defun lpe::tags-at-point ()
   (lpe::package->tags (lpe::package-at-point)))
@@ -160,9 +171,14 @@ expands to
   (let* ((packages-with-tag (gethash tag lpe::*tag->packages*))
          (tags-of-package (gethash package lpe::*package->tags*)))
 
-    (pushnew tag tags-of-package :test 'equal)
-    (pushnew package packages-with-tag :test 'equal)
+    (cond ((s-starts-with? "!" tag)
+           (let ((tag (subseq tag 1)))
+             (message "Removing tag %s" tag)
+             (setf tags-of-package (remove* tag tags-of-package :test 'equal))
+             (setf packages-with-tag (remove* package packages-with-tag :test 'equal))))
 
+          (t (pushnew tag tags-of-package :test 'equal)
+             (pushnew package packages-with-tag :test 'equal)))
     (puthash tag packages-with-tag lpe::*tag->packages*)
     (puthash package tags-of-package lpe::*package->tags*)))
 
@@ -200,9 +216,6 @@ expands to
                         (:copier lpe::copy-filter))
   function
   string)
-
-  ;; (setq lpe::*current-filter* filter-str)
-  ;; (setq lpe::*filterfn* filter-fn))
 
 (defun lpe::set-filter (filter-fn filter-str)
   (push (lpe::make-filter :function filter-fn
@@ -366,27 +379,51 @@ expands to
                (ht-keys lpe::*tag->packages*) :test 'equal)))
 
 
-(defun* lpe:tag (taglist &optional add)
-  (interactive (list (completing-read-multiple "Tags (comma separated): "
-                                               (lpe::all-tags)
-                                               nil nil
-                                               (s-join "," (lpe::package->tags
-                                                             (lpe::package-at-point))))))
+(defun* lpe::tag% (taglist packages add)
   (setf lpe::*last-applied-tags* taglist)
-  (let* ((pkg (lpe::package-at-point))
-         (oldtags (lpe::package->tags pkg)))
+  (dolist (pkg packages)
+    (let ((oldtags (lpe::package->tags pkg)))
+      (when (not add)
+        (dolist (tag oldtags)
+          (setf (lpe::package->tags pkg) nil)
+          (setf (lpe::tag->packages tag)
+                (remove pkg (lpe::tag->packages tag)))))
 
-    (when (not add)
-      (dolist (tag oldtags)
-        (setf (lpe::package->tags pkg) nil)
-        (setf (lpe::tag->packages tag)
-              (remove pkg (lpe::tag->packages tag)))))
+      (dolist (tag taglist)
+        (lpe::tag-package (downcase (s-trim tag)) pkg))
+      (lpe::process-line))))
 
-    (dolist (tag taglist)
-      (lpe::tag-package (downcase (s-trim tag)) pkg))
-    (lpe::process-line)
-    (lpe::save-state)
-    (lpe::update-minibuffer-info)))
+(defun* lpe:tag (taglist &optional add)
+  (interactive (let ((add-mode-p (or (and current-prefix-arg
+                                          (not (region-active-p)))
+                                     (and (not current-prefix-arg)
+                                          (region-active-p)))))
+
+                      (list (completing-read-multiple
+                             (apply 'format "%s tags (comma separated%s): "
+                                    (if add-mode-p
+                                        (list "Modify" ", prepend with `!' to remove a tag")
+                                      (list "Set" "")))
+                             (lpe::all-tags)
+                             nil nil
+                             (if add-mode-p
+                                 nil
+                               (s-join "," (lpe::package->tags
+                                            (lpe::package-at-point)))))
+                            add-mode-p)))
+  (assert (or add (every (lambda (tag) (not (s-starts-with? "!" tag)))
+                         taglist))
+          nil
+          "Tag names cannot start with !")
+
+  (lpe::tag% taglist (if (region-active-p)
+                         (lpe::packages-in-region (region-beginning)
+                                                  (region-end))
+                       (list (lpe::package-at-point)))
+             add)
+  (lpe::save-state)
+  (lpe::update-minibuffer-info))
+
 
 
 (defun lpe:show-hidden-toggle ()
@@ -460,36 +497,36 @@ expands to
 
 ;;;;  Keybindings
 
+(flet ((dk (kblist)
+           (dolist (kbdef kblist)
+             (define-key
+               list-packages-ext-mode-map
+               (kbd (car kbdef))
+               (cadr kbdef)))))
+  (dk '(("t" lpe:tag)
+        ("f" lpe:filter)
+        ("F" lpe:filter-with-regex)
+        ("H" lpe:show-hidden-toggle)
+        ("v" lpe:search-in-summary-toggle)
+        ("g" (lambda () (interactive)
+               (revert-buffer)
+               (lpe::update-all)))
+        ("<XF86Back>" lpe:filters-history-backward)
+        ("<XF86Forward>" lpe:filters-history-forward)
+        ("<M-right>" lpe:filters-history-forward)
+        ("<M-left>" lpe:filters-history-backward)
+        ("." lpe:apply-last-tags)
+        ("k"
+         (lambda ()
+           (interactive)
+           (lpe:tag '("hidden") t)))
 
-(define-key list-packages-ext-mode-map (kbd "t") 'lpe:tag)
-(define-key list-packages-ext-mode-map (kbd "f") 'lpe:filter)
-(define-key list-packages-ext-mode-map (kbd "F") 'lpe:filter-with-regex)
-(define-key list-packages-ext-mode-map (kbd "H") 'lpe:show-hidden-toggle)
-(define-key list-packages-ext-mode-map (kbd "v") 'lpe:search-in-summary-toggle)
-(define-key list-packages-ext-mode-map (kbd "g") (lambda () (interactive)
-                                                   (revert-buffer)
-                                                   (lpe::update-all)))
-(define-key list-packages-ext-mode-map
-  (kbd "<XF86Back>")
-  'lpe:filters-history-backward)
-
-(define-key list-packages-ext-mode-map
-  (kbd "<XF86Forward>")
-  'lpe:filters-history-forward)
-
-(define-key list-packages-ext-mode-map (kbd ".") 'lpe:apply-last-tags)
-
-(define-key list-packages-ext-mode-map (kbd "k")
-  (lambda ()
-    (interactive)
-    (lpe:tag '("hidden") t)))
-
-(define-key list-packages-ext-mode-map (kbd "C")
-  '(lambda ()
-     (interactive)
-     (when (yes-or-no-p "Are you sure you want to clear all the tags? ")
-       (lpe::clear-tags)
-       (lpe::update-all))))
+        ("C"
+         (lambda ()
+           (interactive)
+           (when (yes-or-no-p "Are you sure you want to clear all the tags? ")
+             (lpe::clear-tags)
+             (lpe::update-all)))))))
 
 
 (provide 'list-package-ext)
