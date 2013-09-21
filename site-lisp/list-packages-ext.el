@@ -267,7 +267,7 @@ Provides:
   :group 'package)
 
 (defface lpe:hidden-fringe-face
-  '((t (:foreground "magenta")))
+  '((t (:foreground "MediumPurple3")))
   "face to fontify Enotify Success messages"
   :group 'package)
 
@@ -295,7 +295,7 @@ Provides:
                   (lpe::star-overlay-new bol eol pkg))
                  ((and (member "hidden" tags) lpe::*show-hidden-p*)
                   (lpe::star-overlay-new bol eol
-                                         pkg 'font-lock-comment-face))))
+                                         pkg 'lpe:hidden-fringe-face))))
         (goto-char (line-beginning-position 2))
         (setq pkg (lpe::package-at-point))))))
 
@@ -466,7 +466,7 @@ Provides:
                (delete-overlay ov)))
            (lpe::star-overlay-new (line-beginning-position) (line-end-position)
                                   (lpe::package-at-point)
-                                  'font-lock-comment-face)
+                                  'lpe:hidden-fringe-face)
            (goto-char next-pos))
 
           ((member "starred" tags)
@@ -525,7 +525,7 @@ Provides:
 
 
 (defun lpe::format-tags ()
-  (format "%-25s%40s"
+  (format "%-25s %40s"
           (propertize "Tags: " 'face '((:foreground "green")))
           (s-join "," (lpe::tags-at-point))))
 
