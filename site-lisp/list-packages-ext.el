@@ -192,7 +192,7 @@ Provides:
       (while (< (point) end)
         (goto-char (line-beginning-position))
         (push (lpe::package-at-point) packages)
-        (next-line)))
+        (goto-char (line-beginning-position 2))))
     packages))
 
 (defun lpe::tags-at-point ()
@@ -220,9 +220,8 @@ Provides:
 
 
 (defun lpe::all-tags ()
-  (let (all-tags)
-    (union (list "hidden" "starred")
-               (ht-keys lpe::*tag->packages*) :test 'equal)))
+  (union (list "hidden" "starred")
+         (ht-keys lpe::*tag->packages*) :test 'equal))
 
 (defun* lpe::tag% (taglist packages add &optional toggle)
   (setf lpe::*last-applied-tags* taglist)
@@ -674,35 +673,36 @@ Provides:
          (last-tag (car (last last-tag-group)))
          (completed-text (s-join "/" (append (butlast tag-groups)
                                              (list (s-join "," (butlast last-tag-group)))))))
-    (flet ((propertize-completion (tag)
-             (let ((full-completion
-                    (concat completed-text
-                            (unless (or (s-blank? completed-text)
-                                        (s-ends-with? "/" completed-text))
-                              ",")
-                            tag))
-                   (displayed-completion (let ((tag (substring tag 0))
-                                                (ll (length last-tag)))
-                                            (when (> (length tag) ll)
-                                              (set-text-properties
-                                               ll (1+ ll)
-                                               '(face completions-first-difference)
-                                               tag))
-                                            tag)))
-               (propertize full-completion 'display displayed-completion)))
+    (cl-flet ((propertize-completion (tag)
+                (let ((full-completion
+                       (concat completed-text
+                               (unless (or (s-blank? completed-text)
+                                           (s-ends-with? "/" completed-text))
+                                 ",")
+                               tag))
+                      (displayed-completion (let ((tag (substring tag 0))
+                                                  (ll (length last-tag)))
+                                              (when (> (length tag) ll)
+                                                (set-text-properties
+                                                 ll (1+ ll)
+                                                 '(face completions-first-difference)
+                                                 tag))
+                                              tag)))
+                  (propertize full-completion 'display displayed-completion)))
 
-           (string-matches-tag (tag)
-              (and (not (find tag (butlast last-tag-group) :test 'lpe::tag-match))
-                   (s-starts-with? last-tag tag)))
+              (string-matches-tag (tag)
+                (and (not (find tag (butlast last-tag-group) :test 'lpe::tag-match))
+                     (s-starts-with? last-tag tag)))
 
-           (add-!-to-completion-if-negated (candidate)
-             (concat (if (lpe::tag-negated? last-tag) "!" "")
-                     candidate)))
+              (add-!-to-completion-if-negated (candidate)
+                (concat (if (lpe::tag-negated? last-tag) "!" "")
+                        candidate)))
 
-      (mapcar 'propertize-completion
-              (remove-if-not 'string-matches-tag
-                             (mapcar 'add-!-to-completion-if-negated
+      (mapcar #'propertize-completion
+              (remove-if-not #'string-matches-tag
+                             (mapcar #'add-!-to-completion-if-negated
                                      lpe:*all-tags*))))))
+
 (defvar lpe:*accept-negation* nil)
 
 (defun lpe::complete-tags (string)
@@ -719,23 +719,23 @@ Provides:
                 (not !last-tag))
             nil
             "Tags cannot start with `!', and negated tags are not acceptable in this context.")
-    (flet ((format-completion (tag)
-             (let ((full-completion (s-join "," (append other-tags (list tag))))
-                   (displayed-completion (let ((tag (substring tag 0))
-                                                (ll (length last-tag)))
-                                            (when (> (length tag) ll)
-                                              (set-text-properties
-                                               ll (1+ ll)
-                                               '(face completions-first-difference)
-                                               tag))
-                                            tag)))
-               (propertize full-completion 'display displayed-completion)))
-           (string-matches (tag)
-             (and (not (find tag (butlast other-tags) :test 'lpe::tag-match))
-                  (s-starts-with? last-tag tag))))
+    (cl-flet ((format-completion (tag)
+                (let ((full-completion (s-join "," (append other-tags (list tag))))
+                      (displayed-completion (let ((tag (substring tag 0))
+                                                  (ll (length last-tag)))
+                                              (when (> (length tag) ll)
+                                                (set-text-properties
+                                                 ll (1+ ll)
+                                                 '(face completions-first-difference)
+                                                 tag))
+                                              tag)))
+                  (propertize full-completion 'display displayed-completion)))
+              (string-matches (tag)
+                (and (not (find tag (butlast other-tags) :test 'lpe::tag-match))
+                     (s-starts-with? last-tag tag))))
 
-      (mapcar 'format-completion
-              (remove-if-not 'string-matches
+      (mapcar #'format-completion
+              (remove-if-not #'string-matches
                              all-tags)))))
 
 (defun lpe::read-tags (&optional add-mode-p)
@@ -782,12 +782,12 @@ Provides:
 
 ;;;;  Keybindings
 
-(flet ((dk (kblist)
-           (dolist (kbdef kblist)
-             (define-key
-               list-packages-ext-mode-map
-               (kbd (car kbdef))
-               (cadr kbdef)))))
+(cl-flet ((dk (kblist)
+            (dolist (kbdef kblist)
+              (define-key
+                  list-packages-ext-mode-map
+                  (kbd (car kbdef))
+                (cadr kbdef)))))
   (dk '(("t" lpe:tag)
         ("f" lpe:filter)
         ("F" lpe:filter-with-regex)
