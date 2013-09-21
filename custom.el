@@ -209,6 +209,7 @@
            (add-my-include-directories))
      (c-auto-newline)
      (c-file-style . k&r))))
+ '(savehist-mode t)
  '(scroll-bar-mode nil)
  '(shell-pop-shell-type (quote ("eshell" "*eshell*" (lambda nil (eshell)))))
  '(shell-pop-universal-key "<f2>")
