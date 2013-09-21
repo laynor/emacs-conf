@@ -47,6 +47,8 @@
     (apropos-mode Buffer-menu-mode calendar-mode color-theme-mode command-history-mode compilation-mode dictionary-mode ert-results-mode help-mode Info-mode Man-mode speedbar-mode undo-tree-visualizer-mode view-mode woman-mode el-get-package-menu-mode)))
  '(flycheck-flake8rc "~/.config/flake8")
  '(fringe-mode (quote (4 . 4)) nil (fringe))
+ '(git-commit-fill-column 120)
+ '(git-commit-summary-max-length 90)
  '(git-commit-summary-maxlen 90)
  '(global-diff-hl-mode t)
  '(gtags-auto-update t)
