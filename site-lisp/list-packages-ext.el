@@ -139,6 +139,7 @@ Provides:
 
 
 (defun lpe:deactivate ()
+  (lpe::clear-star-overlays)
   (remove-hook 'post-command-hook 'lpe::post-command-hook))
 
 
@@ -198,13 +199,17 @@ Provides:
   (lpe::package->tags (lpe::package-at-point)))
 
 
-(defun lpe::tag-package (tag package)
-  (let* ((packages-with-tag (gethash tag lpe::*tag->packages*))
-         (tags-of-package (gethash package lpe::*package->tags*)))
+(defun lpe::tag-package (tag package &optional toggle)
+  (let* ((packages-with-tag (lpe::tag->packages tag))
+         (tags-of-package (lpe::package->tags package))
+         (package-has-tag (member tag tags-of-package)))
 
-    (cond ((lpe::tag-negated? tag)
-           (let ((tag (subseq tag 1)))
-             (message "Removing tag %s" tag)
+    (assert (not (and (lpe::tag-negated? tag) toggle))
+            nil
+            "Negated tags cannot be toggled.")
+    (cond ((or (and toggle package-has-tag) (lpe::tag-negated? tag))
+           (let ((tag (replace-regexp-in-string  "^!?" "" tag)))
+             (message "Removing tag '%s'" tag)
              (setf tags-of-package (remove* tag tags-of-package :test 'equal))
              (setf packages-with-tag (remove* package packages-with-tag :test 'equal))))
 
@@ -216,21 +221,21 @@ Provides:
 
 (defun lpe::all-tags ()
   (let (all-tags)
-    (union (list "hidden")
+    (union (list "hidden" "starred")
                (ht-keys lpe::*tag->packages*) :test 'equal)))
 
-(defun* lpe::tag% (taglist packages add)
+(defun* lpe::tag% (taglist packages add &optional toggle)
   (setf lpe::*last-applied-tags* taglist)
   (dolist (pkg packages)
     (let ((oldtags (lpe::package->tags pkg)))
-      (when (not add)
+      (unless (or add toggle)
         (dolist (tag oldtags)
           (setf (lpe::package->tags pkg) nil)
           (setf (lpe::tag->packages tag)
                 (remove pkg (lpe::tag->packages tag)))))
 
       (dolist (tag taglist)
-        (lpe::tag-package (downcase (s-trim tag)) pkg)))))
+        (lpe::tag-package (downcase (s-trim tag)) pkg toggle)))))
 
 
 ;;;;  Line hiding
@@ -255,17 +260,26 @@ Provides:
 
 (defvar lpe:*star-fringe-bitmap* 'filled-rectangle)
 
+(defvar lpe::*package->star-overlay* (ht-create))
+
 (defface lpe:star-fringe-face
   '((t (:foreground "yellow")))
   "face to fontify Enotify Success messages"
   :group 'package)
 
-(defun lpe::star-overlay-new (beg end)
+(defface lpe:hidden-fringe-face
+  '((t (:foreground "magenta")))
+  "face to fontify Enotify Success messages"
+  :group 'package)
+
+(defun lpe::star-overlay-new (beg end package &optional face)
   (let ((ov (make-overlay beg end)))
+    (ht-set lpe::*package->star-overlay* package ov)
     (overlay-put ov 'evaporate t)
-    (overlay-put ov 'before-string (propertize " " 'display `((left-fringe
-                                                               ,lpe:*star-fringe-bitmap*
-                                                               lpe:star-fringe-face))))
+    (overlay-put ov 'before-string
+                 (propertize " " 'display `((left-fringe
+                                             ,lpe:*star-fringe-bitmap*
+                                             ,(or face 'lpe:star-fringe-face)))))
     (push ov lpe::*overlays*)
     ov))
 
@@ -275,8 +289,14 @@ Provides:
     (goto-char (point-min))
     (let ((pkg (lpe::package-at-point)))
       (while pkg
-        (when (member "starred" (lpe::package->tags pkg))
-          (lpe::star-overlay-new (line-beginning-position) (line-end-position)))
+        (let ((tags (lpe::package->tags pkg))
+              (bol (line-beginning-position))
+              (eol (line-end-position)))
+          (cond  ((member "starred" tags)
+                  (lpe::star-overlay-new bol eol pkg))
+                 ((and (member "hidden" tags) lpe::*show-hidden-p*)
+                  (lpe::star-overlay-new bol eol
+                                         pkg 'font-lock-comment-face))))
         (goto-char (line-beginning-position 2))
         (setq pkg (lpe::package-at-point))))))
 
@@ -284,6 +304,9 @@ Provides:
   (dolist (ov lpe::*overlays*)
     (delete-overlay ov))
   (setq lpe::*overlays* nil))
+
+(defun lpe::package->star-overlay (package)
+  (ht-get lpe::*package->star-overlay* package))
 
 
 ;;;;  Filters
@@ -435,11 +458,30 @@ Provides:
                (and (not lpe::*show-hidden-p*) (member "hidden" tags)))
            (lpe::hide-line)
            (goto-char next-pos)
-           (tabulated-list-print t))
-          ((member "starred" tags)
-           (lpe::star-overlay-new (line-beginning-position) (line-end-position))
+           (when (not lpe::*show-hidden-p*)
+             (tabulated-list-print t)))
+
+          ((and lpe::*show-hidden-p* (member "hidden" tags))
+           (let ((ov (lpe::package->star-overlay (lpe::package-at-point))))
+             (when ov
+               (delete-overlay ov)))
+           (lpe::star-overlay-new (line-beginning-position) (line-end-position)
+                                  (lpe::package-at-point)
+                                  'font-lock-comment-face)
            (goto-char next-pos))
-          (t (message "smufutu")))))
+
+          ((member "starred" tags)
+           (let ((ov (lpe::package->star-overlay (lpe::package-at-point))))
+             (when ov
+               (delete-overlay ov)))
+           (lpe::star-overlay-new (line-beginning-position) (line-end-position)
+                                  (lpe::package-at-point))
+           (goto-char next-pos))
+
+          (t (let ((ov (lpe::package->star-overlay (lpe::package-at-point))))
+               (when ov
+                 (delete-overlay ov)))
+             (goto-char next-pos)))))
 
 
 
@@ -505,18 +547,8 @@ Provides:
                                      (and (not current-prefix-arg)
                                           (region-active-p)))))
 
-                      (list (completing-read-multiple
-                             (apply 'format "%s tags (comma separated%s): "
-                                    (if add-mode-p
-                                        (list "Modify" ", prepend with `!' to remove a tag")
-                                      (list "Set" "")))
-                             (lpe::all-tags)
-                             nil nil
-                             (if add-mode-p
-                                 nil
-                               (s-join "," (lpe::package->tags
-                                            (lpe::package-at-point)))))
-                            add-mode-p)))
+                 (list (lpe::read-tags add-mode-p)
+                       add-mode-p)))
   (assert (or add (not (find-if 'lpe::tag-negated? taglist)))
           nil
           "Tag names cannot start with !")
@@ -535,10 +567,13 @@ Provides:
                          (lpe::packages-in-region (region-beginning)
                                                   (region-end))
                        (list (lpe::package-at-point)))
-             t)
+             t t)
   (lpe::save-state)
-  (goto-char (line-beginning-position 2))
-  (lpe::update-all)
+  (if (and lpe::*show-hidden-p* (not (region-active-p)))
+      (lpe::process-line)
+    (unless (region-active-p)
+      (goto-char (line-beginning-position 2)))
+    (lpe::update-all))
   (lpe::update-minibuffer-info))
 
 
@@ -554,7 +589,7 @@ Provides:
                  (lpe::packages-in-region (region-beginning)
                                           (region-end))
                (list (lpe::package-at-point)))
-             t)
+             t t)
   (lpe::save-state)
   (if (region-active-p)
       (lpe::update-all)
@@ -639,25 +674,79 @@ Provides:
          (last-tag (car (last last-tag-group)))
          (completed-text (s-join "/" (append (butlast tag-groups)
                                              (list (s-join "," (butlast last-tag-group)))))))
-    (mapcar (lambda (tag)
-              (propertize
-               (concat completed-text (and (not (s-blank? completed-text))
-                                           (not (s-ends-with? "/" completed-text))
-                                           ",") tag)
-               'display (let ((tag (substring tag 0))
-                              (ll (length last-tag)))
-                          (when (> (length tag) ll)
-                            (set-text-properties ll (1+ ll)
-                                                 '(face completions-first-difference)
-                                                 tag))
-                          tag)))
-            (remove-if-not (lambda (s)
-                             (and (not (find s (butlast last-tag-group) :test 'lpe::tag-match))
-                                  (s-starts-with? last-tag s)))
-                           (mapcar (lambda (candidate)
-                                     (concat (if (lpe::tag-negated? last-tag) "!" "")
-                                             candidate))
-                                   lpe:*all-tags*)))))
+    (flet ((propertize-completion (tag)
+             (let ((full-completion
+                    (concat completed-text
+                            (unless (or (s-blank? completed-text)
+                                        (s-ends-with? "/" completed-text))
+                              ",")
+                            tag))
+                   (displayed-completion (let ((tag (substring tag 0))
+                                                (ll (length last-tag)))
+                                            (when (> (length tag) ll)
+                                              (set-text-properties
+                                               ll (1+ ll)
+                                               '(face completions-first-difference)
+                                               tag))
+                                            tag)))
+               (propertize full-completion 'display displayed-completion)))
+
+           (string-matches-tag (tag)
+              (and (not (find tag (butlast last-tag-group) :test 'lpe::tag-match))
+                   (s-starts-with? last-tag tag)))
+
+           (add-!-to-completion-if-negated (candidate)
+             (concat (if (lpe::tag-negated? last-tag) "!" "")
+                     candidate)))
+
+      (mapcar 'propertize-completion
+              (remove-if-not 'string-matches-tag
+                             (mapcar 'add-!-to-completion-if-negated
+                                     lpe:*all-tags*))))))
+(defvar lpe:*accept-negation* nil)
+
+(defun lpe::complete-tags (string)
+  (let* ((tags (s-split "," string))
+         (last-tag (car (last tags)))
+         (other-tags (butlast tags))
+         (!last-tag (lpe::tag-negated? last-tag))
+         (all-tags (if !last-tag
+                       (mapcar (lambda (tag)
+                                 (s-concat "!" tag))
+                               lpe:*all-tags*)
+                     lpe:*all-tags*)))
+    (assert (or (and !last-tag lpe:*accept-negation*)
+                (not !last-tag))
+            nil
+            "Tags cannot start with `!', and negated tags are not acceptable in this context.")
+    (flet ((format-completion (tag)
+             (let ((full-completion (s-join "," (append other-tags (list tag))))
+                   (displayed-completion (let ((tag (substring tag 0))
+                                                (ll (length last-tag)))
+                                            (when (> (length tag) ll)
+                                              (set-text-properties
+                                               ll (1+ ll)
+                                               '(face completions-first-difference)
+                                               tag))
+                                            tag)))
+               (propertize full-completion 'display displayed-completion)))
+           (string-matches (tag)
+             (and (not (find tag (butlast other-tags) :test 'lpe::tag-match))
+                  (s-starts-with? last-tag tag))))
+
+      (mapcar 'format-completion
+              (remove-if-not 'string-matches
+                             all-tags)))))
+
+(defun lpe::read-tags (&optional add-mode-p)
+  (interactive)
+  (let ((lpe:*accept-negation* add-mode-p)
+        (lpe:*all-tags* (lpe::all-tags)))
+    (completing-read (apply 'format "%s tags (comma separated%s): "
+                            (if add-mode-p
+                                (list "Modify" ", prepend with `!' to remove a tag")
+                              (list "Set" "")))
+                     (completion-table-dynamic 'lpe::complete-tags))))
 
 (defun lpe::read-tag-expression ()
   (interactive)
