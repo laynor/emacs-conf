@@ -31,7 +31,7 @@
 
 ;;;;  Macros
 
-(require 'cl)
+(require 'cl-lib)
 (require 's)
 (require 'ht)
 (require 'persistent-soft)
@@ -52,7 +52,7 @@ expands to
           (t body3...)))
 "
   (let (body
-        (exp* (gensym)))
+        (exp* (cl-gensym)))
     (dolist (clause clauses)
       (let* ((pattern (car clause))
              (condition (if (equal pattern '_)
@@ -210,8 +210,8 @@ Provides:
     (cond ((or (and toggle package-has-tag) (lpe::tag-negated? tag))
            (let ((tag (replace-regexp-in-string  "^!?" "" tag)))
              (message "Removing tag '%s'" tag)
-             (setf tags-of-package (remove* tag tags-of-package :test 'equal))
-             (setf packages-with-tag (remove* package packages-with-tag :test 'equal))))
+             (setf tags-of-package (cl-remove tag tags-of-package :test 'equal))
+             (setf packages-with-tag (cl-remove package packages-with-tag :test 'equal))))
 
           (t (pushnew tag tags-of-package :test 'equal)
              (pushnew package packages-with-tag :test 'equal)))
@@ -220,8 +220,8 @@ Provides:
 
 
 (defun lpe::all-tags ()
-  (union (list "hidden" "starred")
-         (ht-keys lpe::*tag->packages*) :test 'equal))
+  (cl-union (list "hidden" "starred")
+            (ht-keys lpe::*tag->packages*) :test 'equal))
 
 (defun* lpe::tag% (taglist packages add &optional toggle)
   (setf lpe::*last-applied-tags* taglist)
@@ -243,9 +243,9 @@ Provides:
 (defvar lpe::*hidden-entries*)
 
 (defun lpe::hide-package (pkg)
-  (setq tabulated-list-entries (remove-if (lambda (entry)
-                                            (eq pkg (package-desc-name (car entry))))
-                                          tabulated-list-entries)))
+  (setq tabulated-list-entries (cl-remove-if (lambda (entry)
+                                               (eq pkg (package-desc-name (car entry))))
+                                             tabulated-list-entries)))
 (defun lpe::hide-line ()
   (lpe::hide-package (lpe::package-at-point)))
 
@@ -346,20 +346,20 @@ Provides:
   (let* ((tag-sets-strings (s-split "/" filter-str))
          (tag-sets (mapcar (lambda (tss)
                              (let* ((tags (s-split "," tss))
-                                    (required-tags (remove-if 'lpe::tag-negated? tags))
-                                    (required-absent-tags (remove-if-not 'lpe::tag-negated? tags)))                               (cons required-tags required-absent-tags)))
+                                    (required-tags (cl-remove-if 'lpe::tag-negated? tags))
+                                    (required-absent-tags (cl-remove-if-not 'lpe::tag-negated? tags)))                               (cons required-tags required-absent-tags)))
                            tag-sets-strings)))
     (lambda (_package-desc tags)
-      (some (lambda (tagset)
-              ;; the package must match all required tags, and no tag
-              ;; in package must be required-basent
-              (and (every (lambda (tag)
-                            (member tag tags))
-                          (car tagset))
-                   (every (lambda (tag)
-                            (not (member tag (cdr tagset))))
-                          tags)))
-            tag-sets))))
+      (cl-some (lambda (tagset)
+                 ;; the package must match all required tags, and no tag
+                 ;; in package must be required-basent
+                 (and (cl-every (lambda (tag)
+                                  (member tag tags))
+                                (car tagset))
+                      (cl-notany (lambda (tag)
+                                   (member tag (cdr tagset)))
+                                 tags)))
+               tag-sets))))
 
 
 (defun lpe::regex-filter (regex)
@@ -440,10 +440,13 @@ Provides:
                (pkg (package-desc-name pkg-desc))
                (tags (lpe::package->tags pkg)))
           (lpe::update-progress)
-          (when (or (and (lpe::current-filter-function) (not (funcall (lpe::current-filter-function) pkg-desc tags)))
+          (when (or (and (lpe::current-filter-function)
+                         (not (funcall (lpe::current-filter-function)
+                                       pkg-desc tags)))
                     (and (not lpe::*show-hidden-p*) (member "hidden" tags)))
             (push entry to-hide))))
-      (setq tabulated-list-entries (set-difference tabulated-list-entries to-hide :test 'equal))))
+      (setq tabulated-list-entries (cl-set-difference tabulated-list-entries to-hide
+                                                      :test 'equal))))
 
 
 (defun lpe::process-line ()
@@ -548,7 +551,7 @@ Provides:
 
                  (list (lpe::read-tags add-mode-p)
                        add-mode-p)))
-  (assert (or add (not (find-if 'lpe::tag-negated? taglist)))
+  (assert (or add (not (cl-find-if 'lpe::tag-negated? taglist)))
           nil
           "Tag names cannot start with !")
 
@@ -691,7 +694,7 @@ Provides:
                   (propertize full-completion 'display displayed-completion)))
 
               (string-matches-tag (tag)
-                (and (not (find tag (butlast last-tag-group) :test 'lpe::tag-match))
+                (and (null (cl-find tag (butlast last-tag-group) :test 'lpe::tag-match))
                      (s-starts-with? last-tag tag)))
 
               (add-!-to-completion-if-negated (candidate)
@@ -699,9 +702,9 @@ Provides:
                         candidate)))
 
       (mapcar #'propertize-completion
-              (remove-if-not #'string-matches-tag
-                             (mapcar #'add-!-to-completion-if-negated
-                                     lpe:*all-tags*))))))
+              (cl-remove-if-not #'string-matches-tag
+                                (mapcar #'add-!-to-completion-if-negated
+                                        lpe:*all-tags*))))))
 
 (defvar lpe:*accept-negation* nil)
 
@@ -731,11 +734,11 @@ Provides:
                                               tag)))
                   (propertize full-completion 'display displayed-completion)))
               (string-matches (tag)
-                (and (not (find tag (butlast other-tags) :test 'lpe::tag-match))
+                (and (not (cl-find tag (butlast other-tags) :test 'lpe::tag-match))
                      (s-starts-with? last-tag tag))))
 
       (mapcar #'format-completion
-              (remove-if-not #'string-matches
+              (cl-remove-if-not #'string-matches
                              all-tags)))))
 
 (defun lpe::read-tags (&optional add-mode-p)
