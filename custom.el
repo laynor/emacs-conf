@@ -45,6 +45,8 @@
  '(evil-motion-state-modes
    (quote
     (apropos-mode Buffer-menu-mode calendar-mode color-theme-mode command-history-mode compilation-mode dictionary-mode ert-results-mode help-mode Info-mode Man-mode speedbar-mode undo-tree-visualizer-mode view-mode woman-mode el-get-package-menu-mode)))
+ '(flx-ido-mode t)
+ '(flx-ido-threshhold 10000)
  '(flycheck-flake8rc "~/.config/flake8")
  '(fringe-mode (quote (4 . 4)) nil (fringe))
  '(git-commit-fill-column 120)

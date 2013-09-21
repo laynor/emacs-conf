@@ -6,6 +6,6 @@
 (require 'flx)
 ;;(ido-everywhere 1)
 ;; disable ido faces to see flx highlights.
-;; (setq ido-use-faces t)
+(setq ido-use-faces t)
 
 (sm-provide :package flx)
