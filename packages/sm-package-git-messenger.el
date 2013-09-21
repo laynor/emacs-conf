@@ -26,4 +26,6 @@
                  date
                  (buffer-substring-no-properties (point) (point-max)))))))
 
+(define-key prog-mode-map (kbd "C-c g") 'git-messenger:popup-message)
+
 (sm-provide :package git-messenger)
