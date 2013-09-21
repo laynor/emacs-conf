@@ -22,19 +22,18 @@
 
 ;;; Commentary:
 
-;;; TODO: undo support
-;;; TODO: region support
-
+;; TODO: undo support
 ;;
-
-;;; Code:
-
-;;;;  Macros
 
 (require 'cl-lib)
 (require 's)
 (require 'ht)
 (require 'persistent-soft)
+
+;;; Code:
+
+;;;;  Macros
+
 
 (defmacro* lpe::equal-case (exp &body clauses)
   "Like case, but comparison done with equal.
@@ -58,36 +57,50 @@ expands to
              (condition (if (equal pattern '_)
                             t
                           `(equal ,exp* ,pattern))))
-      (push `(,condition
-              ,@(cdr clause))
-            body)))
+        (push `(,condition
+                ,@(cdr clause))
+              body)))
     `(let ((,exp* ,exp))
        (cond
-        ,@(reverse body)))))
+         ,@(reverse body)))))
 
 (put 'lpe::equal-case 'lisp-indent-function 1)
 
 
 
-;;;;  Variables
+;;;;  Variables and faces
 
 
-(defvar list-packages-ext-mode-map (make-sparse-keymap))
+;;; Package properties
+(defvar lpe::*tag->packages* (ht-create))
+(defvar lpe::*package->tags* (ht-create))
+(defvar lpe::*package->notes* (ht-create))
+
+;;; Non persistent state
 (defvar lpe::*overlays* nil)
 (defvar lpe::*filterfn* nil)
 (defvar lpe::*show-hidden-p* nil)
 (defvar lpe::*current-filter* "")
 (defvar lpe::search-in-summary nil)
-(defvar lpe::*tag->packages* (ht-create))
-(defvar lpe::*package->tags* (ht-create))
-(defvar lpe::*package->notes* (ht-create))
 (defvar lpe::*last-applied-tags* nil)
 
+;;; Other stuff
+(defvar list-packages-ext-mode-map (make-sparse-keymap))
+(defvar lpe::*cache-location* "list-packages-ext-mode")
+
+(defface lpe:star-fringe-face
+    '((t (:foreground "yellow")))
+  "face to fontify Enotify Success messages"
+  :group 'package)
+
+(defface lpe:hidden-fringe-face
+    '((t (:foreground "MediumPurple3")))
+  "face to fontify Enotify Success messages"
+  :group 'package)
 
 
 ;;;;  Persistence
 
-(defvar lpe::*cache-location* "list-packages-ext-mode")
 
 (defun lpe::save-state ()
   (persistent-soft-store 'lpe::*tag->packages*
@@ -113,9 +126,8 @@ expands to
 
 ;;;;  Minor mode
 
-
 (define-minor-mode list-packages-ext-mode
-  "Some extras for the *Packages* buffer (see `list-packages').
+    "Some extras for the *Packages* buffer (see `list-packages').
 Provides:
 - package tagging
 - package hiding (with the tag 'hidden'
@@ -139,7 +151,7 @@ Provides:
 
 
 (defun lpe:deactivate ()
-  (lpe::clear-star-overlays)
+  (lpe::clear-overlays)
   (remove-hook 'post-command-hook 'lpe::post-command-hook))
 
 
@@ -147,32 +159,48 @@ Provides:
   (lpe::show-all-lines)
   (lpe::process-table)
   (tabulated-list-print t)
-  (lpe::update-star-overlays)
+  (lpe::update-overlays)
   (lpe::update-minibuffer-info))
 
 
 ;;;;  Tags
 
-(defun lpe::tag-match (tag-1 tag-2)
-  (let ((t1 (replace-regexp-in-string "^!?" "" tag-1))
-        (t2 (replace-regexp-in-string "^!?" "" tag-2)))
-    (equal t1 t2)))
+
+(defun lpe::tag-abs (tag)
+  (replace-regexp-in-string "^!?" "" tag))
+
 
 (defun lpe::tag-negated? (tag)
   (s-starts-with? "!" tag))
 
 
+(defun lpe::tag-match (tag-1 tag-2)
+  (let ((t1 (lpe::tag-abs tag-1))
+        (t2 (lpe::tag-abs tag-2)))
+    (equal t1 t2)))
+
+
 (defun lpe::clear-tags ()
-  (setq lpe::*tag->packages* (make-hash-table :test 'equal))
-  (setq lpe::*package->tags* (make-hash-table :test 'equal)))
+  (setq lpe::*tag->packages* (ht-create))
+  (setq lpe::*package->tags* (ht-create)))
 
 
-(defmacro lpe::tag->packages (tag)
-  `(gethash ,tag lpe::*tag->packages*))
+(defun lpe::tag->packages (tag)
+  (ht-get lpe::*tag->packages* tag))
+
+(gv-define-setter lpe::tag->packages (val tag)
+  `(ht-set lpe::*tag->packages* ,tag ,val))
 
 
-(defmacro lpe::package->tags (package)
-  `(gethash ,package lpe::*package->tags*))
+(defun lpe::package->tags (package)
+  (ht-get lpe::*package->tags* package))
+
+(gv-define-setter lpe::package->tags (val package)
+  `(ht-set lpe::*package->tags* ,package ,val))
+
+
+(defun lpe::package-has-tag (package tag)
+  (member tag (lpe::package->tags package)))
 
 
 (defun lpe::package-desc-at-point ()
@@ -202,21 +230,24 @@ Provides:
 (defun lpe::tag-package (tag package &optional toggle)
   (let* ((packages-with-tag (lpe::tag->packages tag))
          (tags-of-package (lpe::package->tags package))
-         (package-has-tag (member tag tags-of-package)))
+         (package-has-tag (lpe::package-has-tag tag package)))
 
     (assert (not (and (lpe::tag-negated? tag) toggle))
             nil
             "Negated tags cannot be toggled.")
+
     (cond ((or (and toggle package-has-tag) (lpe::tag-negated? tag))
-           (let ((tag (replace-regexp-in-string  "^!?" "" tag)))
-             (message "Removing tag '%s'" tag)
-             (setf tags-of-package (cl-remove tag tags-of-package :test 'equal))
+           (let ((tag (lpe::tag-abs tag)))
+             (setf tags-of-package (cl-remove (lpe::tag-abs tag) tags-of-package :test 'equal))
              (setf packages-with-tag (cl-remove package packages-with-tag :test 'equal))))
 
           (t (pushnew tag tags-of-package :test 'equal)
              (pushnew package packages-with-tag :test 'equal)))
-    (puthash tag packages-with-tag lpe::*tag->packages*)
-    (puthash package tags-of-package lpe::*package->tags*)))
+
+    (setf (lpe::tag->packages (lpe::tag-abs tag))
+          packages-with-tag)
+    (setf (lpe::package->tags package)
+          tags-of-package)))
 
 
 (defun lpe::all-tags ()
@@ -251,29 +282,29 @@ Provides:
 
 (defun lpe::show-all-lines ()
   (interactive)
-  (lpe::clear-star-overlays)
+  (lpe::clear-overlays)
   (revert-buffer))
+
+(defun lpe::package-hidden? (package)
+  (lpe::package-has-tag package "hidden"))
 
 
 ;;;;  Starring
 
 (defvar lpe:*star-fringe-bitmap* 'filled-rectangle)
 
-(defvar lpe::*package->star-overlay* (ht-create))
+(defvar lpe::*package->overlay* (ht-create))
 
-(defface lpe:star-fringe-face
-  '((t (:foreground "yellow")))
-  "face to fontify Enotify Success messages"
-  :group 'package)
+(defun lpe::package->overlay (package)
+  (ht-get lpe::*package->overlay* package))
 
-(defface lpe:hidden-fringe-face
-  '((t (:foreground "MediumPurple3")))
-  "face to fontify Enotify Success messages"
-  :group 'package)
+(gv-define-setter lpe::package->overlay (val package)
+  `(ht-set lpe::*package->overlay* ,package val))
 
-(defun lpe::star-overlay-new (beg end package &optional face)
+
+(defun lpe::overlay-new (beg end package &optional face)
   (let ((ov (make-overlay beg end)))
-    (ht-set lpe::*package->star-overlay* package ov)
+    (setf (lpe::package->overlay package) ov)
     (overlay-put ov 'evaporate t)
     (overlay-put ov 'before-string
                  (propertize " " 'display `((left-fringe
@@ -282,30 +313,30 @@ Provides:
     (push ov lpe::*overlays*)
     ov))
 
-(defun lpe::update-star-overlays ()
-  (lpe::clear-star-overlays)
+(defun lpe::update-overlays ()
+  (lpe::clear-overlays)
   (save-excursion
     (goto-char (point-min))
     (let ((pkg (lpe::package-at-point)))
       (while pkg
-        (let ((tags (lpe::package->tags pkg))
-              (bol (line-beginning-position))
+        (let ((bol (line-beginning-position))
               (eol (line-end-position)))
-          (cond  ((member "starred" tags)
-                  (lpe::star-overlay-new bol eol pkg))
-                 ((and (member "hidden" tags) lpe::*show-hidden-p*)
-                  (lpe::star-overlay-new bol eol
-                                         pkg 'lpe:hidden-fringe-face))))
+          (cond  ((lpe::package-starred? pkg)
+                  (lpe::overlay-new bol eol pkg))
+                 ((and (lpe::package-hidden? pkg) lpe::*show-hidden-p*)
+                  (lpe::overlay-new bol eol
+                                    pkg 'lpe:hidden-fringe-face))))
         (goto-char (line-beginning-position 2))
         (setq pkg (lpe::package-at-point))))))
 
-(defun lpe::clear-star-overlays ()
+(defun lpe::clear-overlays ()
   (dolist (ov lpe::*overlays*)
     (delete-overlay ov))
   (setq lpe::*overlays* nil))
 
-(defun lpe::package->star-overlay (package)
-  (ht-get lpe::*package->star-overlay* package))
+
+(defun lpe::package-starred? (package)
+  (lpe::package-has-tag package "starred"))
 
 
 ;;;;  Filters
@@ -314,7 +345,7 @@ Provides:
 
 (setq lpe::*filters-history-pos* 0)
 
-(defstruct (lpe::filter (:constructor lpe::make-filter)
+(cl-defstruct (lpe::filter (:constructor lpe::make-filter)
                         (:copier lpe::copy-filter))
   function
   string)
@@ -357,7 +388,9 @@ Provides:
                                   (member tag tags))
                                 (car tagset))
                       (cl-notany (lambda (tag)
-                                   (member tag (cdr tagset)))
+                                   (cl-find-if (lambda (negated-tag)
+                                                 (lpe::tag-match tag negated-tag))
+                                               (cdr tagset)))
                                  tags)))
                tag-sets))))
 
@@ -379,10 +412,9 @@ Provides:
 ;;;;  Notes
 
 (defmacro lpe::package->notes (package)
-  `(ht-get lpe::*package->notes* ,package))
+  `(gethash ,package lpe::*package->notes*))
 
 (defvar lpe:*package* nil)
-(make-variable-buffer-local 'lpe:*package*)
 
 (defun lpe:edit-package-notes (package)
   (interactive (list (lpe::package-at-point)))
@@ -403,9 +435,8 @@ Provides:
     (cond ((s-blank? notes)
            (ht-remove lpe::*package->notes* lpe:*package*))
 
-          (t (ht-set lpe::*package->notes*
-                     lpe:*package*
-                     notes)
+          (t (setf (lpe::*package->notes* lpe:*package*)
+                   notes)
              (lpe::save-state))))
   (set-buffer-modified-p nil)
   (kill-buffer)
@@ -415,75 +446,59 @@ Provides:
 ;;;;  Buffer processing
 
 
-(let ((current-progress 0)
-      (progress-message ""))
-
-  (defun lpe::start-progress (message)
-    (setq progress-message message)
-    (setq current-progress 0))
-
-  (defun lpe::update-progress ()
-    (let* ((n (round (* 33 (/ (float (point)) (point-max))))))
-      (when (/= n current-progress)
-        (setq current-progress n)
-        (lpe::message (format "%s |%-33s|"
-                              progress-message
-                              (concat (s-repeat n "=") ">")))))))
-
-
 (defun lpe::process-table ()
-    (lpe::show-all-lines)
-    (lpe::start-progress  "Filtering: ")
-    (let (to-hide)
-      (dolist (entry tabulated-list-entries)
-        (let* ((pkg-desc (car entry))
-               (pkg (package-desc-name pkg-desc))
-               (tags (lpe::package->tags pkg)))
-          (lpe::update-progress)
-          (when (or (and (lpe::current-filter-function)
-                         (not (funcall (lpe::current-filter-function)
-                                       pkg-desc tags)))
-                    (and (not lpe::*show-hidden-p*) (member "hidden" tags)))
-            (push entry to-hide))))
-      (setq tabulated-list-entries (cl-set-difference tabulated-list-entries to-hide
-                                                      :test 'equal))))
+  (lpe::show-all-lines)
+  (let* ((pr (make-progress-reporter "Filtering ..." 0 (length tabulated-list-entries)))
+         to-hide
+         (i 0))
+    (dolist (entry tabulated-list-entries)
+      (let* ((pkg-desc (car entry))
+             (pkg (package-desc-name pkg-desc))
+             (tags (lpe::package->tags pkg)))
+        (when (or (and (lpe::current-filter-function)
+                       (not (funcall (lpe::current-filter-function)
+                                     pkg-desc tags)))
+                  (and (not lpe::*show-hidden-p*) (lpe::package-hidden? pkg)))
+          (push entry to-hide)))
+      (progress-reporter-update pr i)
+      (cl-incf i))
+    (progress-reporter-done pr)
+    (setq tabulated-list-entries (cl-set-difference tabulated-list-entries to-hide
+                                                    :test 'equal))))
 
 
 (defun lpe::process-line ()
   (let ((tags (lpe::tags-at-point))
         ;; Saving position to avoid going back to beginning of buffer
-        (next-pos (line-beginning-position 2)))
+        (next-pos (line-beginning-position 2))
+        (pkg (lpe::package-at-point)))
+
+    (ignore-errors (delete-overlay (lpe::package->overlay package)))
+
     (cond ((or (and (lpe::current-filter-function)
                     (not (funcall (lpe::current-filter-function)
                                   (lpe::package-desc-at-point)
                                   tags)))
-               (and (not lpe::*show-hidden-p*) (member "hidden" tags)))
+               (and (not lpe::*show-hidden-p*)
+                    (lpe::package-hidden? pkg)))
            (lpe::hide-line)
            (goto-char next-pos)
            (when (not lpe::*show-hidden-p*)
              (tabulated-list-print t)))
 
-          ((and lpe::*show-hidden-p* (member "hidden" tags))
-           (let ((ov (lpe::package->star-overlay (lpe::package-at-point))))
-             (when ov
-               (delete-overlay ov)))
-           (lpe::star-overlay-new (line-beginning-position) (line-end-position)
-                                  (lpe::package-at-point)
-                                  'lpe:hidden-fringe-face)
+          ((and lpe::*show-hidden-p*
+                (lpe::package-hidden? pkg))
+           (lpe::overlay-new (line-beginning-position) (line-end-position)
+                             pkg
+                             'lpe:hidden-fringe-face)
            (goto-char next-pos))
 
-          ((member "starred" tags)
-           (let ((ov (lpe::package->star-overlay (lpe::package-at-point))))
-             (when ov
-               (delete-overlay ov)))
-           (lpe::star-overlay-new (line-beginning-position) (line-end-position)
-                                  (lpe::package-at-point))
+          ((lpe::package-starred? pkg)
+           (lpe::overlay-new (line-beginning-position) (line-end-position)
+                             (lpe::package-at-point))
            (goto-char next-pos))
 
-          (t (let ((ov (lpe::package->star-overlay (lpe::package-at-point))))
-               (when ov
-                 (delete-overlay ov)))
-             (goto-char next-pos)))))
+          (t (goto-char next-pos)))))
 
 
 
@@ -548,10 +563,12 @@ Provides:
                                           (not (region-active-p)))
                                      (and (not current-prefix-arg)
                                           (region-active-p)))))
-
-                 (list (lpe::read-tags add-mode-p)
+                 (list (s-split "," (lpe::read-tags (unless add-mode-p
+                                                      (s-join "," (lpe::tags-at-point)) )
+                                                    add-mode-p))
                        add-mode-p)))
-  (assert (or add (not (cl-find-if 'lpe::tag-negated? taglist)))
+
+  (assert (or add (not (cl-find-if #'lpe::tag-negated? taglist)))
           nil
           "Tag names cannot start with !")
 
@@ -561,14 +578,19 @@ Provides:
                        (list (lpe::package-at-point)))
              add)
   (lpe::save-state)
+  (if (and lpe::*show-hidden-p* (not (region-active-p)))
+      (lpe::process-line)
+    (unless (region-active-p)
+      (goto-char (line-beginning-position 2)))
+    (lpe::update-all))
   (lpe::update-minibuffer-info))
 
 (defun lpe:hide-package ()
   (interactive)
   (lpe::tag% '("hidden") (if (region-active-p)
-                         (lpe::packages-in-region (region-beginning)
-                                                  (region-end))
-                       (list (lpe::package-at-point)))
+                             (lpe::packages-in-region (region-beginning)
+                                                      (region-end))
+                           (list (lpe::package-at-point)))
              t t)
   (lpe::save-state)
   (if (and lpe::*show-hidden-p* (not (region-active-p)))
@@ -739,9 +761,9 @@ Provides:
 
       (mapcar #'format-completion
               (cl-remove-if-not #'string-matches
-                             all-tags)))))
+                                all-tags)))))
 
-(defun lpe::read-tags (&optional add-mode-p)
+(defun lpe::read-tags (initial-input &optional add-mode-p)
   (interactive)
   (let ((lpe:*accept-negation* add-mode-p)
         (lpe:*all-tags* (lpe::all-tags)))
@@ -749,7 +771,8 @@ Provides:
                             (if add-mode-p
                                 (list "Modify" ", prepend with `!' to remove a tag")
                               (list "Set" "")))
-                     (completion-table-dynamic 'lpe::complete-tags))))
+                     (completion-table-dynamic 'lpe::complete-tags)
+                     nil nil initial-input)))
 
 (defun lpe::read-tag-expression ()
   (interactive)
@@ -770,17 +793,20 @@ Provides:
 
 ;;;;  Kludges
 
-(eval-after-load 'smooth-scrolling
-  (progn
-    (defun disable-smooth-scroll ()
-      (ad-disable-advice 'next-line 'after 'smooth-scroll-up)
-      (ad-disable-advice 'previous-line 'after 'smooth-scroll-down)
-      (ad-activate 'next-line)
-      (ad-activate 'previous-line))
+;; (eval-after-load 'smooth-scrolling
+;;   (progn
+;;     (defun disable-smooth-scroll ()
+;;       (ad-disable-advice 'next-line 'after 'smooth-scroll-up)
+;;       (ad-disable-advice 'previous-line 'after 'smooth-scroll-down)
+;;       (ad-activate 'next-line)
+;;       (ad-activate 'previous-line))
 
 
-    (add-hook 'list-packages-ext-mode-hook
-              'disable-smooth-scroll)))
+;;     (add-hook 'list-packages-ext-mode-hook
+;;               'disable-smooth-scroll)))
+
+(add-hook 'package-menu-mode-hook
+          'hl-line-mode)
 
 
 ;;;;  Keybindings
@@ -807,7 +833,6 @@ Provides:
         ("k" lpe:hide-package)
 
         ("C" lpe:clear-all-tags))))
-
 
 
 (provide 'list-package-ext)
