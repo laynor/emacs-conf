@@ -86,4 +86,11 @@
 
  )
 
+(setq lisp-indent-function 'common-lisp-indent-function)
+(put 'if 'common-lisp-indent-function 2)
+(put 'cl-flet 'common-lisp-indent-function
+     (get 'flet 'common-lisp-indent-function))
+
+(font-lock-add-keywords 'emacs-lisp-mode '(("\\<\\(cl-\\(flet\\|labels\\)\\)\\>" . font-lock-keyword-face)))
+
 (sm-provide :module elisp)
