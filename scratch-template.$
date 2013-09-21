@@ -3,3 +3,4 @@
 ;; then enter the text in that file's own buffer.
 ;; Initialization time: $[init-time] seconds.
 ;; Emacs profile: $[emacs-profile]
+
