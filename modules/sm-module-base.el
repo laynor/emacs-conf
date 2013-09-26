@@ -8,6 +8,7 @@
                        "ace-jump-mode"
                        "auto-complete"
                        "browse-kill-ring"
+                       "charmap"
                        "diff-hl"
                        "diminish"
                        "dired"

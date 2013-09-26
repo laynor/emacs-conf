@@ -91,6 +91,10 @@
 (put 'cl-flet 'common-lisp-indent-function
      (get 'flet 'common-lisp-indent-function))
 
+(put 'gv-define-setter 'common-lisp-indent-function
+     (get 'defmacro 'common-lisp-indent-function))
+
 (font-lock-add-keywords 'emacs-lisp-mode '(("\\<\\(cl-\\(flet\\|labels\\)\\)\\>" . font-lock-keyword-face)))
 
+(add-hook 'emacs-lisp-mode-hook 'yas-minor-mode-on)
 (sm-provide :module elisp)

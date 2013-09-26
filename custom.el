@@ -22,6 +22,7 @@
      (java-mode . "java")
      (awk-mode . "awk")
      (other . "gnu"))))
+ '(charmap-rollback-cursor t)
  '(column-number-mode t)
  '(comment-style (quote extra-line))
  '(compilation-scroll-output (quote first-error))

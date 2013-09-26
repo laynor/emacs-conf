@@ -42,6 +42,15 @@
           ((functionp pos)
            (funcall pos)))))
 
+(defun page-id-at-point ()
+  (interactive)
+  (let ((pid (save-excursion
+               (search-backward (kbd "C-l"))
+               (buffer-substring (line-beginning-position 2) (line-end-position 2)))))
+    (if (called-interactively-p)
+        (message pid))))
+
+
 (defun* buffer-page-identifiers (&optional buffer)
   (let ((buf (or buffer (current-buffer)))
         id-list)
