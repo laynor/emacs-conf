@@ -66,15 +66,345 @@ expands to
 
 (put 'lpe::equal-case 'lisp-indent-function 1)
 
+
+;;;; Tagging subsystem
+
+(defvar lpe::*basic-tags* '(append ("hidden" "starred") finder-known-keywords)
+  "Default tags that will be proposed to the user when tagging a
+package. Used for completion.
+See `lpe::all-tags'."
+  )
+
+(defvar lpe::*tag->objects* (ht-create)
+  "Table used to maintain tag->objet associations. Superfluous,
+  evaluating removal of this variable. Can speed up some operations.")
+
+(defvar lpe::*object->tags* (ht-create)
+  "Table used to maintain object->tags associations")
+
+(defvar lpe:*tag-expr-and*  ","
+  "AND operator representation in tag filters. See `lpe::read-tags'.")
+
+(defvar lpe:*tag-expr-or*   "/"
+  "OR operator representation in tag filters. See `lpe::read-tags'.")
+
+(defvar lpe:*tag-expr-not*  "!"
+  "NOT operator representatin in tag filters. See `lpe::read-tags'.")
+
+;;; TODO: remove global variables
+(cl-defstruct (lpe::tag-support (:constructor lpe::make-tag-support)
+                                (:copier lpe::copy-tag-support))
+  object->tags
+  tag->objects
+  and-op
+  or-op
+  not-op
+  basic-tags)
+
+
+(defun lpe::clear-tags ()
+  "Clears the tags."
+  (setq lpe::*tag->objects* (ht-create))
+  (setq lpe::*object->tags* (ht-create)))
+
+
+(defun lpe::save-tags ()
+  "Saves the tags to `lpe::*cache-location*'."
+  (persistent-soft-store 'lpe::*tag->objects*
+                         (ht-to-alist lpe::*tag->objects*)
+                         lpe::*cache-location*)
+  (persistent-soft-store 'lpe::*object->tags*
+                         (ht-to-alist lpe::*object->tags*)
+                         lpe::*cache-location*))
+
+
+(defun lpe::restore-tags ()
+  "Restores the tags from disk."
+  (let ((t->p (persistent-soft-fetch 'lpe::*tag->objects* lpe::*cache-location*))
+        (p->t (persistent-soft-fetch 'lpe::*object->tags* lpe::*cache-location*)))
+    (setq lpe::*tag->objects* (or (and t->p (ht-from-alist t->p)) (ht-create)))
+    (setq lpe::*object->tags* (or (and p->t (ht-from-alist p->t)) (ht-create)))))
+
+
+(defun lpe::tag-negated? (tag)
+  "Returns true if TAG is negated."
+  (s-starts-with? lpe:*tag-expr-not* tag))
+
+(defun lpe::negate-tag (tag)
+  "Returns the negation of TAG for use in a tag expression."
+  (if (lpe::tag-negated? tag)
+      (lpe::tag-abs tag)
+    (concat lpe:*tag-expr-not* tag)))
+
+(defun lpe::tag-abs (tag)
+  "Returns the absolute value of tag, such that
+   (equal (lpe::tag-abs tag)  (lpe::tag-abs (lpe::negate-tag tag)))
+holds."
+  (replace-regexp-in-string (format "^\\(%s\\)?" lpe:*tag-expr-not*) "" tag))
+
+(defun lpe::tag-match? (tag-1 tag-2)
+  "Returns true if
+   (equal (lpe::tag-abs tag-1) (lpe::tag-abs tag-2))
+holds."
+  (let ((t1 (lpe::tag-abs tag-1))
+        (t2 (lpe::tag-abs tag-2)))
+    (equal t1 t2)))
+
+
+(defun lpe::tag->objects (tag)
+  "Returns the objects tagged with TAG."
+  (ht-get lpe::*tag->objects* tag))
+
+(gv-define-setter lpe::tag->objects (val tag)
+  `(ht-set lpe::*tag->objects* ,tag ,val))
+
+
+(defun lpe::tags-of (object)
+  "Returns the the tags of OBJECT as a list."
+  (ht-get lpe::*object->tags* object))
+
+(gv-define-setter lpe::tags-of (val object)
+  `(ht-set lpe::*object->tags* ,object ,val))
+
+
+(defun lpe::all-tags ()
+  "Returns the list of all the tags used, plus the set of basic
+tags `lpe::*basic-tags*'."
+  (cl-union lpe::*basic-tags*
+            (ht-keys lpe::*tag->objects*) :test 'equal))
+
+(defun lpe::has-tag? (object tag)
+  "Returns non nil if OBJECT is tagged with TAG."
+  (member tag (lpe::tags-of object)))
+
+
+(defun lpe::tag-add (object tag)
+  "Tags OBJECT with TAG."
+  (pushnew tag (lpe::tags-of object) :test 'equal)
+  (pushnew object (lpe::tag->objects tag) :test 'equal))
+
+
+(defun lpe::tag-remove (object tag)
+  "Removes TAG from OBJECT."
+  (let ((tag (lpe::tag-abs tag)))
+    (setf (lpe::tags-of object) (cl-remove (lpe::tag-abs tag) (lpe::tags-of object)
+                                           :test 'equal))
+    (setf (lpe::tag->objects tag) (cl-remove object (lpe::tag->objects tag)
+                                             :test 'equal))))
+
+(defun lpe::tag-toggle (object tag)
+  "Toggles the presence of TAG in tag-set the tag-set of OBJECT."
+  (if (lpe::has-tag? object tag)
+      (lpe::tag-remove object tag)
+    (lpe::tag-add object tag)))
+
+
+(defun lpe::tag-object (tag object &optional toggle)
+  "If TOGGLE is non nil, toggles the presence of TAG in the
+tag-set of OBJECT, otherwise adds TAG to object or removes it
+negated."
+  (assert (not (and (lpe::tag-negated? tag) toggle))
+          nil
+          "Negated tags cannot be toggled.")
+  (cond (toggle
+          (lpe::tag-toggle object tag))
+         ((lpe::tag-negated? tag)
+          (lpe::tag-remove object tag))
+         (t (lpe::tag-add object tag ))))
+
+
+;;; FIXME This crappy fest of global variables oughts to be encapsulated
+(defvar lpe:*all-tags* nil)
+
+(defvar lpe::*accept-negated-tags* nil)
+
+(defun lpe::complete-tags (string)
+  "Completes a tag sequence separated with `lpe:*tag-expr-and*'."
+  (let* ((tags (s-split lpe:*tag-expr-and* string))
+         (last-tag (car (last tags)))
+         (other-tags (butlast tags))
+         (!last-tag (lpe::tag-negated? last-tag))
+         (all-tags (if !last-tag
+                       (mapcar 'lpe::negate-tag lpe:*all-tags*)
+                     lpe:*all-tags*)))
+
+    (assert (or (and !last-tag lpe::*accept-negated-tags*)
+                (not !last-tag))
+            nil
+            (format "Tags cannot start with `%s', and negated tags are not acceptable in this context."
+                    lpe:*tag-expr-not*
+            ))
+
+    (cl-flet ((format-completion (tag)
+                (let ((full-completion (s-join lpe:*tag-expr-and* (append other-tags (list tag))))
+                      (displayed-completion (let ((tag (substring tag 0))
+                                                  (ll (length last-tag)))
+                                              (when (> (length tag) ll)
+                                                (set-text-properties
+                                                 ll (1+ ll)
+                                                 '(face completions-first-difference)
+                                                 tag))
+                                              tag)))
+                  (propertize full-completion 'display displayed-completion)))
+
+              (string-matches (tag)
+                (and (not (cl-find tag (butlast other-tags) :test 'lpe::tag-match?))
+                     (s-starts-with? last-tag tag))))
+
+      (mapcar #'format-completion
+              (cl-remove-if-not #'string-matches
+                                all-tags)))))
+
+(defun lpe::read-tags (prompt initial-input &optional accept-negated-p)
+  "Prompts the user with PROMPT and INITIAL-INPUT for a tag
+  sequence separated by `lpe:*tag-expr-and*'. If ACCEPT-NEGATED-P
+  is non nil, negated tags are accepted."
+
+  (let ((lpe::*accept-negated-tags* accept-negated-p)
+        (lpe:*all-tags* (lpe::all-tags)))
+    (completing-read prompt
+                     (completion-table-dynamic 'lpe::complete-tags)
+                     nil nil initial-input)))
+
+;;;; Tag based filters
+
+;;; Tag expressions:
+;;; Filters are expressed as logic predicates, in disjunctive form
+;;; AND: ,
+;;; OR:  /
+;;; NOT: !
+;;;
+;;; Example:
+;;;  tag1,tag2,tag3,!tag4/tag5 = tag1 and tag2 and tag3 and (not tag4) or tag5
+
+(defun lpe::tag-expr-parse (tag-expr)
+  "Parses a tag expression in disjunctive (sum of products) form.
+For an overview of the syntax, see `lpe::tag-expr-read'."
+  (let* ((tag-sets-strings (s-split lpe:*tag-expr-or* tag-expr))
+         (tag-sets (mapcar (lambda (tss)
+                             (let* ((tags (s-split lpe:*tag-expr-and* tss))
+                                    (required-tags (cl-remove-if 'lpe::tag-negated? tags))
+                                    (required-absent-tags (cl-remove-if-not 'lpe::tag-negated?
+                                                                            tags)))
+                               (cons required-tags required-absent-tags)))
+                           tag-sets-strings)))
+    (lambda (tags)
+      (cl-some (lambda (tagset)
+                 ;; the package must match all required tags, and no tag
+                 ;; in package must be required-basent
+                 (and (cl-every (lambda (tag)
+                                  (member tag tags))
+                                (car tagset))
+                      (cl-notany (lambda (tag)
+                                   (cl-find-if (lambda (negated-tag)
+                                                 (lpe::tag-match? tag negated-tag))
+                                               (cdr tagset)))
+                                 tags)))
+               tag-sets))))
+
+
+;;;;  Tags Completion
+
+
+(defun lpe::tag-expr-completions (string)
+  (let* ((tag-groups (s-split lpe:*tag-expr-or* string))
+         (last-tag-group (s-split lpe:*tag-expr-and* (car (last tag-groups))))
+         (last-tag (car (last last-tag-group)))
+         (completed-text (s-join lpe:*tag-expr-or*
+                                 (append (butlast tag-groups)
+                                         (list (s-join lpe:*tag-expr-and*
+                                                       (butlast last-tag-group)))))))
+    (cl-flet ((propertize-completion (tag)
+                (let ((full-completion
+                       (concat completed-text
+                               (unless (or (s-blank? completed-text)
+                                           (s-ends-with? lpe:*tag-expr-or* completed-text))
+                                 lpe:*tag-expr-and*)
+                               tag))
+                      (displayed-completion (let ((tag (substring tag 0))
+                                                  (ll (length last-tag)))
+                                              (when (> (length tag) ll)
+                                                (set-text-properties
+                                                 ll (1+ ll)
+                                                 '(face completions-first-difference)
+                                                 tag))
+                                              tag)))
+                  (propertize full-completion 'display displayed-completion)))
+
+              (string-matches-tag (tag)
+                (and (null (cl-find tag (butlast last-tag-group) :test 'lpe::tag-match?))
+                     (s-starts-with? last-tag tag))))
+
+
+      (mapcar #'propertize-completion
+              (cl-remove-if-not #'string-matches-tag
+                                (if (lpe::tag-negated? last-tag)
+                                    (mapcar #'lpe::negate-tag lpe:*all-tags*)
+                                  lpe:*all-tags*))))))
+
+
+(defun lpe::tag-expr-read (prompt &optional collection initial-input)
+  "Reads a tag expression in disjunctive (sum of products) form.
+A tag filter like
+  (tag1 AND tag2 AND NOT tag3) or tag4
+is expressed as
+  tag1,tag2,!tag3/tag4
+The syntax for the operators can be controlled binding
+`lpe::*tag-expr-and*', `lpe::*tag-expr-or*' and `lpe::*tag-expr-not*' "
+  (let ((lpe:*all-tags* (or collection (lpe::all-tags))))
+    (completing-read prompt
+                     (completion-table-dynamic 'lpe::tag-expr-completions)
+                     nil
+                     nil
+                     initial-input)))
+
+
+;;;;  Notes subsystem
+(defvar lpe::*package->notes* (ht-create)
+  "Hash table containing package->notes associations.")
+
+(defmacro lpe::package->notes (package)
+  "Returns the notes for PACKAGE as a string. SETF-able."
+  `(gethash ,package lpe::*package->notes*))
+
+
+;;; XXX other ugly variable that oughts to be encapsulated
+(defvar lpe:*package* nil)
+
+(defun lpe:edit-package-notes (package)
+  "Opens a buffer where the user can enter notes about PACKAGE."
+  (interactive (list (lpe::package-at-point)))
+  (let ((buf (get-buffer-create (format "*Notes for %s*" package))))
+    (with-current-buffer buf
+      (erase-buffer)
+      (let ((notes (lpe::package->notes package)))
+        (when notes
+          (insert notes)))
+      (org-mode)
+      (setq lpe:*package* package)
+      (local-set-key (kbd "C-c C-c") 'lpe::save-package-notes ))
+    (switch-to-buffer-other-window buf)))
+
+(defun lpe::save-package-notes  ()
+  "Saves the notes on disk."
+  (interactive)
+  (let ((notes (buffer-string)))
+    (cond ((s-blank? notes)
+           (ht-remove lpe::*package->notes* lpe:*package*))
+
+          (t (setf (lpe::package->notes lpe:*package*)
+                   notes)
+             (lpe::save-state))))
+  (set-buffer-modified-p nil)
+  (kill-buffer)
+  (switch-to-buffer-other-window "*Packages*"))
 
 
 ;;;;  Variables and faces
 
 
+
 ;;; Package properties
-(defvar lpe::*tag->packages* (ht-create))
-(defvar lpe::*package->tags* (ht-create))
-(defvar lpe::*package->notes* (ht-create))
 
 ;;; Non persistent state
 (defvar lpe::*overlays* nil)
@@ -103,25 +433,16 @@ expands to
 
 
 (defun lpe::save-state ()
-  (persistent-soft-store 'lpe::*tag->packages*
-                         (ht-to-alist lpe::*tag->packages*)
-                         lpe::*cache-location*)
-  (persistent-soft-store 'lpe::*package->tags*
-                         (ht-to-alist lpe::*package->tags*)
-                         lpe::*cache-location*)
+  (lpe::save-tags)
   (persistent-soft-store 'lpe::*package->notes*
                          (ht-to-alist lpe::*package->notes*)
                          lpe::*cache-location*))
 
 
 (defun lpe::resume-state ()
-  (let ((t->p (persistent-soft-fetch 'lpe::*tag->packages* lpe::*cache-location*))
-        (p->t (persistent-soft-fetch 'lpe::*package->tags* lpe::*cache-location*))
-        (p->n (persistent-soft-fetch 'lpe::*package->notes* lpe::*cache-location*)))
-    (setq lpe::*tag->packages* (or (and t->p (ht-from-alist t->p)) (ht-create)))
-    (setq lpe::*package->tags* (or (and p->t (ht-from-alist p->t)) (ht-create)))
+  (lpe::restore-tags)
+  (let ((p->n (persistent-soft-fetch 'lpe::*package->notes* lpe::*cache-location*)))
     (setq lpe::*package->notes* (or (and p->n (ht-from-alist p->n)) (ht-create)))))
-
 
 
 ;;;;  Minor mode
@@ -165,44 +486,6 @@ Provides:
 
 ;;;;  Tags
 
-
-(defun lpe::tag-abs (tag)
-  (replace-regexp-in-string "^!?" "" tag))
-
-
-(defun lpe::tag-negated? (tag)
-  (s-starts-with? "!" tag))
-
-
-(defun lpe::tag-match (tag-1 tag-2)
-  (let ((t1 (lpe::tag-abs tag-1))
-        (t2 (lpe::tag-abs tag-2)))
-    (equal t1 t2)))
-
-
-(defun lpe::clear-tags ()
-  (setq lpe::*tag->packages* (ht-create))
-  (setq lpe::*package->tags* (ht-create)))
-
-
-(defun lpe::tag->packages (tag)
-  (ht-get lpe::*tag->packages* tag))
-
-(gv-define-setter lpe::tag->packages (val tag)
-  `(ht-set lpe::*tag->packages* ,tag ,val))
-
-
-(defun lpe::package->tags (package)
-  (ht-get lpe::*package->tags* package))
-
-(gv-define-setter lpe::package->tags (val package)
-  `(ht-set lpe::*package->tags* ,package ,val))
-
-
-(defun lpe::package-has-tag (package tag)
-  (member tag (lpe::package->tags package)))
-
-
 (defun lpe::package-desc-at-point ()
   (tabulated-list-get-id))
 
@@ -224,48 +507,22 @@ Provides:
     packages))
 
 (defun lpe::tags-at-point ()
-  (lpe::package->tags (lpe::package-at-point)))
+  (lpe::tags-of (lpe::package-at-point)))
 
-
-(defun lpe::tag-package (tag package &optional toggle)
-  (let* ((packages-with-tag (lpe::tag->packages tag))
-         (tags-of-package (lpe::package->tags package))
-         (package-has-tag (lpe::package-has-tag tag package)))
-
-    (assert (not (and (lpe::tag-negated? tag) toggle))
-            nil
-            "Negated tags cannot be toggled.")
-
-    (cond ((or (and toggle package-has-tag) (lpe::tag-negated? tag))
-           (let ((tag (lpe::tag-abs tag)))
-             (setf tags-of-package (cl-remove (lpe::tag-abs tag) tags-of-package :test 'equal))
-             (setf packages-with-tag (cl-remove package packages-with-tag :test 'equal))))
-
-          (t (pushnew tag tags-of-package :test 'equal)
-             (pushnew package packages-with-tag :test 'equal)))
-
-    (setf (lpe::tag->packages (lpe::tag-abs tag))
-          packages-with-tag)
-    (setf (lpe::package->tags package)
-          tags-of-package)))
-
-
-(defun lpe::all-tags ()
-  (cl-union (list "hidden" "starred")
-            (ht-keys lpe::*tag->packages*) :test 'equal))
 
 (defun* lpe::tag% (taglist packages add &optional toggle)
   (setf lpe::*last-applied-tags* taglist)
   (dolist (pkg packages)
-    (let ((oldtags (lpe::package->tags pkg)))
+    (let ((oldtags (lpe::tags-of pkg)))
       (unless (or add toggle)
         (dolist (tag oldtags)
-          (setf (lpe::package->tags pkg) nil)
-          (setf (lpe::tag->packages tag)
-                (remove pkg (lpe::tag->packages tag)))))
+          (setf (lpe::tags-of pkg) nil)
+          (setf (lpe::tag->objects tag)
+                (remove pkg (lpe::tag->objects tag)))))
 
       (dolist (tag taglist)
-        (lpe::tag-package (downcase (s-trim tag)) pkg toggle)))))
+        (lpe::tag-object (downcase (s-trim tag)) pkg toggle)))))
+
 
 
 ;;;;  Line hiding
@@ -286,7 +543,7 @@ Provides:
   (revert-buffer))
 
 (defun lpe::package-hidden? (package)
-  (lpe::package-has-tag package "hidden"))
+  (lpe::has-tag? package "hidden"))
 
 
 ;;;;  Starring
@@ -299,7 +556,7 @@ Provides:
   (ht-get lpe::*package->overlay* package))
 
 (gv-define-setter lpe::package->overlay (val package)
-  `(ht-set lpe::*package->overlay* ,package val))
+  `(ht-set lpe::*package->overlay* ,package ,val))
 
 
 (defun lpe::overlay-new (beg end package &optional face)
@@ -336,7 +593,7 @@ Provides:
 
 
 (defun lpe::package-starred? (package)
-  (lpe::package-has-tag package "starred"))
+  (lpe::has-tag? package "starred"))
 
 
 ;;;;  Filters
@@ -346,7 +603,7 @@ Provides:
 (setq lpe::*filters-history-pos* 0)
 
 (cl-defstruct (lpe::filter (:constructor lpe::make-filter)
-                        (:copier lpe::copy-filter))
+                           (:copier lpe::copy-filter))
   function
   string)
 
@@ -371,28 +628,6 @@ Provides:
            (lpe::filter-string (lpe::current-filter)))
       ""))
 
-;; filter syntax:
-;; tag1,tag2,tag3,!tag4/tag5 = tag1 and tag2 and tag3 and (not tag4) or tag5
-(defun lpe::parse-filter (filter-str)
-  (let* ((tag-sets-strings (s-split "/" filter-str))
-         (tag-sets (mapcar (lambda (tss)
-                             (let* ((tags (s-split "," tss))
-                                    (required-tags (cl-remove-if 'lpe::tag-negated? tags))
-                                    (required-absent-tags (cl-remove-if-not 'lpe::tag-negated? tags)))                               (cons required-tags required-absent-tags)))
-                           tag-sets-strings)))
-    (lambda (_package-desc tags)
-      (cl-some (lambda (tagset)
-                 ;; the package must match all required tags, and no tag
-                 ;; in package must be required-basent
-                 (and (cl-every (lambda (tag)
-                                  (member tag tags))
-                                (car tagset))
-                      (cl-notany (lambda (tag)
-                                   (cl-find-if (lambda (negated-tag)
-                                                 (lpe::tag-match tag negated-tag))
-                                               (cdr tagset)))
-                                 tags)))
-               tag-sets))))
 
 
 (defun lpe::regex-filter (regex)
@@ -411,37 +646,6 @@ Provides:
 
 ;;;;  Notes
 
-(defmacro lpe::package->notes (package)
-  `(gethash ,package lpe::*package->notes*))
-
-(defvar lpe:*package* nil)
-
-(defun lpe:edit-package-notes (package)
-  (interactive (list (lpe::package-at-point)))
-  (let ((buf (get-buffer-create (format "*Notes for %s*" package))))
-    (with-current-buffer buf
-      (erase-buffer)
-      (let ((notes (lpe::package->notes package)))
-        (when notes
-          (insert notes)))
-      (org-mode)
-      (setq lpe:*package* package)
-      (local-set-key (kbd "C-c C-c") 'lpe:save-package-notes))
-    (switch-to-buffer-other-window buf)))
-
-(defun lpe:save-package-notes ()
-  (interactive)
-  (let ((notes (buffer-string)))
-    (cond ((s-blank? notes)
-           (ht-remove lpe::*package->notes* lpe:*package*))
-
-          (t (setf (lpe::*package->notes* lpe:*package*)
-                   notes)
-             (lpe::save-state))))
-  (set-buffer-modified-p nil)
-  (kill-buffer)
-  (switch-to-buffer-other-window "*Packages*"))
-
 
 ;;;;  Buffer processing
 
@@ -454,7 +658,7 @@ Provides:
     (dolist (entry tabulated-list-entries)
       (let* ((pkg-desc (car entry))
              (pkg (package-desc-name pkg-desc))
-             (tags (lpe::package->tags pkg)))
+             (tags (lpe::tags-of pkg)))
         (when (or (and (lpe::current-filter-function)
                        (not (funcall (lpe::current-filter-function)
                                      pkg-desc tags)))
@@ -473,7 +677,7 @@ Provides:
         (next-pos (line-beginning-position 2))
         (pkg (lpe::package-at-point)))
 
-    (ignore-errors (delete-overlay (lpe::package->overlay package)))
+    (ignore-errors (delete-overlay (lpe::package->overlay pkg)))
 
     (cond ((or (and (lpe::current-filter-function)
                     (not (funcall (lpe::current-filter-function)
@@ -559,11 +763,16 @@ Provides:
 ;;; Tagging
 
 (defun* lpe:tag (taglist &optional add)
-  (interactive (let ((add-mode-p (or (and current-prefix-arg
-                                          (not (region-active-p)))
-                                     (and (not current-prefix-arg)
-                                          (region-active-p)))))
-                 (list (s-split "," (lpe::read-tags (unless add-mode-p
+  (interactive (let* ((add-mode-p (or (and current-prefix-arg
+                                           (not (region-active-p)))
+                                      (and (not current-prefix-arg)
+                                           (region-active-p))))
+                      (prompt (apply 'format "%s tags (comma separated%s): "
+                                     (if add-mode-p
+                                         (list "Modify" ", prepend with `!' to remove a tag")
+                                         (list "Set" "")))))
+                 (list (s-split "," (lpe::read-tags prompt
+                                                    (unless add-mode-p
                                                       (s-join "," (lpe::tags-at-point)) )
                                                     add-mode-p))
                        add-mode-p)))
@@ -636,8 +845,8 @@ Provides:
 
 ;;; filtering
 
-(defun lpe:filter (filter-str)
-  (interactive (list (lpe::read-tag-expression)))
+(defun lpe:filter-by-tag-expr (filter-str)
+  (interactive (list (lpe::tag-expr-read "Filter (tag expression): ")))
   (cond ((s-blank? filter-str)
          (lpe::show-all-lines)
          (lpe::set-filter nil "None")
@@ -648,7 +857,10 @@ Provides:
                           "Packages with notes only")
          (lpe::update-all))
         (t
-         (lpe::set-filter (lpe::parse-filter filter-str) filter-str)
+         (lpe::set-filter (let ((tagfilter (lpe::tag-expr-parse filter-str)))
+                            (lambda (_package-desc tags)
+                              (funcall tagfilter tags)))
+                          filter-str)
          (lpe::update-all))))
 
 
@@ -688,97 +900,6 @@ Provides:
 
 
 
-;;;;  Tags Completion
-
-(defvar lpe:*all-tags*)
-
-(defun lpe::complete-tag-expression (string)
-  (let* ((tag-groups (s-split "/" string))
-         (last-tag-group (s-split "," (car (last tag-groups))))
-         (last-tag (car (last last-tag-group)))
-         (completed-text (s-join "/" (append (butlast tag-groups)
-                                             (list (s-join "," (butlast last-tag-group)))))))
-    (cl-flet ((propertize-completion (tag)
-                (let ((full-completion
-                       (concat completed-text
-                               (unless (or (s-blank? completed-text)
-                                           (s-ends-with? "/" completed-text))
-                                 ",")
-                               tag))
-                      (displayed-completion (let ((tag (substring tag 0))
-                                                  (ll (length last-tag)))
-                                              (when (> (length tag) ll)
-                                                (set-text-properties
-                                                 ll (1+ ll)
-                                                 '(face completions-first-difference)
-                                                 tag))
-                                              tag)))
-                  (propertize full-completion 'display displayed-completion)))
-
-              (string-matches-tag (tag)
-                (and (null (cl-find tag (butlast last-tag-group) :test 'lpe::tag-match))
-                     (s-starts-with? last-tag tag)))
-
-              (add-!-to-completion-if-negated (candidate)
-                (concat (if (lpe::tag-negated? last-tag) "!" "")
-                        candidate)))
-
-      (mapcar #'propertize-completion
-              (cl-remove-if-not #'string-matches-tag
-                                (mapcar #'add-!-to-completion-if-negated
-                                        lpe:*all-tags*))))))
-
-(defvar lpe:*accept-negation* nil)
-
-(defun lpe::complete-tags (string)
-  (let* ((tags (s-split "," string))
-         (last-tag (car (last tags)))
-         (other-tags (butlast tags))
-         (!last-tag (lpe::tag-negated? last-tag))
-         (all-tags (if !last-tag
-                       (mapcar (lambda (tag)
-                                 (s-concat "!" tag))
-                               lpe:*all-tags*)
-                     lpe:*all-tags*)))
-    (assert (or (and !last-tag lpe:*accept-negation*)
-                (not !last-tag))
-            nil
-            "Tags cannot start with `!', and negated tags are not acceptable in this context.")
-    (cl-flet ((format-completion (tag)
-                (let ((full-completion (s-join "," (append other-tags (list tag))))
-                      (displayed-completion (let ((tag (substring tag 0))
-                                                  (ll (length last-tag)))
-                                              (when (> (length tag) ll)
-                                                (set-text-properties
-                                                 ll (1+ ll)
-                                                 '(face completions-first-difference)
-                                                 tag))
-                                              tag)))
-                  (propertize full-completion 'display displayed-completion)))
-              (string-matches (tag)
-                (and (not (cl-find tag (butlast other-tags) :test 'lpe::tag-match))
-                     (s-starts-with? last-tag tag))))
-
-      (mapcar #'format-completion
-              (cl-remove-if-not #'string-matches
-                                all-tags)))))
-
-(defun lpe::read-tags (initial-input &optional add-mode-p)
-  (interactive)
-  (let ((lpe:*accept-negation* add-mode-p)
-        (lpe:*all-tags* (lpe::all-tags)))
-    (completing-read (apply 'format "%s tags (comma separated%s): "
-                            (if add-mode-p
-                                (list "Modify" ", prepend with `!' to remove a tag")
-                              (list "Set" "")))
-                     (completion-table-dynamic 'lpe::complete-tags)
-                     nil nil initial-input)))
-
-(defun lpe::read-tag-expression ()
-  (interactive)
-  (let ((lpe:*all-tags* (lpe::all-tags)))
-    (completing-read "Filter (tag expression): "
-                     (completion-table-dynamic 'lpe::complete-tag-expression))))
 
 
 ;;;;  Post command hook
@@ -818,7 +939,7 @@ Provides:
                   (kbd (car kbdef))
                 (cadr kbdef)))))
   (dk '(("t" lpe:tag)
-        ("f" lpe:filter)
+        ("f" lpe:filter-by-tag-expr)
         ("F" lpe:filter-with-regex)
         ("H" lpe:show-hidden-toggle)
         ("v" lpe:search-in-summary-toggle)
