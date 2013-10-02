@@ -225,6 +225,8 @@
  '(uniquify-buffer-name-style (quote forward) nil (uniquify))
  '(uniquify-ignore-buffers-re "^\\ *")
  '(uniquify-separator ":")
+ '(user-full-name "Alessandro Piras")
+ '(user-mail-address "laynor@gmail.com")
  '(visible-bell t)
  '(wl-summary-indent-length-limit nil)
  '(wl-summary-width nil)
