@@ -37,3 +37,6 @@
 [submodule "site-lisp/slime-js"]
 	path = site-lisp/slime-js
 	url = git@github.com:Gozala/slime-js.git
+[submodule "site-lisp/list-packages-ext"]
+	path = site-lisp/list-packages-ext
+	url = git@github.com:laynor/list-packages-ext.git
