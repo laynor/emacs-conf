@@ -26,11 +26,6 @@
  '(column-number-mode t)
  '(comment-style (quote extra-line))
  '(compilation-scroll-output (quote first-error))
- '(custom-enabled-themes (quote (ale-black-2)))
- '(custom-safe-themes
-   (quote
-    ("fb40d3205d941d8e54050cc7f70f9aca3046bde2ba2929d3f09f1ae02d248ae5" "91d2e0d23703423c1da4fad78cfa9717335d1a4ebbb1710fc214743822a5c89f" "490739aa40b07e854d5d816443a01577f19dd382a759187d258e283ea988eafb" "0a1af5e5832a8e38710ce55f3f04342f890330e586e42557c18638f7b056410f" "7f96e6a6dd9b02aeae63cde2916f2725eaf91b44049cdc9cf608ceff4c2a3732" "238da0c6bc2420cac5f2b20f714a01f0e042ea3bd48146ad9fc6be6baf33594f" default)))
- '(custom-theme-directory "~/.emacs.d/themes/")
  '(dired-listing-switches "-alh")
  '(direx:closed-icon "▸ ")
  '(direx:open-icon "▾ ")
