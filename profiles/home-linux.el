@@ -15,7 +15,7 @@
   (custom-set-variables
    '(python-shell-interpreter "python2"))
 
-  (load "custom.el"))
+  (load custom-file))
 
 
 

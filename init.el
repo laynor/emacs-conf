@@ -11,7 +11,8 @@
   (concat user-emacs-directory "site-lisp/" package-name "/"))
 
 (setq-default evil-intercept-esc 'always)
-(add-to-list 'load-path user-emacs-directory)
+(add-to-list 'custom-theme-load-path (concat user-emacs-directory "themes"))
+;;(add-to-list 'load-path user-emacs-directory)
 ;; (setq custom-file (concat user-emacs-directory *active-profile* ".el"))
 ;;(load *active-profile*)
 
