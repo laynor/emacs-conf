@@ -6,7 +6,7 @@
 (add-to-list 'load-path
              (concat user-emacs-directory "site-lisp/emacs-clang-complete-async"))
 
-;; (require 'auto-complete-clang-async)
+(require 'auto-complete-clang-async)
 ;(setq ac-source-clang-async
       ;(append '((document . nil))
               ;ac-source-clang-async))
