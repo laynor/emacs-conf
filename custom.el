@@ -71,7 +71,6 @@
  '(jedi:max-summary-length 40)
  '(jedi:show-function-signature-in-summary t)
  '(magit-diff-refine-hunk t)
- '(magit-mode-hook (quote (magit-filenotify-mode)))
  '(menu-bar-mode nil)
  '(org-export-odt-inline-image-extensions (quote ("png" "jpeg" "jpg" "gif" "svg")))
  '(powerline-height 16)
