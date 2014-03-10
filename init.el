@@ -1,4 +1,5 @@
 (require 'cl)
+(setq inhibit-x-resources t)
 (setq sm-profile "home-linux")
 
 ;; (setq *active-profile* (or (getenv "EMACS_PROFILE")
