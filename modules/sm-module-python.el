@@ -11,6 +11,7 @@
   (add-hook 'python-mode-hook 'jedi:setup)
   (add-hook 'python-mode-hook (lambda () (setq popup-max-menu-width 0.5)))
   (add-hook 'python-mode-hook 'yas-minor-mode)
+  (add-hook 'python-mode-hook 'auto-complete-mode)
   )
 
 (sm-provide :module python)

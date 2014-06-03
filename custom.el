@@ -30,8 +30,7 @@
  '(custom-enabled-themes (quote (ale-black-2)))
  '(custom-safe-themes
    (quote
-    ("fb40d3205d941d8e54050cc7f70f9aca3046bde2ba2929d3f09f1ae02d248ae5" "91d2e0d23703423c1da4fad78cfa9717335d1a4ebbb1710fc214743822a5c89f" "490739aa40b07e854d5d816443a01577f19dd382a759187d258e283ea988eafb" "0a1af5e5832a8e38710ce55f3f04342f890330e586e42557c18638f7b056410f" "7f96e6a6dd9b02aeae63cde2916f2725eaf91b44049cdc9cf608ceff4c2a3732" "238da0c6bc2420cac5f2b20f714a01f0e042ea3bd48146ad9fc6be6baf33594f" default)))
- '(custom-theme-directory "~/.emacs.d/themes/")
+    ("7f96e6a6dd9b02aeae63cde2916f2725eaf91b44049cdc9cf608ceff4c2a3732" "fb40d3205d941d8e54050cc7f70f9aca3046bde2ba2929d3f09f1ae02d248ae5" default)))
  '(dired-listing-switches "-alh")
  '(direx:closed-icon "▸ ")
  '(direx:open-icon "▾ ")
@@ -251,7 +250,7 @@
  '(ac-clang-candidate-face ((t (:background "lightgray" :foreground "navy" :underline "medium slate blue"))))
  '(diff-hl-change ((t (:background "slate blue" :foreground "blue3"))))
  '(diff-removed ((t (:inherit diff-changed :background "firebrick4"))))
- '(ediff-odd-diff-C ((t (:background "Dim Grey" :foreground "White"))) t)
+ '(ediff-odd-diff-C ((t (:background "Dim Grey" :foreground "White"))))
  '(eldoc-highlight-function-argument ((t (:inherit bold :box nil :underline "deeppink"))))
  '(factor-font-lock-comment ((t (:inherit font-lock-comment-face))))
  '(factor-font-lock-parsing-word ((t (:inherit font-lock-keyword-face))))
@@ -278,4 +277,4 @@
  '(powerline-enotify-bg-face ((t (:background "gray8" :foreground "grey75" :box (:line-width 1 :color "grey75" :style released-button) :slant italic :weight bold))))
  '(pp^L-highlight ((t (:background "#120c14" :foreground "black"))))
  '(region ((t (:background "#382D7B"))))
- '(ruby-dev-repl-prompt-face ((t (:inherit default :foreground "SpringGreen1")))))
+ '(ruby-dev-repl-prompt-face ((t (:inherit default :foreground "SpringGreen1"))) t))
