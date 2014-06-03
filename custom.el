@@ -23,6 +23,7 @@
      (awk-mode . "awk")
      (other . "gnu"))))
  '(charmap-rollback-cursor t)
+ '(cider-repl-use-pretty-printing t)
  '(column-number-mode t)
  '(comment-style (quote extra-line))
  '(compilation-scroll-output (quote first-error))
@@ -39,10 +40,13 @@
  '(elmo-imap4-default-stream-type (quote ssl))
  '(enotify-mode-line-prefix "")
  '(enotify-mode-line-suffix "")
- '(evil-default-cursor (quote (t "magenta")))
+ '(erc-log-channels-directory "~/.erc/log/")
+ '(erc-log-mode t)
+ '(erc-log-write-after-insert t)
+ '(evil-default-cursor (quote (t)))
  '(evil-emacs-state-modes
    (quote
-    (direx:direx-mode eassist-mode archive-mode bbdb-mode bookmark-bmenu-mode bookmark-edit-annotation-mode browse-kill-ring-mode bzr-annotate-mode calc-mode cfw:calendar-mode completion-list-mode Custom-mode debugger-mode delicious-search-mode desktop-menu-blist-mode desktop-menu-mode doc-view-mode dvc-bookmarks-mode dvc-diff-mode dvc-info-buffer-mode dvc-log-buffer-mode dvc-revlist-mode dvc-revlog-mode dvc-status-mode dvc-tips-mode ediff-mode efs-mode Electric-buffer-menu-mode emms-browser-mode emms-mark-mode emms-metaplaylist-mode emms-playlist-mode ert-results-mode etags-select-mode fj-mode gc-issues-mode gdb-breakpoints-mode gdb-disassembly-mode gdb-frames-mode gdb-locals-mode gdb-memory-mode gdb-registers-mode gdb-threads-mode gist-list-mode gnus-article-mode gnus-browse-mode gnus-group-mode gnus-server-mode gnus-summary-mode google-maps-static-mode ibuffer-mode jde-javadoc-checker-report-mode magit-commit-mode magit-diff-mode magit-key-mode magit-log-mode magit-mode magit-reflog-mode magit-show-branches-mode magit-stash-mode magit-status-mode magit-wazzup-mode magit-key-mode mh-folder-mode monky-mode notmuch-hello-mode notmuch-search-mode notmuch-show-mode occur-mode org-agenda-mode package-menu-mode proced-mode rcirc-mode rebase-mode recentf-dialog-mode reftex-select-bib-mode reftex-toc-mode sldb-mode slime-inspector-mode slime-thread-control-mode slime-xref-mode sr-buttons-mode sr-mode sr-tree-mode sr-virtual-mode tar-mode tetris-mode tla-annotate-mode tla-archive-list-mode tla-bconfig-mode tla-bookmarks-mode tla-branch-list-mode tla-browse-mode tla-category-list-mode tla-changelog-mode tla-follow-symlinks-mode tla-inventory-file-mode tla-inventory-mode tla-lint-mode tla-logs-mode tla-revision-list-mode tla-revlog-mode tla-tree-lint-mode tla-version-list-mode twittering-mode urlview-mode vc-annotate-mode vc-dir-mode vc-git-log-view-mode vc-svn-log-view-mode vm-mode vm-summary-mode w3m-mode wab-compilation-mode xgit-annotate-mode xgit-changelog-mode xgit-diff-mode xgit-revlog-mode xhg-annotate-mode xhg-log-mode xhg-mode xhg-mq-mode xhg-mq-sub-mode xhg-status-extra-mode eclim-project-mode eclim-problems-mode wl-summary-mode wl-folder-mode quickrun/mode)))
+    (cider-doc-mode cider-stacktrace-mode direx:direx-mode eassist-mode archive-mode bbdb-mode bookmark-bmenu-mode bookmark-edit-annotation-mode browse-kill-ring-mode bzr-annotate-mode calc-mode cfw:calendar-mode completion-list-mode Custom-mode debugger-mode delicious-search-mode desktop-menu-blist-mode desktop-menu-mode doc-view-mode dvc-bookmarks-mode dvc-diff-mode dvc-info-buffer-mode dvc-log-buffer-mode dvc-revlist-mode dvc-revlog-mode dvc-status-mode dvc-tips-mode ediff-mode efs-mode Electric-buffer-menu-mode emms-browser-mode emms-mark-mode emms-metaplaylist-mode emms-playlist-mode ert-results-mode etags-select-mode fj-mode gc-issues-mode gdb-breakpoints-mode gdb-disassembly-mode gdb-frames-mode gdb-locals-mode gdb-memory-mode gdb-registers-mode gdb-threads-mode gist-list-mode gnus-article-mode gnus-browse-mode gnus-group-mode gnus-server-mode gnus-summary-mode google-maps-static-mode ibuffer-mode jde-javadoc-checker-report-mode magit-commit-mode magit-diff-mode magit-key-mode magit-log-mode magit-mode magit-reflog-mode magit-show-branches-mode magit-stash-mode magit-status-mode magit-wazzup-mode magit-key-mode mh-folder-mode monky-mode notmuch-hello-mode notmuch-search-mode notmuch-show-mode occur-mode org-agenda-mode package-menu-mode proced-mode rcirc-mode rebase-mode recentf-dialog-mode reftex-select-bib-mode reftex-toc-mode sldb-mode slime-inspector-mode slime-thread-control-mode slime-xref-mode sr-buttons-mode sr-mode sr-tree-mode sr-virtual-mode tar-mode tetris-mode tla-annotate-mode tla-archive-list-mode tla-bconfig-mode tla-bookmarks-mode tla-branch-list-mode tla-browse-mode tla-category-list-mode tla-changelog-mode tla-follow-symlinks-mode tla-inventory-file-mode tla-inventory-mode tla-lint-mode tla-logs-mode tla-revision-list-mode tla-revlog-mode tla-tree-lint-mode tla-version-list-mode twittering-mode urlview-mode vc-annotate-mode vc-dir-mode vc-git-log-view-mode vc-svn-log-view-mode vm-mode vm-summary-mode w3m-mode wab-compilation-mode xgit-annotate-mode xgit-changelog-mode xgit-diff-mode xgit-revlog-mode xhg-annotate-mode xhg-log-mode xhg-mode xhg-mq-mode xhg-mq-sub-mode xhg-status-extra-mode eclim-project-mode eclim-problems-mode wl-summary-mode wl-folder-mode quickrun/mode)))
  '(evil-motion-state-modes
    (quote
     (apropos-mode Buffer-menu-mode calendar-mode color-theme-mode command-history-mode compilation-mode dictionary-mode ert-results-mode help-mode Info-mode Man-mode speedbar-mode undo-tree-visualizer-mode view-mode woman-mode el-get-package-menu-mode)))
@@ -50,6 +54,9 @@
  '(flx-ido-threshhold 10000)
  '(flycheck-flake8rc "~/.config/flake8")
  '(fringe-mode (quote (4 . 4)) nil (fringe))
+ '(generic-extras-enable-list
+   (quote
+    (alias-generic-mode apache-conf-generic-mode apache-log-generic-mode astap-generic-mode bat-generic-mode etc-fstab-generic-mode etc-modules-conf-generic-mode etc-passwd-generic-mode etc-services-generic-mode etc-sudoers-generic-mode fvwm-generic-mode hosts-generic-mode ibis-generic-mode inetd-conf-generic-mode inf-generic-mode ini-generic-mode java-manifest-generic-mode java-properties-generic-mode javascript-generic-mode mailagent-rules-generic-mode mailrc-generic-mode named-boot-generic-mode named-database-generic-mode pkginfo-generic-mode prototype-generic-mode rc-generic-mode reg-generic-mode resolve-conf-generic-mode rul-generic-mode samba-generic-mode show-tabs-generic-mode spice-generic-mode vrml-generic-mode x-resource-generic-mode xmodmap-generic-mode)))
  '(git-commit-fill-column 120)
  '(git-commit-summary-max-length 90)
  '(git-commit-summary-maxlen 90)
@@ -74,6 +81,7 @@
  '(magit-diff-refine-hunk t)
  '(menu-bar-mode nil)
  '(org-export-odt-inline-image-extensions (quote ("png" "jpeg" "jpg" "gif" "svg")))
+ '(org-src-fontify-natively t)
  '(powerline-height 16)
  '(projectile-ack-function (quote ag-regexp))
  '(projectile-tags-command "gtags")
@@ -254,12 +262,13 @@
  '(flycheck-error ((t (:inherit error :underline t))))
  '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face :foreground "MediumPurple1" :weight bold))))
  '(font-lock-comment-face ((t (:foreground "MediumPurple3" :slant italic))))
+ '(font-lock-fic-author-face ((t (:background "gray20" :foreground "orangered" :underline t))))
  '(font-lock-fic-face ((t (:inherit font-lock-comment-face :background "Red" :foreground "Yellow" :weight bold))))
  '(font-lock-preprocessor-face ((t (:inherit font-lock-builtin-face :foreground "#ff0033"))))
  '(font-lock-string-face ((t (:foreground "blue violet"))))
  '(font-lock-warning-face ((t (:inherit error :foreground "goldenrod"))))
  '(highlight-indentation-face ((t (:inherit fringe :background "grey8"))) t)
- '(hl-sexp-face ((t (:background "gray7"))))
+ '(hl-sexp-face ((t (:background "gray7"))) t)
  '(jedi:highlight-function-argument ((t (:inherit eldoc-highlight-function-argument))))
  '(magit-log-author ((t (:foreground "MediumPurple1"))))
  '(magit-log-sha1 ((t (:foreground "cornflower blue"))))

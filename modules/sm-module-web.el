@@ -1,7 +1,8 @@
 ;;;; Module web
 (sm-module web
            :unmanaged-p nil
-           :require-packages '(nxhtml zencoding))
+           :require-packages '(web-mode))
+           ;; :require-packages '(nxhtml zencoding))
 
 (sm-module-pre (web)
   ;; TODO insert your pre-package-initialization code here

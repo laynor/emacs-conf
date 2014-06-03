@@ -7,6 +7,7 @@
 ;;   (when (eq package 'mediawiki)
 ;;     (debug))
 ;;   (message "PACKAGE %s" package))
+(setq inhibit-x-resources t)
 (defun local-repo (package-name)
   (concat user-emacs-directory "site-lisp/" package-name "/"))
 

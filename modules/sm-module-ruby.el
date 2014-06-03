@@ -2,6 +2,7 @@
 (sm-module ruby
            :unmanaged-p nil
            :require-packages '(yasnippet rsense enotify
+                               enh-ruby-mode
                                highlight-indentation
                                hideshow
                                rspec-mode markdown-mode
