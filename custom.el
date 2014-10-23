@@ -71,6 +71,7 @@
  '(jedi:cut-summary-postfix "...")
  '(jedi:max-summary-length 40)
  '(jedi:show-function-signature-in-summary t)
+ '(js2-highlight-level 3)
  '(magit-diff-refine-hunk t)
  '(menu-bar-mode nil)
  '(org-export-odt-inline-image-extensions (quote ("png" "jpeg" "jpg" "gif" "svg")))
