@@ -39,6 +39,9 @@
  '(elmo-imap4-default-stream-type (quote ssl))
  '(enotify-mode-line-prefix "")
  '(enotify-mode-line-suffix "")
+ '(erc-modules
+   (quote
+    (autojoin completion dcc fill irccontrols list match menu move-to-prompt netsplit networks noncommands readonly ring services stamp spelling track)))
  '(evil-default-cursor (quote (t "magenta")))
  '(evil-emacs-state-modes
    (quote
