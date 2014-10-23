@@ -4,8 +4,9 @@
 (sm-profile-pre (home-windows)
   (setq flymake-mode nil)
   (setq custom-file (concat user-emacs-directory "custom.el"))
-  (setenv "PATH" (concat   "C:\\Users\\ale\\local\\opt\\Msys2\\usr\\bin;"
-                           (getenv "PATH")))
+  (push  "C:/Users/ale/local/opt/Msys2/usr/bin" exec-path)
+  (setenv "PATH" (concat "C:\\Users\\ale\\local\\opt\\Msys2\\usr\\bin;"
+                         (getenv "PATH")))
   )
 
 ;;; Modules to activate
