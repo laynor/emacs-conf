@@ -2,7 +2,7 @@
 (sm-module elisp
            :unmanaged-p nil
            :require-packages '("elisp-slime-nav" "ale-fixme" "auto-complete" "hl-sexp" "highlight-cl"
-                               "litable" "ale-testing" "rainbow-mode" "edit-color-stamp"))
+                               "litable" "ale-testing" "rainbow-mode" "edit-color-stamp" "yasnippet"))
 
 (sm-module-pre (elisp)
   ;; TODO insert your pre-package-initialization code here
@@ -96,5 +96,5 @@
 
 (font-lock-add-keywords 'emacs-lisp-mode '(("\\<\\(cl-\\(flet\\|labels\\)\\)\\>" . font-lock-keyword-face)))
 
-(add-hook 'emacs-lisp-mode-hook 'yas-minor-mode-on)
+;; (add-hook 'emacs-lisp-mode-hook 'yas-minor-mode-on)
 (sm-provide :module elisp)
