@@ -15,6 +15,7 @@
                        "direx"
                        "dollaro"
                        "erc"
+		       "f"
                        "undo-tree"
                        "paredit"
 		       "el-get"
