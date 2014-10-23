@@ -30,3 +30,8 @@ semanticdb/
 .mc-lists.el
 /notes.org
 /site-lisp/starttls-0.10/
+/.litable-lists.el
+/.recentf
+/history
+/projectile.cache
+/server/server
