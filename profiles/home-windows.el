@@ -4,9 +4,7 @@
 (sm-profile-pre (home-windows)
   (setq flymake-mode nil)
   (setq custom-file (concat user-emacs-directory "custom.el"))
-  (setenv "PATH" (concat   "c:\\Users\\ale\\AppData\\Local\\scoop\\apps\\findutils\\4.4.2\\bin;"
-                           "c:\\Users\\ale\\AppData\\Local\\scoop\\apps\\diffutils\\2.8.7\\bin;"
-                           "c:\\Users\\ale\\AppData\\Local\\scoop\\apps\\grep\\2.5.4\\bin;"
+  (setenv "PATH" (concat   "C:\\Users\\ale\\local\\opt\\Msys2\\usr\\bin;"
                            (getenv "PATH")))
   )
 
