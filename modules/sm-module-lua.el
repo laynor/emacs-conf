@@ -8,7 +8,7 @@
   )
 
 (sm-module-post (lua)
-  ;; TODO insert your post-package-initialization code here
+  (add-hook 'lua-mode-hook 'rainbow-mode)
   )
 
 (sm-provide :module lua)

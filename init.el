@@ -1,4 +1,5 @@
 (require 'cl)
+(setq inhibit-x-resources t)
 
 ;; (setq *active-profile* (or (getenv "EMACS_PROFILE")
 ;; 			   "default-profile"))
@@ -6,11 +7,13 @@
 ;;   (when (eq package 'mediawiki)
 ;;     (debug))
 ;;   (message "PACKAGE %s" package))
+(setq inhibit-x-resources t)
 (defun local-repo (package-name)
   (concat user-emacs-directory "site-lisp/" package-name "/"))
 
 (setq-default evil-intercept-esc 'always)
 (add-to-list 'load-path (concat user-emacs-directory "site-lisp/"))
+(add-to-list 'custom-theme-load-path (concat user-emacs-directory "themes"))
 ;; (setq custom-file (concat user-emacs-directory *active-profile* ".el"))
 ;;(load *active-profile*)
 

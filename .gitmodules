@@ -40,3 +40,6 @@
 [submodule "site-lisp/list-packages-ext"]
 	path = site-lisp/list-packages-ext
 	url = git@github.com:laynor/list-packages-ext.git
+[submodule "site-lisp/emacs-gradle-mode"]
+	path = site-lisp/emacs-gradle-mode
+	url = https://github.com/jacobono/emacs-gradle-mode.git

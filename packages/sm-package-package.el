@@ -20,13 +20,20 @@
       (car (read-from-string (buffer-string))))
     (package-list)))
 
+(defun package-get-name (package)
+  (etypecase package
+    (list (package-get-name (car package)))
+    (package-desc (package-desc-name package))
+    (symbol (symbol-name package))
+    (string package)))
+    
 
 (defun package-dump-manually-installed-packages ()
   (setq package-manually-installed-packages
         (sort (remove-duplicates package-manually-installed-packages)
               (lambda (s1 s2)
-                (string< (symbol-name s1)
-                         (symbol-name s2)))))
+                (string< (package-get-name s1)
+                         (package-get-name s2)))))
   (with-temp-file package-manually-installed-packages-file
     (insert "(\n")
     (dolist (el package-manually-installed-packages)
