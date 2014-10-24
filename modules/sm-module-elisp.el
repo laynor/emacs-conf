@@ -31,7 +31,7 @@
     (hl-sexp-mode 1)
     (highlight-cl-add-font-lock-keywords)
     (elisp-slime-nav-mode 1)
-    (yas-minor-mode-on)
+    (ignore-errors (yas-minor-mode-on))
     (add-hook 'local-write-file-hooks
               'check-parens))
 
@@ -102,5 +102,4 @@
   )
 
 
-(add-hook 'emacs-lisp-mode-hook 'yas-minor-mode-on)
 (sm-provide :module elisp)
