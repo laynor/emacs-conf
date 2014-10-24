@@ -14,6 +14,7 @@
 
 ;;; After loading modules
 (sm-profile-post (home-windows)
+  (toggle-frame-maximized)
   (setq browse-url-firefox-program "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe")
   ;; (setq magit-git-executable "c:/cygwin/bin/git.exe")
   (load custom-file)
