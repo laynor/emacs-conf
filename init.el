@@ -18,8 +18,8 @@
 ;;(load *active-profile*)
 
 ;;(setq package-enable-at-startup nil)
-
-(setq package-archives '(("melpa" . "http://melpa.milkbox.net/packages/")))
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 
 (add-to-list 'load-path (concat user-emacs-directory "smotitah"))
 (setq sm-debug nil)
