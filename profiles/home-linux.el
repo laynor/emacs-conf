@@ -8,14 +8,14 @@
   )
 
 ;;; Modules to activate
-(sm-require-modules "scrolling" "base" "dired" "elisp" "common-lisp" "C" "objc" "factor" "erlang" "python" "ruby" "lua" "mail" "haskell" "javascript")
+(sm-require-modules "scrolling" "base" "dired" "elisp" "common-lisp" "C" "objc" "factor" "erlang" "python" "ruby" "lua" "mail" "haskell" "javascript" "android" "web" "clojure")
 
 ;;; After loading modules
 (sm-profile-post (home-linux)
   (custom-set-variables
    '(python-shell-interpreter "python2"))
 
-  (load "custom.el"))
+  (load custom-file))
 
 
 

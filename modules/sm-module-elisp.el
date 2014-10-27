@@ -25,12 +25,40 @@
   (global-set-key [(f5)] 'visit-ielm)
 
   ;; Activate minor modes
-  (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode) ;eldoc
-  (add-hook 'emacs-lisp-mode-hook 'ac-emacs-lisp-mode-setup)
-  (add-hook 'emacs-lisp-mode-hook '(lambda () (hl-sexp-mode 1)))
-  (add-hook 'emacs-lisp-mode-hook 'highlight-cl-add-font-lock-keywords)
-  (add-hook 'emacs-lisp-mode-hook '(lambda () (elisp-slime-nav-mode 1)))
-  (add-hook 'lisp-interaction-mode-hook 'highlight-cl-add-font-lock-keywords)
+  (defun my-emacs-lisp-mode-hook ()
+    (turn-on-eldoc-mode)
+    (ac-emacs-lisp-mode-setup)
+    (hl-sexp-mode 1)
+    (highlight-cl-add-font-lock-keywords)
+    (elisp-slime-nav-mode 1)
+    (yas-minor-mode-on)
+    (add-hook 'local-write-file-hooks
+              'check-parens))
+
+
+  (sm-integrate-with (:package rainbow-mode)
+      (add-hook 'lisp-interaction-mode-hook #'(lambda () (rainbow-mode t)))
+    (add-hook 'emacs-lisp-mode-hook #'(lambda () (rainbow-mode t))))
+
+ ;;;;;;;;;;;;;;;;;;;;;
+ ;;; evil integration
+  (sm-integrate-with (:package evil)
+      (evil-define-key 'normal emacs-lisp-mode-map (kbd "M-.")
+                       'elisp-slime-nav-find-elisp-thing-at-point))
+
+
+  (setq lisp-indent-function 'common-lisp-indent-function)
+
+  (put 'if 'common-lisp-indent-function 2)
+
+  (put 'cl-flet 'common-lisp-indent-function
+       (get 'flet 'common-lisp-indent-function))
+
+  (put 'gv-define-setter 'common-lisp-indent-function
+       (get 'defmacro 'common-lisp-indent-function))
+
+  (font-lock-add-keywords 'emacs-lisp-mode '(("\\<\\(cl-\\(flet\\|labels\\)\\)\\>" . font-lock-keyword-face)))
+
 
   ;; (add-hook 'emacs-lisp-mode-hook '(lambda () (pretty-symbols-mode 1)))
 
@@ -69,32 +97,10 @@
   ;;   (kbd "M-k") 'up-list
   ;;   (kbd "M-l") 'evil-forward-sexp
   ;;   (kbd "M-h") 'evil-backward-sexp)
- ; could be bad, will not let you save at all, until you correct the error
- (add-hook 'emacs-lisp-mode-hook
-  (function (lambda ()
-   (add-hook 'local-write-file-hooks
-    'check-parens))))
+                                        ; could be bad, will not let you save at all, until you correct the error
+ ;;; End module post
+  )
 
- ;;;;;;;;;;;;;;;;;;;;;
- ;;; evil integration
- (sm-integrate-with (:package evil)
-   (evil-define-key 'normal emacs-lisp-mode-map (kbd "M-.") 'elisp-slime-nav-find-elisp-thing-at-point))
-
- (sm-integrate-with (:package rainbow-mode)
-   (add-hook 'lisp-interaction-mode-hook #'(lambda () (rainbow-mode t)))
-   (add-hook 'emacs-lisp-mode-hook #'(lambda () (rainbow-mode t))))
-
- )
-
-(setq lisp-indent-function 'common-lisp-indent-function)
-(put 'if 'common-lisp-indent-function 2)
-(put 'cl-flet 'common-lisp-indent-function
-     (get 'flet 'common-lisp-indent-function))
-
-(put 'gv-define-setter 'common-lisp-indent-function
-     (get 'defmacro 'common-lisp-indent-function))
-
-(font-lock-add-keywords 'emacs-lisp-mode '(("\\<\\(cl-\\(flet\\|labels\\)\\)\\>" . font-lock-keyword-face)))
 
 ;; (add-hook 'emacs-lisp-mode-hook 'yas-minor-mode-on)
 (sm-provide :module elisp)
