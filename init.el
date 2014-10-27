@@ -1,5 +1,4 @@
 (require 'cl)
-(setq sm-profile "home-linux")
 
 ;; (setq *active-profile* (or (getenv "EMACS_PROFILE")
 ;; 			   "default-profile"))
@@ -11,7 +10,8 @@
   (concat user-emacs-directory "site-lisp/" package-name "/"))
 
 (setq-default evil-intercept-esc 'always)
-(add-to-list 'load-path user-emacs-directory)
+(add-to-list 'load-path (concat user-emacs-directory "site-lisp/"))
+
 ;; (setq custom-file (concat user-emacs-directory *active-profile* ".el"))
 ;;(load *active-profile*)
 
@@ -30,16 +30,17 @@
 ;(unless (server-running-p)
   ;(message "mufu"))
   ;; (server-start))
-;; (add-to-list 'load-path (local-repo "dollaro/"))
-;; (load "dollaro")
+
 (add-hook 'after-init-hook (lambda ()
+                             (require 'f)
+                             (require 'dollaro)
 			     (setq initial-scratch-message
                                    ($:fill-template (f-read-text
                                                      (concat user-emacs-directory
                                                              "scratch-template.$"))
                                                     `((init-time . ,(emacs-init-time))
                                                       (emacs-profile . ,sm-profile))))
-                             (message "Startup time: %s" (emacs-init-time))))
+			     (message "Startup time: %s" (emacs-init-time))))
 
 (setq gc-cons-threshold 20000000)
 

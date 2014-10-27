@@ -1,7 +1,7 @@
 ;;;; Module org
 (sm-module org
            :unmanaged-p nil
-           :require-packages '(org-bullets))
+           :require-packages '(org-bullets evil-leader evil-org))
 
 (sm-module-pre (org)
   )
