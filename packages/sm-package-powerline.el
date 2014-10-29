@@ -161,9 +161,9 @@ FACE. This includes the mouse over faces."
 
 
 ;;; active modeline detection hack
-(add-hook 'post-command-hook (lambda ()
-                               (when (not (minibuffer-selected-window))
-                                 (setq powerline-selected-window (selected-window)))))
+;; (add-hook 'post-command-hook (lambda ()
+;;                                (when (not (minibuffer-selected-window))
+;;                                  (setq powerline-selected-window (selected-window)))))
 
 (setq-default mode-line-format
               '("%e"
