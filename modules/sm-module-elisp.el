@@ -35,6 +35,8 @@
     (add-hook 'local-write-file-hooks
               'check-parens))
 
+  (add-hook 'emacs-lisp-mode-hook 'my-emacs-lisp-mode-hook)
+  (add-hook 'lisp-interaction-mode-hook 'my-emacs-lisp-mode-hook)
 
   (sm-integrate-with (:package rainbow-mode)
       (add-hook 'lisp-interaction-mode-hook #'(lambda () (rainbow-mode t)))
