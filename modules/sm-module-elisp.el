@@ -104,4 +104,5 @@
   )
 
 
+;; (add-hook 'emacs-lisp-mode-hook 'yas-minor-mode-on)
 (sm-provide :module elisp)

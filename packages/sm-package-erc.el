@@ -53,7 +53,7 @@ machine localhost port bitlbee login USER password PASSWORD"
 ;; The ~/.ercpass file contains a line like this one:
 
 ;; (setq freenode-passwd-laynor "myfreenodepassword")
-(setq erc-modules '(autojoin button completion dcc fill irccontrols list match menu move-to-prompt netsplit networks noncommands readonly ring services stamp spelling track))
-(erc-update-modules)
+;; (setq erc-modules '(autojoin completion dcc fill irccontrols list match menu move-to-prompt netsplit networks noncommands readonly ring services stamp spelling track))
+;; (erc-update-modules)
 
 (sm-provide :package erc)

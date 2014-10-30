@@ -12,7 +12,7 @@
   )
 
 ;;; Modules to activate
-(sm-require-modules "base" "elisp" "c-sharp" "javascript" "web" "clojure")
+(sm-require-modules "base" "elisp" "c-sharp" "org" "javascript" "web" "clojure")
 
 ;;; After loading modules
 (sm-profile-post (home-windows)

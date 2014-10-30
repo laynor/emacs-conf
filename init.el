@@ -32,18 +32,17 @@
 ;(unless (server-running-p)
   ;(message "mufu"))
   ;; (server-start))
-;; (add-to-list 'load-path (local-repo "dollaro/"))
-;; (load "dollaro")
+
 (add-hook 'after-init-hook (lambda ()
                              (require 'f)
                              (require 'dollaro)
-                             (setq initial-scratch-message
+			     (setq initial-scratch-message
                                    ($:fill-template (f-read-text
                                                      (concat user-emacs-directory
                                                              "scratch-template.$"))
                                                     `((init-time . ,(emacs-init-time))
                                                       (emacs-profile . ,sm-profile))))
-                             (message "Startup time: %s" (emacs-init-time))))
+			     (message "Startup time: %s" (emacs-init-time))))
 
 (setq gc-cons-threshold 20000000)
 
