@@ -7,10 +7,12 @@
   (push  "C:/Users/ale/local/opt/Msys2/usr/bin" exec-path)
   (setenv "PATH" (concat "C:\\Users\\ale\\local\\opt\\Msys2\\usr\\bin;"
                          (getenv "PATH")))
+  (require 'server)
+  (server-start)
   )
 
 ;;; Modules to activate
-(sm-require-modules "base" "elisp" "c-sharp" "javascript" "web")
+(sm-require-modules "base" "elisp" "c-sharp" "javascript" "web" "clojure")
 
 ;;; After loading modules
 (sm-profile-post (home-windows)
