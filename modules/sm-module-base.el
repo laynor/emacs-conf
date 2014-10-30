@@ -39,7 +39,7 @@
 		       "ido-vertical-mode"
                        "ipa"
                        "magit"
-                       "magit-filenotify"
+                       ;; "magit-filenotify"
                        "git-commit-mode"
                        "git-messenger"
                        "markdown-mode"
