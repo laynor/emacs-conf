@@ -78,19 +78,20 @@
   (dotimes (i (or count 1))
     (let (op-pos cl-pos)
       (condition-case nil
-          (progn (save-excursion
-                   (paredit-backward-up)
-                   (setq op-pos (point))
-                   (paredit-forward)
-                   (setq cl-pos (point)))
-                 (let ((lookahead (char-syntax (char-after (point)))))
-                   (case lookahead
-                     (?\( (goto-char op-pos))
-                     (?\) (goto-char cl-pos))
-                     (otherwise (goto-char (if (> (abs (- (point) cl-pos))
-                                                  (abs (- (point) op-pos)))
-                                               op-pos
-                                             cl-pos))))))
+          (progn
+            (save-excursion
+              (paredit-backward-up)
+              (setq op-pos (point))
+              (paredit-forward)
+              (setq cl-pos (point)))
+            (let ((lookahead (char-syntax (char-after (point)))))
+              (case lookahead
+                (?\( (goto-char op-pos))
+                (?\) (goto-char cl-pos))
+                (otherwise (goto-char (if (> (abs (- (point) cl-pos))
+                                             (abs (- (point) op-pos)))
+                                          op-pos
+                                        cl-pos))))))
         (error (error "Already at top-level."))))) )
 
 (provide 'evil-sexp)
