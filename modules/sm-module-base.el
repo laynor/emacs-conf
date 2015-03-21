@@ -22,6 +22,7 @@
                        "evil"
                        "evil-sexp"
 		       "expand-region"
+                       "f"
                        "flx"
                        "flx-ido"
                        "fuzzy"

@@ -3,6 +3,7 @@ ace-jump-mode
 ag
 auto-complete
 auto-complete-clang
+bbdb
 browse-kill-ring
 c-eldoc
 ctable
@@ -17,15 +18,18 @@ direx
 elisp-slime-nav
 epc
 erlang
-evil
+es-lib
 flx
 flycheck
 fuzzy
-gh
-gist
+ghc
+ghci-completion
 git-commit-mode
+git-messenger
 gitignore-mode
 guide-key
+haskell-mode
+helm
 hide-comnt
 highlight-cl
 hl-sexp
@@ -35,20 +39,25 @@ litable
 magit
 markdown-mode
 markdown-mode+
-melpa
 melpa-upstream-visit
-org-bullets
 paredit
 parenface
+pcache
+([cl-struct-package-desc pcache (20120408 1206) "persistent caching for Emacs [github]" ((eieio (1 3))) single "melpa" nil])
+persistent-soft
+([cl-struct-package-desc persistent-soft (20121205 1456) "Persistent storage, returning nil on failure [github]" ((pcache (0 2 3)) (list-utils (0 2 0))) single "melpa" nil])
+([cl-struct-package-desc persistent-soft (20121205 1456) "Persistent storage, returning nil on failure [github]" ((pcache (0 2 3)) (list-utils (0 2 0))) single "melpa" nil])
 popup
 popwin
 powerline
 projectile
 quickrun
+rspec-mode
 s
 shell-pop
 smex
 smooth-scrolling
+top-mode
 undo-tree
 wgrep
 wgrep-ack

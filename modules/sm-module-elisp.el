@@ -2,7 +2,7 @@
 (sm-module elisp
            :unmanaged-p nil
            :require-packages '("elisp-slime-nav" "ale-fixme" "auto-complete" "hl-sexp" "highlight-cl"
-                               "litable" "ale-testing" "rainbow-mode" "edit-color-stamp" "yasnippet"))
+                               "litable" "ale-testing" "rainbow-mode" "edit-color-stamp" "yasnippet" "flash-region"))
 
 (sm-module-pre (elisp)
   ;; TODO insert your pre-package-initialization code here
@@ -22,6 +22,13 @@
           (other-window 1)
           (ielm)))))
 
+(defun eval-defun-flash-region (edebugit)
+  (interactive "P")
+  (eval-defun edebugit)
+  (let ((bounds (bounds-of-thing-at-point 'defun)))
+    (flash-region (car bounds) (cdr bounds) 'region 0.25)))
+
+(define-key emacs-lisp-mode-map (kbd "C-c C-c") 'eval-defun-flash-region)
   (global-set-key [(f5)] 'visit-ielm)
 
   ;; Activate minor modes
